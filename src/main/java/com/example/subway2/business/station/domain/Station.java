@@ -1,7 +1,7 @@
 package com.example.subway2.business.station.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.example.subway2.global.common.BaseEntity;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,5 +10,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "stations")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Station {
+public class Station extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 }
