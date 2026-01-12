@@ -1,1 +1,2 @@
 rootProject.name = 'subway2'
+include ('core','app')
