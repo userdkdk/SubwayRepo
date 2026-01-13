@@ -1,6 +1,6 @@
 package com.example.app.business.station.adapter;
 
-import com.example.core.common.domain.BaseEntity;
+import com.example.app.common.domain.BaseEntity;
 import com.example.core.common.domain.enums.ActiveType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
