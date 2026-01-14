@@ -37,7 +37,7 @@ public class CustomResponse<T> {
                 .body(new CustomResponse<>(true, data, null));
     }
     
-    public static <T> ResponseEntity<CustomResponse<T>> create() {
+    public static <T> ResponseEntity<CustomResponse<T>> created() {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new CustomResponse<>(true, null, null));

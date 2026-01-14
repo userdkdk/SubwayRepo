@@ -36,6 +36,7 @@ public class SegmentJpaEntity extends BaseEntity {
     @Column(name = "spend_time", nullable = false)
     private int spendTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
 }

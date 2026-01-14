@@ -24,6 +24,16 @@ public class StationJpaEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
+
+    private StationJpaEntity(String name, ActiveType activeType) {
+        this.name = name;
+        this.activeType = activeType;
+    }
+
+    public static StationJpaEntity create(String name, ActiveType activeType) {
+        return new StationJpaEntity(name, activeType);
+    }
 }

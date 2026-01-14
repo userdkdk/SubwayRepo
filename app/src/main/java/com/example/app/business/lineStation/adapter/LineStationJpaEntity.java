@@ -35,6 +35,7 @@ public class LineStationJpaEntity extends BaseEntity {
     @Column(name = "seq", nullable = false)
     private int seq;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
 

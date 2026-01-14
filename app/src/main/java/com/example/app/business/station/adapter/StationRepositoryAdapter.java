@@ -8,16 +8,16 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class StationRepositoryAdapter implements StationRepository {
-    private final SpringDataStationJpaRepository springDataStationJpaRepository;
-
+    private final SpringDataStationJpaRepository stationJpaRepository;
+    private final StationMapper stationMapper;
 
     @Override
     public boolean existsByName(String name) {
-        return false;
+        return stationJpaRepository.existsByName(name);
     }
 
     @Override
-    public Station save(Station station) {
-        return null;
+    public void save(Station station) {
+        stationJpaRepository.save(stationMapper.toEntity(station));
     }
 }

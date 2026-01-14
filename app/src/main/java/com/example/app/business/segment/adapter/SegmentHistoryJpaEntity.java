@@ -22,6 +22,7 @@ public class SegmentHistoryJpaEntity {
     @JoinColumn(name = "segment_id", nullable = false)
     private SegmentJpaEntity segmentJpaEntity;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="action", nullable = false)
     private HistoryType historyType;
 

@@ -23,6 +23,7 @@ public class LineJpaEntity extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
 }
