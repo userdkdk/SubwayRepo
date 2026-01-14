@@ -2,7 +2,6 @@ package com.example.app.common.exception;
 
 import com.example.app.common.response.CustomResponse;
 import com.example.core.common.exception.CustomException;
-import com.example.core.common.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

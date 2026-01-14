@@ -11,8 +11,10 @@ public class NameNormalizer {
 
     private final Pattern pattern;
 
+    // 한글,영어 대소문자,숫자,띄어쓰기,하이픈만 허용
     private NameNormalizer(int min, int max) {
-        this.pattern = Pattern.compile("^[a-zA-Z0-9가-힣]{"+min+","+max+"}$");
+        this.pattern = Pattern.compile(
+                "^[a-zA-Z0-9가-힣 \\-]{"+min+","+max+"}$");
     }
 
     public static NameNormalizer of (int min, int max) {
