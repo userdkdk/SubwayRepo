@@ -13,7 +13,7 @@ spring:
     defer-datasource-initialization: true
 
   datasource:
-    url: jdbc:mysql://localhost:3306/subwaymap?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/subwaymap?serverTimezone=Asia/Seoul
     username: subway_user
     password: subway_pw
     driver-class-name: com.mysql.cj.jdbc.Driver

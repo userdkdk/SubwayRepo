@@ -10,8 +10,10 @@ public enum DomainErrorCode implements ErrorCode {
     NAME_ERROR("DC-001", "Input Name Invalid"),
     POLICY_ERROR("DC-002", "Input Policy Invalid"),
     // station
-    STATION_NAME_ERROR("DS-001", "Station name invalid");
+    STATION_NAME_ERROR("DS-001", "Station name invalid"),
 
+    // line
+    LINE_NAME_ERROR("DL-001", "Line name invalid");
 
     private final String code;
     private final String message;
@@ -24,5 +26,15 @@ public enum DomainErrorCode implements ErrorCode {
     @Override
     public String message() {
         return message;
+    }
+
+    @Override
+    public ErrorType errorType() {
+        return ErrorType.DOMAIN;
+    }
+
+    @Override
+    public int status() {
+        return 400;
     }
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,5 +27,5 @@ public class SegmentHistoryJpaEntity {
 
     @CreatedDate
     @Column(name="changed_at", nullable = false, updatable = false)
-    private Instant changedAt;
+    private LocalDateTime changedAt;
 }

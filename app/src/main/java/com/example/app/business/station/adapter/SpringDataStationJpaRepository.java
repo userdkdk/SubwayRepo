@@ -1,4 +1,6 @@
 package com.example.app.business.station.adapter;
 
-public interface SpringDataStationJpaRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SpringDataStationJpaRepository extends JpaRepository<StationJpaEntity, Integer> {
 }

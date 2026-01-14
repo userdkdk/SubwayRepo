@@ -29,7 +29,7 @@ public class Station {
         String normalized = NameNormalizer.normalizeName(name);
         if (!NAME_NORMALIZER.validate(normalized)) {
             throw CustomException.domain(DomainErrorCode.STATION_NAME_ERROR)
-                    .addParam("name",normalized);
+                    .addParam("name invalid",normalized);
         }
         return normalized;
     }
