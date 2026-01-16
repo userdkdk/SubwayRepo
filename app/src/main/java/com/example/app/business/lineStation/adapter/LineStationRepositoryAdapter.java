@@ -14,6 +14,7 @@ public class LineStationRepositoryAdapter implements LineStationRepository {
 
     @Override
     public Optional<LineStation> findByLineIdAndStationId(Integer lineId, Integer stationId) {
-        return lineStationJpaRepository.findByLineJpaEntityIdAndStationJpaEntityId(1,2);
+        lineStationJpaRepository.findByLineJpaEntity_IdAndStationJpaEntity_Id(1,2);
+        return null;
     }
 }

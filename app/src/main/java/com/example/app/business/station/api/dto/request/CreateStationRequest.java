@@ -1,4 +1,4 @@
-package com.example.app.business.station.api.dto;
+package com.example.app.business.station.api.dto.request;
 
 import lombok.Getter;
 

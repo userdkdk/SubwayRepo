@@ -29,15 +29,5 @@ public class LineService {
         Integer end = stationRepository.findIdByName(request.getEndStation())
                 .orElseThrow(()->CustomException.app(AppErrorCode.STATION_NOT_FOUND));
 
-        // find or create line
-        Line line = lineRepository.findByName(request.getName());
-        if (line == null) {
-            line = Line.create(request.getName(), start, end);
-            lineRepository.save(line);
-        } else {
-            lineRepository.active(line);
-        }
-        // save line station
-        LineStation startStation = lineStationRepository.findByLineIdAndStationId(line.getId(), start);
     }
 }

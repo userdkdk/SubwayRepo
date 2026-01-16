@@ -1,11 +1,15 @@
 package com.example.app.business.station.api;
 
-import com.example.app.business.station.api.dto.CreateStationRequest;
+import com.example.app.business.station.api.dto.request.CreateStationRequest;
+import com.example.app.business.station.api.dto.request.DeleteStationRequest;
+import com.example.app.business.station.api.dto.response.StationResponse;
 import com.example.app.business.station.application.StationService;
 import com.example.app.common.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/station")
@@ -14,12 +18,25 @@ public class StationController {
 
     private final StationService stationService;
 
+    @GetMapping("")
+    public ResponseEntity<CustomResponse<List<StationResponse>>> getAllStation() {
+        return CustomResponse.ok(stationService.getAllStation());
+    }
+
     @PostMapping("")
     public ResponseEntity<CustomResponse<Void>> createStation(
             @RequestBody CreateStationRequest request
             ) {
         stationService.createStation(request);
         return CustomResponse.created();
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<CustomResponse<Void>> deleteStation(
+            @RequestBody DeleteStationRequest request
+            ) {
+        stationService.deleteStation(request);
+        return CustomResponse.ok();
     }
 
 }

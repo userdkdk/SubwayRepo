@@ -33,7 +33,7 @@ public class StationRepositoryAdapter implements StationRepository {
         Station station = Station.create(rawName);
         String name = station.getName();
 
-        int isUpdated = stationJpaRepository.activateByName(name, ActiveType.ACTIVE);
+        int isUpdated = stationJpaRepository.setActivateByName(name, ActiveType.ACTIVE);
 
         if (isUpdated==0) {
             StationJpaEntity saved = stationJpaRepository.save(
@@ -52,5 +52,12 @@ public class StationRepositoryAdapter implements StationRepository {
         }
         StationJpaEntity saved = stationJpaRepository.save(stationMapper.toNewEntity(station));
         return stationMapper.toDomain(saved);
+    }
+
+    @Override
+    public void inActivateByName(String rawName) {
+        Station station = Station.create(rawName);
+        String name = station.getName();
+        stationJpaRepository.setActivateByName(name, ActiveType.INACTIVE);
     }
 }
