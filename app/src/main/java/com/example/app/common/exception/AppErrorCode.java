@@ -12,7 +12,9 @@ public enum AppErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR("A-001","Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
     DATA_INTEGRITY_VIOLATION("A-002", "DB Save Error", HttpStatus.CONFLICT),
     // station
-    STATION_NAME_ERROR("AS-001","Station name duplicated", HttpStatus.BAD_REQUEST);
+    STATION_NAME_ERROR("AS-001","Station name duplicated", HttpStatus.BAD_REQUEST),
+    STATION_NOT_FOUND("AS-001","Station Not Found", HttpStatus.NOT_FOUND);
+
 
     private final String code;
     private final String message;

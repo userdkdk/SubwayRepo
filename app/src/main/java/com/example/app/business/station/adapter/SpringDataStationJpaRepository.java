@@ -1,7 +1,23 @@
 package com.example.app.business.station.adapter;
 
+import com.example.core.common.domain.enums.ActiveType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
 
 public interface SpringDataStationJpaRepository extends JpaRepository<StationJpaEntity, Integer> {
-    boolean existsByName(String name);
+
+    Optional<StationJpaEntity> findByName(String name);
+
+    @Query("select s.id from StationJpaEntity s where s.name = :name")
+    Optional<Integer> findIdByName(@Param("name") String name);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("update StationJpaEntity s " +
+            "set s.activeType = :active " +
+            "where s.name = :name")
+    int activateByName(@Param("name") String name, @Param("active") ActiveType activeType);
 }

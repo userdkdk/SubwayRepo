@@ -26,4 +26,22 @@ public class LineJpaEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
+
+    @Column(name = "counts", nullable = false)
+    private int counts;
+
+    private LineJpaEntity(String name, ActiveType activeType, int counts) {
+        this.name = name;
+        this.activeType = activeType;
+        this.counts = counts;
+    }
+
+    public static LineJpaEntity create(String name, ActiveType activeType, int counts) {
+        return new LineJpaEntity(name, activeType, counts);
+    }
+
+    public LineJpaEntity active() {
+        this.activeType = ActiveType.ACTIVE;
+        return this;
+    }
 }

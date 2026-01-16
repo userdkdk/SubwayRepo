@@ -23,6 +23,14 @@ public class Station {
         return new Station(null, normalized, ActiveType.ACTIVE);
     }
 
+    public static Station of(Integer id, String name, ActiveType activeType) {
+        return new Station(id, name, activeType);
+    }
+
+    public Station activate() {
+        return new Station(this.id, this.name, ActiveType.ACTIVE);
+    }
+
     private static String validateName(String name) {
         String normalized = NameValidator.normalizeName(name);
         if (!NAME_VALIDATOR.isValidate(normalized)) {

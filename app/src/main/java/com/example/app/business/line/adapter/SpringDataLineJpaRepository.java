@@ -1,4 +1,7 @@
 package com.example.app.business.line.adapter;
 
-public interface SpringDataLineJpaRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SpringDataLineJpaRepository extends JpaRepository<LineJpaEntity, Integer> {
+    boolean existsByName(String name);
 }

@@ -14,7 +14,8 @@ public enum DomainErrorCode implements ErrorCode {
 
     // line
     LINE_NAME_ERROR("DL-001", "Line name invalid"),
-    LINE_NAME_DUPLICATED("DL-002", "Line name duplicated");
+    LINE_NAME_DUPLICATED("DL-002", "Line name duplicated"),
+    LINE_INPUT_STATION_SAME("DL-003","Input stations are same");
 
     private final String code;
     private final String message;

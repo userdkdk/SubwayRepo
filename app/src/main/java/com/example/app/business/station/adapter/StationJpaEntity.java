@@ -1,5 +1,6 @@
 package com.example.app.business.station.adapter;
 
+import com.example.app.business.line.adapter.LineJpaEntity;
 import com.example.app.common.domain.BaseEntity;
 import com.example.core.common.domain.enums.ActiveType;
 import jakarta.persistence.*;
@@ -35,5 +36,9 @@ public class StationJpaEntity extends BaseEntity {
 
     public static StationJpaEntity create(String name, ActiveType activeType) {
         return new StationJpaEntity(name, activeType);
+    }
+
+    public void activate() {
+        this.activeType = ActiveType.ACTIVE;
     }
 }
