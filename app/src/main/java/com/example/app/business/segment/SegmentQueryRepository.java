@@ -4,13 +4,11 @@ import com.example.core.business.station.Station;
 import com.example.core.common.domain.enums.ActiveType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class SegmentQueryRepository {
     private final SpringDataSegmentJpaRepository segmentJpaRepository;
 

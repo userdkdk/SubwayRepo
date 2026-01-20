@@ -1,25 +1,18 @@
 package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
-import com.example.app.api.station.adapter.StationApiMapper;
-import com.example.app.api.station.api.dto.response.StationSegmentResponse;
-import com.example.app.business.line.LineQueryRepository;
-import com.example.app.business.segment.SegmentJpaEntity;
-import com.example.app.business.segment.SegmentQueryRepository;
+import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
 import com.example.app.business.station.StationQueryRepository;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineRepository;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentRepository;
-import com.example.core.business.station.StationRepository;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -54,5 +47,9 @@ public class LineService {
         Segment segment = Segment.create(savedLine.getId(), startId, endId,
                 distance, spendTIme);
         segmentRepository.save(segment);
+    }
+
+    @Transactional
+    public void createSegment(Integer lineId, CreateSegmentRequest request) {
     }
 }

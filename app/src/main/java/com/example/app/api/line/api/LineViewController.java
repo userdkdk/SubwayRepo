@@ -5,15 +5,12 @@ import com.example.app.api.station.api.dto.response.StationSegmentResponse;
 import com.example.app.common.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/lineview")
+@RequestMapping("/api/line")
 @RequiredArgsConstructor
 public class LineViewController {
 
@@ -21,7 +18,7 @@ public class LineViewController {
 
     @GetMapping("/{lineId}")
     public ResponseEntity<CustomResponse<List<StationSegmentResponse>>> getStationsById(
-            @RequestParam Integer lineId
+            @PathVariable Integer lineId
     ) {
         List<StationSegmentResponse> res = lineViewService.getStationsById(lineId);
         return CustomResponse.ok(res);
