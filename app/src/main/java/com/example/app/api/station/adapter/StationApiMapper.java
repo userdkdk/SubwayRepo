@@ -1,6 +1,7 @@
 package com.example.app.api.station.adapter;
 
 import com.example.app.api.station.api.dto.response.StationResponse;
+import com.example.app.api.station.api.dto.response.StationSegmentResponse;
 import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.business.station.StationJpaEntity;
 import org.springframework.stereotype.Component;
@@ -15,8 +16,14 @@ public class StationApiMapper {
                 .build();
     }
 
-    public StationResponse segmentEntityToDto(SegmentJpaEntity entity) {
-        return StationResponse.builder()
+    public StationSegmentResponse segmentEntityToDto(SegmentJpaEntity entity) {
+        return StationSegmentResponse.builder()
+                .beforeId(entity.getBeforeStationJpaEntity().getId())
+                .beforeName(entity.getBeforeStationJpaEntity().getName())
+                .afterId(entity.getAfterStationJpaEntity().getId())
+                .afterName(entity.getAfterStationJpaEntity().getName())
+                .distance(entity.getDistance())
+                .spendTime(entity.getSpendTime())
                 .build();
     }
 }

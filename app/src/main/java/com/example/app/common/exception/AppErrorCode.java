@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum AppErrorCode implements ErrorCode {
-    INTERNAL_SERVER_ERROR("A-001","Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
+    INTERNAL_SERVER_ERROR("A-001","Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
     DATA_INTEGRITY_VIOLATION("A-002", "DB Save Error", HttpStatus.CONFLICT),
     // station
     STATION_NAME_ERROR("AS-001","Station name duplicated", HttpStatus.BAD_REQUEST);
