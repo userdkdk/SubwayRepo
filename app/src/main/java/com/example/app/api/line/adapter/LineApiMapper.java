@@ -1,4 +1,4 @@
-package com.example.app.admin.line.adapter;
+package com.example.app.api.line.adapter;
 
 import org.springframework.stereotype.Component;
 

@@ -3,6 +3,8 @@ package com.example.app.business.station;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationRepository;
 import com.example.core.common.domain.enums.ActiveType;
+import com.example.core.common.exception.CustomException;
+import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,27 +26,30 @@ public class StationRepositoryAdapter implements StationRepository {
         return stationJpaRepository.findIdByName(name);
     }
 
-
     @Override
-    public Station upsertActivateByName(String rawName) {
-        Station station = Station.create(rawName);
+    public Station save(Station station) {
         String name = station.getName();
 
-        int isUpdated = stationJpaRepository.setActivateByName(name, ActiveType.ACTIVE);
-
-        if (isUpdated==0) {
-            StationJpaEntity saved = stationJpaRepository.save(
-                    StationJpaEntity.create(name, ActiveType.ACTIVE)
-            );
-            return stationMapper.toDomain(saved);
+        if (stationJpaRepository.existsByName(name)) {
+            throw CustomException.domain(DomainErrorCode.STATION_NAME_DUPLICATED)
+                    .addParam("name", name);
         }
-        return station;
+
+        StationJpaEntity saved = stationJpaRepository.save(
+                stationMapper.toNewEntity(station)
+        );
+        return stationMapper.toDomain(saved);
     }
 
     @Override
-    public void inActivateByName(String rawName) {
-        Station station = Station.create(rawName);
+    public void inActivate(Station station) {
         String name = station.getName();
         stationJpaRepository.setActivateByName(name, ActiveType.INACTIVE);
+    }
+
+    @Override
+    public void activate(Station station) {
+        String name = station.getName();
+        stationJpaRepository.setActivateByName(name, ActiveType.ACTIVE);
     }
 }

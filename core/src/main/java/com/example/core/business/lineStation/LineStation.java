@@ -11,10 +11,9 @@ public class LineStation {
     private final Integer id;
     private final Integer lineId;
     private final Integer stationId;
-    private final int seq;
     private final ActiveType activeType;
 
-    public static LineStation create(Integer lineId, Integer stationId, int seq) {
-        return new LineStation(null, lineId, stationId, seq, ActiveType.ACTIVE);
+    public static LineStation create(Integer lineId, Integer stationId) {
+        return new LineStation(null, lineId, stationId, ActiveType.ACTIVE);
     }
 }

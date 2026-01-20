@@ -1,4 +1,4 @@
-package com.example.app.admin.line.api.dto;
+package com.example.app.api.line.api.dto.request;
 
 import lombok.Getter;
 
@@ -7,4 +7,6 @@ public class CreateLineRequest {
     private String name;
     private Integer startId;
     private Integer endId;
+    private double distance;
+    private int spendTime;
 }

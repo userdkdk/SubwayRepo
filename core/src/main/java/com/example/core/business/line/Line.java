@@ -14,21 +14,18 @@ public class Line {
 
     private final Integer id;
     private final String name;
-    private final Integer startStation;
     private final Integer counts;
-    private final Integer endStation;
     private final ActiveType activeType;
 
     private static final NameValidator NAME_VALIDATOR = NameValidator.of(2, 20);
 
-    public static Line create(String name, Integer start, Integer end) {
+    public static Line create(String name) {
         String normalized = validateName(name);
-        if (start.equals(end)) {
-            throw CustomException.domain(DomainErrorCode.LINE_INPUT_STATION_SAME)
-                    .addParam("start id", start)
-                    .addParam("end id", end);
-        }
-        return new Line(null, normalized, start, end, 2,ActiveType.ACTIVE);
+        return new Line(null, normalized, 2, ActiveType.ACTIVE);
+    }
+
+    public static Line of(Integer id, String name, int counts, ActiveType activeType) {
+        return new Line(id, name, counts, activeType);
     }
 
     private static String validateName(String name) {

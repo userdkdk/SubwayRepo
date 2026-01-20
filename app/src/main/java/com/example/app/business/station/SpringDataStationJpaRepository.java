@@ -13,6 +13,8 @@ public interface SpringDataStationJpaRepository extends JpaRepository<StationJpa
 
     Optional<StationJpaEntity> findByName(String name);
 
+    boolean existsByName(String name);
+
     @Query("select s.id from StationJpaEntity s where s.name = :name")
     Optional<Integer> findIdByName(@Param("name") String name);
 

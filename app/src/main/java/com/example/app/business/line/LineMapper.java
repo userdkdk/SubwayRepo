@@ -5,10 +5,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LineMapper {
-    public LineJpaEntity toEntity(Line line) {
+    public LineJpaEntity toNewEntity(Line line) {
         return LineJpaEntity.create(
-                line.getName(),
-                line.getActiveType(),
-                line.getCounts());
+                line.getName());
+    }
+
+    public Line toDomain(LineJpaEntity saved) {
+        return Line.of(saved.getId(),
+                saved.getName(),
+                saved.getCounts(),
+                saved.getActiveType());
     }
 }

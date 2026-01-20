@@ -3,6 +3,7 @@ package com.example.app.business.segment;
 import com.example.app.business.line.LineJpaEntity;
 import com.example.app.business.station.StationJpaEntity;
 import com.example.app.common.domain.BaseEntity;
+import com.example.core.business.segment.Segment;
 import com.example.core.common.domain.enums.ActiveType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,7 +13,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "segments")
+@Table(name = "segments",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "UK_SEGMENTS_LINE_BS_AS",
+                        columnNames = {"line_id", "before_station_id", "after_station_id"})
+        })
 public class SegmentJpaEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,4 +44,19 @@ public class SegmentJpaEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
+
+    private SegmentJpaEntity(LineJpaEntity lineRef, StationJpaEntity beforeRef, StationJpaEntity afterRef,
+                             double distance, int spendTime, ActiveType activeType) {
+        this.lineJpaEntity = lineRef;
+        this.beforeStationJpaEntity = beforeRef;
+        this.afterStationJpaEntity = afterRef;
+        this.distance = distance;
+        this.spendTime = spendTime;
+        this.activeType = activeType;
+    }
+    public static SegmentJpaEntity create(LineJpaEntity lineRef, StationJpaEntity beforeRef, StationJpaEntity afterRef,
+                                          double distance, int spendTime) {
+        return new SegmentJpaEntity(lineRef, beforeRef, afterRef,
+                distance, spendTime, ActiveType.ACTIVE);
+    }
 }

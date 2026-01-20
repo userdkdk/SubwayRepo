@@ -13,4 +13,6 @@ public interface SpringDataLineJpaRepository extends JpaRepository<LineJpaEntity
             "set l.activeType = :active " +
             "where l.name = :name")
     int setActivateByName(String name, ActiveType activeType);
+
+    boolean existsByIdAndActiveType(Integer id, ActiveType activeType);
 }

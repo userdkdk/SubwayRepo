@@ -1,5 +1,8 @@
 package com.example.core.business.line;
 
 public interface LineRepository{
-    Line upsertActivateByName(String name, Integer start, Integer end);
+    Line save(Line line);
+    void inActivate(Line line);
+    void Activate(Line line);
+
 }

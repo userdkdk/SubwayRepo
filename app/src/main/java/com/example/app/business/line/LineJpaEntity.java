@@ -36,8 +36,8 @@ public class LineJpaEntity extends BaseEntity {
         this.counts = counts;
     }
 
-    public static LineJpaEntity create(String name, ActiveType activeType, int counts) {
-        return new LineJpaEntity(name, activeType, counts);
+    public static LineJpaEntity create(String name) {
+        return new LineJpaEntity(name, ActiveType.ACTIVE, 2);
     }
 
     public void activate() {
