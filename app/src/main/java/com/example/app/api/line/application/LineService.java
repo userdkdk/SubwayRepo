@@ -28,26 +28,8 @@ import java.util.List;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final LineQueryRepository lineQueryRepository;
-    private final StationRepository stationRepository;
     private final StationQueryRepository stationQueryRepository;
     private final SegmentRepository segmentRepository;
-    private final SegmentQueryRepository segmentQueryRepository;
-    private final StationSorter stationSorter;
-    private final StationApiMapper stationApiMapper;
-
-    public List<StationSegmentResponse> getStationsById(Integer lineId) {
-
-        if (!lineQueryRepository.existsById(lineId)) {
-            throw CustomException.domain(DomainErrorCode.LINE_NOT_FOUND)
-                    .addParam("line id",lineId);
-        }
-        List<SegmentJpaEntity> segments = segmentQueryRepository.findByLine(lineId);
-        log.debug("Line Id: {}, size: {}", lineId, segments.size());
-        return stationSorter.sortSegments(segments).stream()
-                .map(stationApiMapper::segmentEntityToDto)
-                .toList();
-    }
 
     @Transactional
     public void createLine(CreateLineRequest request) {

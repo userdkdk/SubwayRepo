@@ -18,14 +18,6 @@ public class LineController {
 
     private final LineService lineService;
 
-    @GetMapping("/{lineId}")
-    public ResponseEntity<CustomResponse<List<StationSegmentResponse>>> getStationsById(
-            @RequestParam Integer lineId
-    ) {
-        List<StationSegmentResponse> res = lineService.getStationsById(lineId);
-        return CustomResponse.ok(res);
-    }
-
     @PostMapping("")
     public ResponseEntity<CustomResponse<Void>> createLine(
             @RequestBody CreateLineRequest request
