@@ -14,18 +14,17 @@ public class Line {
 
     private final Integer id;
     private final String name;
-    private final Integer counts;
     private final ActiveType activeType;
 
     private static final NameValidator NAME_VALIDATOR = NameValidator.of(2, 20);
 
     public static Line create(String name) {
         String normalized = validateName(name);
-        return new Line(null, normalized, 2, ActiveType.ACTIVE);
+        return new Line(null, normalized, ActiveType.ACTIVE);
     }
 
-    public static Line of(Integer id, String name, int counts, ActiveType activeType) {
-        return new Line(id, name, counts, activeType);
+    public static Line of(Integer id, String name, ActiveType activeType) {
+        return new Line(id, name, activeType);
     }
 
     private static String validateName(String name) {

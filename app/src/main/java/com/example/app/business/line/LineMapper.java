@@ -13,7 +13,6 @@ public class LineMapper {
     public Line toDomain(LineJpaEntity saved) {
         return Line.of(saved.getId(),
                 saved.getName(),
-                saved.getCounts(),
                 saved.getActiveType());
     }
 }

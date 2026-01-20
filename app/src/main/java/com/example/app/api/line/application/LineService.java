@@ -2,6 +2,7 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
+import com.example.app.business.line.LineQueryRepository;
 import com.example.app.business.station.StationQueryRepository;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineRepository;
@@ -23,6 +24,7 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationQueryRepository stationQueryRepository;
     private final SegmentRepository segmentRepository;
+    private final LineQueryRepository lineQueryRepository;
 
     @Transactional
     public void createLine(CreateLineRequest request) {
@@ -50,6 +52,21 @@ public class LineService {
     }
 
     @Transactional
-    public void createSegment(Integer lineId, CreateSegmentRequest request) {
+    public void addStation(Integer lineId, CreateSegmentRequest request) {
+        Integer startId = request.getStartId();
+        Integer endId = request.getEndId();
+        double distance = request.getDistance();
+        int spendTIme = request.getSpendTime();
+
+        if (!stationQueryRepository.existsById(startId)) {
+            throw CustomException.domain(DomainErrorCode.STATION_NOT_FOUND)
+                    .addParam("id", startId);
+        }
+        if (!stationQueryRepository.existsById(endId)) {
+            throw CustomException.domain(DomainErrorCode.STATION_NOT_FOUND)
+                    .addParam("id", endId);
+        }
+
+        Line line = lineQueryRepository.findById(lineId);
     }
 }

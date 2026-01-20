@@ -27,17 +27,13 @@ public class LineJpaEntity extends BaseEntity {
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
 
-    @Column(name = "counts", nullable = false)
-    private int counts;
-
-    private LineJpaEntity(String name, ActiveType activeType, int counts) {
+    private LineJpaEntity(String name, ActiveType activeType) {
         this.name = name;
         this.activeType = activeType;
-        this.counts = counts;
     }
 
     public static LineJpaEntity create(String name) {
-        return new LineJpaEntity(name, ActiveType.ACTIVE, 2);
+        return new LineJpaEntity(name, ActiveType.ACTIVE);
     }
 
     public void activate() {

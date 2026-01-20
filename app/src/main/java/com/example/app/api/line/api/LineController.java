@@ -24,11 +24,11 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}")
-    public ResponseEntity<CustomResponse<Void>> createSegment(
+    public ResponseEntity<CustomResponse<Void>> addStation(
             @RequestParam Integer lineId,
             @RequestBody CreateSegmentRequest request
     ) {
-        lineService.createSegment(lineId, request);
+        lineService.addStation(lineId, request);
         return CustomResponse.created();
     }
 
