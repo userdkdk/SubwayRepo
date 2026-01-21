@@ -1,10 +1,8 @@
 package com.example.app.business.segment;
 
-import com.example.core.business.segment.Segment;
 import com.example.core.common.domain.enums.ActiveType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;

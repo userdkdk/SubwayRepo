@@ -1,8 +1,6 @@
 package com.example.app.business.segment;
 
 import com.example.app.common.exception.AppErrorCode;
-import com.example.core.business.segment.Segment;
-import com.example.core.business.station.Station;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.ErrorCode;

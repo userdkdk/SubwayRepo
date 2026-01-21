@@ -3,7 +3,6 @@ package com.example.app.business.segment;
 import com.example.app.business.line.LineJpaEntity;
 import com.example.app.business.station.StationJpaEntity;
 import com.example.app.common.domain.BaseEntity;
-import com.example.core.business.segment.Segment;
 import com.example.core.common.domain.enums.ActiveType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

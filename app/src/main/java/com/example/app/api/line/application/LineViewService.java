@@ -7,7 +7,6 @@ import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.business.segment.SegmentQueryRepository;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.exception.CustomException;
-import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

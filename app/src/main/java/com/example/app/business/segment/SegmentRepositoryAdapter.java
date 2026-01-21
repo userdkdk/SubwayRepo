@@ -8,7 +8,6 @@ import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentRepository;
 import com.example.core.common.exception.CustomException;
-import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;

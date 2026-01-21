@@ -8,8 +8,6 @@ import com.example.app.business.segment.SegmentQueryRepository;
 import com.example.app.business.station.StationQueryRepository;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationRepository;
-import com.example.core.common.exception.CustomException;
-import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
