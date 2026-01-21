@@ -15,9 +15,6 @@ public interface SpringDataStationJpaRepository extends JpaRepository<StationJpa
 
     boolean existsByName(String name);
 
-    @Query("select s.id from StationJpaEntity s where s.name = :name")
-    Optional<Integer> findIdByName(@Param("name") String name);
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update StationJpaEntity s " +
             "set s.activeType = :active " +
@@ -25,4 +22,6 @@ public interface SpringDataStationJpaRepository extends JpaRepository<StationJpa
     int setActivateByName(@Param("name") String name, @Param("active") ActiveType activeType);
 
     List<StationJpaEntity> findAllByActiveType(ActiveType activeType);
+
+    boolean existsByIdAndActiveType(Integer id, ActiveType activeType);
 }

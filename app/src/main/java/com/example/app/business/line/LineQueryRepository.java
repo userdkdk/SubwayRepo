@@ -12,7 +12,7 @@ public class LineQueryRepository {
     private final SpringDataLineJpaRepository lineJpaRepository;
     private final LineMapper lineMapper;
 
-    public boolean existsById(Integer id) {
+    public boolean existsActiveById(Integer id) {
         return lineJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
     }
 

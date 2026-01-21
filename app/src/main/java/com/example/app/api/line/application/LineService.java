@@ -2,6 +2,7 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
+import com.example.app.api.line.api.dto.request.UpdateSegmentRequest;
 import com.example.app.business.line.LineQueryRepository;
 import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.business.segment.SegmentQueryRepository;
@@ -54,8 +55,8 @@ public class LineService {
         Integer beforeId = request.getBeforeId();
         Integer afterId = request.getAfterId();
         double beforeDistance = request.getBeforeDistance();
-        double afterDistance = request.getAfterDistance();
         int beforeSpendTIme = request.getBeforeSpendTime();
+        double afterDistance = request.getAfterDistance();
         int afterSpendTIme = request.getAfterSpendTime();
 
         // check line and station exists
@@ -101,15 +102,19 @@ public class LineService {
                 "startId, endId input이 올바르지 않습니다.");
     }
     private void checkLineExists(Integer id) {
-        if (!lineQueryRepository.existsById(id)) {
+        if (!lineQueryRepository.existsActiveById(id)) {
             throw CustomException.domain(AppErrorCode.LINE_NOT_FOUND)
                     .addParam("id", id);
         }
     }
     private void checkStationExists(Integer id) {
-        if (!stationQueryRepository.existsById(id)) {
+        if (!stationQueryRepository.existsActiveById(id)) {
             throw CustomException.domain(AppErrorCode.STATION_NOT_FOUND)
                     .addParam("id", id);
         }
+    }
+
+    public void inActiveStation(Integer lineId, UpdateSegmentRequest request) {
+
     }
 }

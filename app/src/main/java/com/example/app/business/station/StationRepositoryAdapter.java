@@ -22,11 +22,6 @@ public class StationRepositoryAdapter implements StationRepository {
     }
 
     @Override
-    public Optional<Integer> findIdByName(String name) {
-        return stationJpaRepository.findIdByName(name);
-    }
-
-    @Override
     public Station save(Station station) {
         String name = station.getName();
 

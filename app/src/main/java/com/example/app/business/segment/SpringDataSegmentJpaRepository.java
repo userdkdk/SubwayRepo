@@ -9,15 +9,14 @@ import java.util.Optional;
 
 public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpaEntity, Integer> {
 
+    List<SegmentJpaEntity> findByLineJpaEntity_Id(Integer lineId);
+
     @EntityGraph(attributePaths = {
             "beforeStationJpaEntity",
             "afterStationJpaEntity"
     })
     List<SegmentJpaEntity> findByLineJpaEntity_IdAndActiveType(Integer lineId, ActiveType activeType);
-
     Optional<SegmentJpaEntity> findByLineJpaEntity_idAndBeforeStationJpaEntity_idAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
-
     Optional<SegmentJpaEntity> findByLineJpaEntity_idAndAfterStationJpaEntity_idAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
-
     Optional<SegmentJpaEntity> findByLineJpaEntity_idAndBeforeStationJpaEntity_idAndAfterStationJpaEntity_idAndActiveType(Integer lineId, Integer startId, Integer endId, ActiveType activeType);
 }

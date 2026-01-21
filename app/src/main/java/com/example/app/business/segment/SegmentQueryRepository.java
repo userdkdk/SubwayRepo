@@ -1,6 +1,7 @@
 package com.example.app.business.segment;
 
 import com.example.app.common.exception.AppErrorCode;
+import com.example.app.common.response.enums.StatusFilter;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.ErrorCode;
@@ -15,10 +16,13 @@ import java.util.Optional;
 public class SegmentQueryRepository {
     private final SpringDataSegmentJpaRepository segmentJpaRepository;
 
-    public List<SegmentJpaEntity> findByLine(Integer lineId) {
-        return segmentJpaRepository.findByLineJpaEntity_IdAndActiveType(
-                lineId, ActiveType.ACTIVE
-        );
+    public List<SegmentJpaEntity> findByLineAndActiveType(Integer lineId, StatusFilter status) {
+        if (status != StatusFilter.ALL) {
+            return segmentJpaRepository.findByLineJpaEntity_IdAndActiveType(
+                    lineId, status.toActiveType()
+            );
+        }
+        return segmentJpaRepository.findByLineJpaEntity_Id(lineId);
     }
 
     public void ensureStationNotInLine(Integer lineId, Integer stationId) {

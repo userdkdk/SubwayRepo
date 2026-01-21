@@ -17,7 +17,7 @@ public class StationQueryRepository {
         return stationJpaRepository.findAllByActiveType(ActiveType.ACTIVE);
     }
 
-    public boolean existsById(Integer id) {
-        return stationJpaRepository.existsById(id);
+    public boolean existsActiveById(Integer id) {
+        return stationJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
     }
 }

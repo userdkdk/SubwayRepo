@@ -5,6 +5,7 @@ import com.example.app.api.station.api.dto.request.DeleteStationRequest;
 import com.example.app.api.station.api.dto.response.StationResponse;
 import com.example.app.api.station.application.StationService;
 import com.example.app.common.response.CustomResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class StationController {
 
     @PostMapping("")
     public ResponseEntity<CustomResponse<Void>> createStation(
-            @RequestBody CreateStationRequest request
+            @Valid @RequestBody CreateStationRequest request
             ) {
         stationService.createStation(request);
         return CustomResponse.created();
@@ -33,7 +34,7 @@ public class StationController {
 
     @PutMapping("")
     public ResponseEntity<CustomResponse<Void>> updateStationActivate(
-            @RequestBody CreateStationRequest request
+            @Valid @RequestBody CreateStationRequest request
     ) {
         stationService.updateStationActivate(request);
         return CustomResponse.created();
@@ -41,7 +42,7 @@ public class StationController {
 
     @DeleteMapping("")
     public ResponseEntity<CustomResponse<Void>> deleteStation(
-            @RequestBody DeleteStationRequest request
+            @Valid @RequestBody DeleteStationRequest request
             ) {
         stationService.deleteStation(request);
         return CustomResponse.ok();
