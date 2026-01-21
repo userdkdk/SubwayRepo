@@ -4,8 +4,11 @@ import lombok.Getter;
 
 @Getter
 public class CreateSegmentRequest {
-    private Integer startId;
-    private Integer endId;
-    private double distance;
-    private int spendTime;
+    private Integer stationId;
+    private Integer beforeId;
+    private Integer afterId;
+    private double beforeDistance;
+    private double afterDistance;
+    private int beforeSpendTime;
+    private int afterSpendTime;
 }

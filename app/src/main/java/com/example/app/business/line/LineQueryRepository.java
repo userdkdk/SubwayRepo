@@ -17,7 +17,4 @@ public class LineQueryRepository {
         return lineJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
     }
 
-    public Line findById(Integer id) {
-        return lineMapper.lineJpaRepository.findById(id);
-    }
 }

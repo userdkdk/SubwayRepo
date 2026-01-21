@@ -45,14 +45,10 @@ public class StationService {
     }
 
     // 수정필요 line_station이 inactive 일때만 가능하도록
+    // 이거 진짜 이상한데 수정하자
     @Transactional
     public void deleteStation(DeleteStationRequest request) {
         Station station = Station.create(request.getName());
         // 모든 segment 조회
-        if (segmentQueryRepository.existsByStationId(station)) {
-            throw CustomException.domain(DomainErrorCode.STATION_DELETE_ERROR)
-                    .addParam("station name", station.getName());
-        }
-        stationRepository.inActivate(station);
     }
 }

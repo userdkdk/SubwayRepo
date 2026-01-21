@@ -12,7 +12,15 @@ public enum AppErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR("A-001","Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
     DATA_INTEGRITY_VIOLATION("A-002", "DB Save Error", HttpStatus.CONFLICT),
     // station
-    STATION_NAME_ERROR("AS-001","Station name duplicated", HttpStatus.BAD_REQUEST);
+    STATION_NOT_FOUND("AS-001", "Station not found", HttpStatus.NOT_FOUND),
+
+    // line
+    LINE_NOT_FOUND("AL-001", "Line not found", HttpStatus.NOT_FOUND),
+
+    // segment,
+    SEGMENT_NOT_FOUND("ASG-001", "Segment not found", HttpStatus.NOT_FOUND),
+    SEGMENT_ALREADY_EXISTS("ASG-002", "Segment already exists", HttpStatus.CONFLICT),
+    SEGMENT_INPUT_VALUE_ERROR("ASG-003", "Segment input value error", HttpStatus.BAD_REQUEST);
 
 
     private final String code;

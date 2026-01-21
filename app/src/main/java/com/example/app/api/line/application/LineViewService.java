@@ -5,6 +5,7 @@ import com.example.app.api.station.api.dto.response.StationSegmentResponse;
 import com.example.app.business.line.LineQueryRepository;
 import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.business.segment.SegmentQueryRepository;
+import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class LineViewService {
     public List<StationSegmentResponse> getStationsById(Integer lineId) {
 
         if (!lineQueryRepository.existsById(lineId)) {
-            throw CustomException.domain(DomainErrorCode.LINE_NOT_FOUND)
+            throw CustomException.domain(AppErrorCode.LINE_NOT_FOUND)
                     .addParam("line id",lineId);
         }
         List<SegmentJpaEntity> segments = segmentQueryRepository.findByLine(lineId);

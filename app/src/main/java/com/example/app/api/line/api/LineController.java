@@ -25,7 +25,7 @@ public class LineController {
 
     @PostMapping("/{lineId}")
     public ResponseEntity<CustomResponse<Void>> addStation(
-            @RequestParam Integer lineId,
+            @PathVariable Integer lineId,
             @RequestBody CreateSegmentRequest request
     ) {
         lineService.addStation(lineId, request);

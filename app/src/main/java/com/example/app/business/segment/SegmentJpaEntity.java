@@ -59,4 +59,16 @@ public class SegmentJpaEntity extends BaseEntity {
         return new SegmentJpaEntity(lineRef, beforeRef, afterRef,
                 distance, spendTime, ActiveType.ACTIVE);
     }
+
+    public void activate() {
+        this.activeType = ActiveType.ACTIVE;
+    }
+
+    public void inActivate() {
+        this.activeType = ActiveType.INACTIVE;
+    }
+
+    public boolean isActive() {
+        return this.activeType==ActiveType.ACTIVE;
+    }
 }

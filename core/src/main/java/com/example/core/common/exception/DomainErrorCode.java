@@ -11,19 +11,16 @@ public enum DomainErrorCode implements ErrorCode {
     // station
     STATION_NAME_ERROR("DS-001", "Station name invalid", 400),
     STATION_NAME_DUPLICATED("DS-002", "Station name duplicated", 409),
-    STATION_NOT_FOUND("DS-003", "Station not found", 404),
     STATION_DELETE_ERROR("DS-004", "Can not delete station", 400),
 
     // line
     LINE_NAME_ERROR("DL-001", "Line name invalid", 400),
     LINE_NAME_DUPLICATED("DL-002", "Line name duplicated", 409),
-    LINE_NOT_FOUND("DL-003", "Line not found", 404),
     LINE_INPUT_STATION_SAME("DL-004","Input stations are same", 400),
 
     // segment
     SEGMENT_INPUT_STATION_SAME("DSG-001", "Input stations are same", 400),
-    SEGMENT_INPUT_VALUE_ERROR("DSG-002", "Input Segment value error", 400),
-    SEGMENT_ALREADY_EXISTS("DSG-003", "Segment already exists", 409);
+    SEGMENT_INPUT_VALUE_ERROR("DSG-002", "Input Segment value error", 400);
 
     private final String code;
     private final String message;

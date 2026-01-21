@@ -10,7 +10,7 @@ public interface SpringDataLineJpaRepository extends JpaRepository<LineJpaEntity
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update LineJpaEntity l " +
-            "set l.activeType = :active " +
+            "set l.activeType = :activeType " +
             "where l.name = :name")
     int setActivateByName(String name, ActiveType activeType);
 
