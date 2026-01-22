@@ -13,8 +13,8 @@ import lombok.Getter;
 public class Line {
 
     private final Integer id;
-    private final String name;
-    private final ActiveType activeType;
+    private String name;
+    private ActiveType activeType;
 
     private static final NameValidator NAME_VALIDATOR = NameValidator.of(2, 20);
 
@@ -25,6 +25,14 @@ public class Line {
 
     public static Line of(Integer id, String name, ActiveType activeType) {
         return new Line(id, name, activeType);
+    }
+
+    public void changeName(String name) {
+        this.name = validateName(name);
+    }
+
+    public void changeActiveType(ActiveType activeType) {
+        this.activeType = activeType;
     }
 
     private static String validateName(String name) {

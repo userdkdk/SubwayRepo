@@ -18,6 +18,7 @@ public class StationApiMapper {
 
     public StationSegmentResponse segmentEntityToDto(SegmentJpaEntity entity) {
         return StationSegmentResponse.builder()
+                .segmentId(entity.getId())
                 .beforeId(entity.getBeforeStationJpaEntity().getId())
                 .beforeName(entity.getBeforeStationJpaEntity().getName())
                 .afterId(entity.getAfterStationJpaEntity().getId())

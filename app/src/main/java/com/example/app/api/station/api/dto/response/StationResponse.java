@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class StationResponse {
-    private String name;
-    private ActiveType activeType;
+    private final String name;
+    private final ActiveType activeType;
 }

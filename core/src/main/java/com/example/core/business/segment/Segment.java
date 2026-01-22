@@ -15,9 +15,9 @@ public class Segment {
     private final Integer lineId;
     private final Integer beforeStationId;
     private final Integer afterStationId;
-    private final double distance;
-    private final int spendTime;
-    private final ActiveType activeType;
+    private Double distance;
+    private Integer spendTime;
+    private ActiveType activeType;
 
     public static Segment create(Integer lineId, Integer beforeStationId, Integer afterStationId,
                                   double distance, int spendTime) {

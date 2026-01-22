@@ -11,7 +11,7 @@ public class LineStation {
     private final Integer id;
     private final Integer lineId;
     private final Integer stationId;
-    private final ActiveType activeType;
+    private ActiveType activeType;
 
     public static LineStation create(Integer lineId, Integer stationId) {
         return new LineStation(null, lineId, stationId, ActiveType.ACTIVE);

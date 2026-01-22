@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -20,9 +21,11 @@ public class LineJpaEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
@@ -39,4 +42,5 @@ public class LineJpaEntity extends BaseEntity {
     public void activate() {
         this.activeType = ActiveType.ACTIVE;
     }
+
 }

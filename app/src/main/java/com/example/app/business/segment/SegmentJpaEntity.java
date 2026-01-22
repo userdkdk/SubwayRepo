@@ -35,10 +35,10 @@ public class SegmentJpaEntity extends BaseEntity {
     private StationJpaEntity afterStationJpaEntity;
 
     @Column(name = "distance", nullable = false)
-    private double distance;
+    private Double distance;
 
     @Column(name = "spend_time", nullable = false)
-    private int spendTime;
+    private Integer spendTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

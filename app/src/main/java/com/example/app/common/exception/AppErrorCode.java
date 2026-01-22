@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 public enum AppErrorCode implements ErrorCode {
     INTERNAL_SERVER_ERROR("A-001","Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR),
     DATA_INTEGRITY_VIOLATION("A-002", "DB Save Error", HttpStatus.CONFLICT),
+    INVALID_INPUT_ERROR("A-003", "Invalid input error", HttpStatus.BAD_REQUEST),
     // station
     STATION_NOT_FOUND("AS-001", "Station not found", HttpStatus.NOT_FOUND),
 

@@ -1,8 +1,11 @@
 package com.example.app.api.line.application;
 
+import com.example.app.api.line.adapter.LineApiMapper;
 import com.example.app.api.line.api.dto.response.LineResponse;
 import com.example.app.api.station.adapter.StationApiMapper;
 import com.example.app.api.station.api.dto.response.StationSegmentResponse;
+import com.example.app.business.line.LineJpaEntity;
+import com.example.app.business.line.LineMapper;
 import com.example.app.business.line.LineQueryRepository;
 import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.business.segment.SegmentQueryRepository;
@@ -27,6 +30,8 @@ public class LineViewService {
     private final SegmentQueryRepository segmentQueryRepository;
     private final StationSorter stationSorter;
     private final StationApiMapper stationApiMapper;
+    private final LineApiMapper lineApiMapper;
+
 
     public List<StationSegmentResponse> getStationsById(Integer lineId, StatusFilter status) {
 
@@ -46,6 +51,8 @@ public class LineViewService {
 
     // return line by activeType
     public List<LineResponse> getAllLines(StatusFilter status) {
-        return null;
+        return lineQueryRepository.findByActiveType(status).stream()
+                .map(lineApiMapper::entityToDto)
+                .toList();
     }
 }

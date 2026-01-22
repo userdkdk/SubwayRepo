@@ -1,5 +1,6 @@
 package com.example.app.business.line;
 
+import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineRepository;
 import com.example.core.common.domain.enums.ActiveType;
@@ -7,6 +8,8 @@ import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.function.Consumer;
 
 @Component
 @RequiredArgsConstructor
@@ -30,21 +33,20 @@ public class LineRepositoryAdapter implements LineRepository {
     }
 
     @Override
-    public void inActivate(Line line) {
+    public void update(Integer id, Consumer<Line> updater) {
+        LineJpaEntity entity = lineJpaRepository.findById(id)
+                .orElseThrow(()->CustomException.app(AppErrorCode.LINE_NOT_FOUND));
 
-    }
+        Line line = lineMapper.toDomain(entity);
 
-    @Override
-    public void Activate(Line line) {
+        updater.accept(line);
+        String newName = line.getName();
+        if (!newName.equals(entity.getName())
+                && lineJpaRepository.existsByName(newName)) {
+            throw CustomException.domain(DomainErrorCode.LINE_NAME_DUPLICATED);
+        }
 
-    }
-
-    public Line upsertActivateByName(String rawName, Integer start, Integer end) {
-        Line line = Line.create(rawName);
-        String name = line.getName();
-
-        int isUpdated = lineJpaRepository.setActivateByName(name, ActiveType.ACTIVE);
-        Integer lineId;
-        return null;
+        entity.setName(line.getName());
+        entity.setActiveType(line.getActiveType());
     }
 }

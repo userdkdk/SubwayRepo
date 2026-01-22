@@ -2,7 +2,9 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
+import com.example.app.api.line.api.dto.request.UpdateLineRequest;
 import com.example.app.api.line.api.dto.request.UpdateSegmentRequest;
+import com.example.app.business.line.LineJpaEntity;
 import com.example.app.business.line.LineQueryRepository;
 import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.business.segment.SegmentQueryRepository;
@@ -13,6 +15,7 @@ import com.example.core.business.line.LineRepository;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentRepository;
 import com.example.core.common.exception.CustomException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -101,12 +104,26 @@ public class LineService {
         throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
                 "startId, endId input이 올바르지 않습니다.");
     }
+
+    @Transactional
+    public void updateLine(Integer lineId, UpdateLineRequest request) {
+        lineRepository.update(lineId, line -> {
+            if (request.getName()!=null) {
+                line.changeName(request.getName());
+            }
+            if (request.getActiveType()!=null) {
+                line.changeActiveType(request.getActiveType());
+            }
+        });
+    }
+
     private void checkLineExists(Integer id) {
         if (!lineQueryRepository.existsActiveById(id)) {
             throw CustomException.domain(AppErrorCode.LINE_NOT_FOUND)
                     .addParam("id", id);
         }
     }
+
     private void checkStationExists(Integer id) {
         if (!stationQueryRepository.existsActiveById(id)) {
             throw CustomException.domain(AppErrorCode.STATION_NOT_FOUND)

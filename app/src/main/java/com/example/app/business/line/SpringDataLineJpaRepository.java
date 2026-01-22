@@ -5,7 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface SpringDataLineJpaRepository extends JpaRepository<LineJpaEntity, Integer> {
+    List<LineJpaEntity> findByActiveType(ActiveType activeType);
+
     boolean existsByName(String name);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)

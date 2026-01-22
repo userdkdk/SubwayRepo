@@ -7,10 +7,11 @@ import lombok.Getter;
 @Getter
 @Builder
 public class StationSegmentResponse {
-    private Integer beforeId;
-    private String beforeName;
-    private Integer afterId;
-    private String afterName;
-    private double distance;
-    private int spendTime;
+    private final Integer segmentId;
+    private final Integer beforeId;
+    private final String beforeName;
+    private final Integer afterId;
+    private final String afterName;
+    private final Double distance;
+    private final Integer spendTime;
 }

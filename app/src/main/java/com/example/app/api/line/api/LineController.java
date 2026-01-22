@@ -2,6 +2,7 @@ package com.example.app.api.line.api;
 
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
+import com.example.app.api.line.api.dto.request.UpdateLineRequest;
 import com.example.app.api.line.api.dto.request.UpdateSegmentRequest;
 import com.example.app.api.line.application.LineService;
 import com.example.app.common.response.CustomResponse;
@@ -17,6 +18,7 @@ public class LineController {
 
     private final LineService lineService;
 
+    // create line
     @PostMapping("")
     public ResponseEntity<CustomResponse<Void>> createLine(
             @Valid @RequestBody CreateLineRequest request
@@ -25,6 +27,17 @@ public class LineController {
         return CustomResponse.created();
     }
 
+    // patch line
+    @PatchMapping("/{lineId}")
+    public ResponseEntity<CustomResponse<Void>> updateLine(
+            @PathVariable Integer lineId,
+            @Valid @RequestBody UpdateLineRequest request
+    ) {
+        lineService.updateLine(lineId, request);
+        return CustomResponse.created();
+    }
+
+    // create segment
     @PostMapping("/{lineId}/stations")
     public ResponseEntity<CustomResponse<Void>> addStation(
             @PathVariable Integer lineId,
@@ -34,13 +47,14 @@ public class LineController {
         return CustomResponse.created();
     }
 
-    @PutMapping("/{lineId}/stations")
+    // patch segment
+    @PatchMapping("/{lineId}/stations")
     public ResponseEntity<CustomResponse<Void>> inActiveStation(
             @PathVariable Integer lineId,
             @Valid @RequestBody UpdateSegmentRequest request
     ) {
         lineService.inActiveStation(lineId, request);
-        return CustomResponse.ok();
+        return CustomResponse.created();
     }
 
 }
