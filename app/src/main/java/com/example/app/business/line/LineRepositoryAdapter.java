@@ -3,7 +3,6 @@ package com.example.app.business.line;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineRepository;
-import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;

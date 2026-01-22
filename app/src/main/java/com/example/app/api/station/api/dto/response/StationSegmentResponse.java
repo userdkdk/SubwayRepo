@@ -1,6 +1,5 @@
 package com.example.app.api.station.api.dto.response;
 
-import com.example.core.common.domain.enums.ActiveType;
 import lombok.Builder;
 import lombok.Getter;
 
