@@ -3,7 +3,6 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.UpdateLineRequest;
-import com.example.app.api.line.api.dto.request.UpdateSegmentRequest;
 import com.example.app.business.line.LineQueryRepository;
 import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.business.segment.SegmentQueryRepository;
@@ -129,7 +128,4 @@ public class LineService {
         }
     }
 
-    public void inActiveStation(Integer lineId, UpdateSegmentRequest request) {
-
-    }
 }

@@ -1,4 +1,4 @@
-package com.example.app.api.line.api.dto.request;
+package com.example.app.api.segment.api.dto;
 
 import lombok.Getter;
 

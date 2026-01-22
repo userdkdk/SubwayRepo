@@ -3,7 +3,6 @@ package com.example.app.api.line.api;
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.UpdateLineRequest;
-import com.example.app.api.line.api.dto.request.UpdateSegmentRequest;
 import com.example.app.api.line.application.LineService;
 import com.example.app.common.response.CustomResponse;
 import jakarta.validation.Valid;
@@ -34,7 +33,7 @@ public class LineController {
             @Valid @RequestBody UpdateLineRequest request
     ) {
         lineService.updateLine(lineId, request);
-        return CustomResponse.created();
+        return CustomResponse.ok();
     }
 
     // create segment
@@ -44,16 +43,6 @@ public class LineController {
             @Valid @RequestBody CreateSegmentRequest request
     ) {
         lineService.addStation(lineId, request);
-        return CustomResponse.created();
-    }
-
-    // patch segment
-    @PatchMapping("/{lineId}/stations")
-    public ResponseEntity<CustomResponse<Void>> inActiveStation(
-            @PathVariable Integer lineId,
-            @Valid @RequestBody UpdateSegmentRequest request
-    ) {
-        lineService.inActiveStation(lineId, request);
         return CustomResponse.created();
     }
 

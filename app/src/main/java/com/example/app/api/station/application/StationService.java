@@ -1,18 +1,12 @@
 package com.example.app.api.station.application;
 
-import com.example.app.api.station.adapter.StationApiMapper;
 import com.example.app.api.station.api.dto.request.CreateStationRequest;
 import com.example.app.api.station.api.dto.request.DeleteStationRequest;
-import com.example.app.api.station.api.dto.response.StationResponse;
-import com.example.app.business.segment.SegmentQueryRepository;
-import com.example.app.business.station.StationQueryRepository;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +14,6 @@ import java.util.List;
 public class StationService {
 
     private final StationRepository stationRepository;
-    private final StationQueryRepository stationQueryRepository;
-    private final SegmentQueryRepository segmentQueryRepository;
-    private final StationApiMapper stationMapper;
-
-    public List<StationResponse> getAllStation() {
-        return stationQueryRepository.findAllByActive().stream()
-                .map(stationMapper::entityToDto)
-                .toList();
-    }
 
     @Transactional
     public void createStation(CreateStationRequest request) {
@@ -39,7 +24,7 @@ public class StationService {
     @Transactional
     public void updateStationActivate(CreateStationRequest request) {
         Station station = Station.create(request.getName());
-        stationRepository.activate(station);
+        return;
     }
 
     // 수정필요 line_station이 inactive 일때만 가능하도록

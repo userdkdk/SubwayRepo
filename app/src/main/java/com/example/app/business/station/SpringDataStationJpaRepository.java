@@ -11,17 +11,7 @@ import java.util.Optional;
 
 public interface SpringDataStationJpaRepository extends JpaRepository<StationJpaEntity, Integer> {
 
-    Optional<StationJpaEntity> findByName(String name);
-
     boolean existsByName(String name);
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update StationJpaEntity s " +
-            "set s.activeType = :active " +
-            "where s.name = :name")
-    int setActivateByName(@Param("name") String name, @Param("active") ActiveType activeType);
-
-    List<StationJpaEntity> findAllByActiveType(ActiveType activeType);
-
+    List<StationJpaEntity> findByActiveType(ActiveType activeType);
     boolean existsByIdAndActiveType(Integer id, ActiveType activeType);
 }

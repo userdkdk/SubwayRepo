@@ -47,7 +47,7 @@ public class LineViewService {
     }
 
     // return line by activeType
-    public List<LineResponse> getAllLines(StatusFilter status) {
+    public List<LineResponse> getLines(StatusFilter status) {
         return lineQueryRepository.findByActiveType(status).stream()
                 .map(lineApiMapper::entityToDto)
                 .toList();

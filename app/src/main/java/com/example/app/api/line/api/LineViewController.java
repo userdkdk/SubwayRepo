@@ -19,11 +19,12 @@ public class LineViewController {
 
     private final LineViewService lineViewService;
 
+    // get lines by activeType
     @GetMapping("")
     public ResponseEntity<CustomResponse<List<LineResponse>>> getAllLines(
             @RequestParam(defaultValue = "ACTIVE") StatusFilter status
-            ) {
-        List<LineResponse> res = lineViewService.getAllLines(status);
+    ) {
+        List<LineResponse> res = lineViewService.getLines(status);
         return CustomResponse.ok(res);
     }
 

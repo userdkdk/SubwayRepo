@@ -9,17 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Component
 @RequiredArgsConstructor
 public class StationRepositoryAdapter implements StationRepository {
     private final SpringDataStationJpaRepository stationJpaRepository;
     private final StationMapper stationMapper;
-
-    @Override
-    public Optional<Station> findByName(String name) {
-        return stationJpaRepository.findByName(name).map(stationMapper::toDomain);
-    }
 
     @Override
     public Station save(Station station) {
@@ -37,14 +33,7 @@ public class StationRepositoryAdapter implements StationRepository {
     }
 
     @Override
-    public void inActivate(Station station) {
-        String name = station.getName();
-        stationJpaRepository.setActivateByName(name, ActiveType.INACTIVE);
-    }
+    public void update(Integer id, Consumer<Station> updater) {
 
-    @Override
-    public void activate(Station station) {
-        String name = station.getName();
-        stationJpaRepository.setActivateByName(name, ActiveType.ACTIVE);
     }
 }
