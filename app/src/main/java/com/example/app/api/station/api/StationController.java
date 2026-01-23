@@ -1,7 +1,7 @@
 package com.example.app.api.station.api;
 
 import com.example.app.api.station.api.dto.request.CreateStationRequest;
-import com.example.app.api.station.api.dto.request.DeleteStationRequest;
+import com.example.app.api.station.api.dto.request.UpdateStationRequest;
 import com.example.app.api.station.application.StationService;
 import com.example.app.common.response.CustomResponse;
 import jakarta.validation.Valid;
@@ -25,20 +25,14 @@ public class StationController {
         return CustomResponse.created();
     }
 
-    @PutMapping("")
+    // patch station
+    @PatchMapping("/{stationId}")
     public ResponseEntity<CustomResponse<Void>> updateStationActivate(
-            @Valid @RequestBody CreateStationRequest request
+            @PathVariable Integer stationId,
+            @Valid @RequestBody UpdateStationRequest request
     ) {
-        stationService.updateStationActivate(request);
+        stationService.updateStation(stationId, request);
         return CustomResponse.created();
-    }
-
-    @DeleteMapping("")
-    public ResponseEntity<CustomResponse<Void>> deleteStation(
-            @Valid @RequestBody DeleteStationRequest request
-            ) {
-        stationService.deleteStation(request);
-        return CustomResponse.ok();
     }
 
 }

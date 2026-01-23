@@ -105,11 +105,11 @@ public class LineService {
     @Transactional
     public void updateLine(Integer lineId, UpdateLineRequest request) {
         lineRepository.update(lineId, line -> {
-            if (request.getName()!=null) {
+            if (request.getName().isBlank()) {
                 line.changeName(request.getName());
             }
-            if (request.getActiveType()!=null) {
-                line.changeActiveType(request.getActiveType());
+            if (request.getStatus()!=null) {
+                line.changeActiveType(request.getStatus().toActiveType());
             }
         });
     }

@@ -14,4 +14,5 @@ public interface SpringDataStationJpaRepository extends JpaRepository<StationJpa
     boolean existsByName(String name);
     List<StationJpaEntity> findByActiveType(ActiveType activeType);
     boolean existsByIdAndActiveType(Integer id, ActiveType activeType);
+    Optional<StationJpaEntity> findByIdAndActiveType(Integer stationId, ActiveType activeType);
 }

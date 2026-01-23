@@ -1,11 +1,10 @@
-package com.example.app.api.line.api.dto.request;
+package com.example.app.api.station.api.dto.request;
 
 import com.example.app.common.response.enums.StatusFilter;
-import com.example.core.common.domain.enums.ActiveType;
 import lombok.Getter;
 
 @Getter
-public class UpdateLineRequest {
+public class UpdateStationRequest {
     private String name;
     private StatusFilter status;
 }

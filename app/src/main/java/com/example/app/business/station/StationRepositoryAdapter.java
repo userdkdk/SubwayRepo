@@ -1,5 +1,6 @@
 package com.example.app.business.station;
 
+import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationRepository;
 import com.example.core.common.domain.enums.ActiveType;
@@ -34,6 +35,18 @@ public class StationRepositoryAdapter implements StationRepository {
 
     @Override
     public void update(Integer id, Consumer<Station> updater) {
+        StationJpaEntity entity = stationJpaRepository.findById(id)
+                .orElseThrow(()->CustomException.app(AppErrorCode.STATION_NOT_FOUND));
+        Station domain = stationMapper.toDomain(entity);
 
+        updater.accept(domain);
+
+        String newName = domain.getName();
+        if (!newName.equals(entity.getName())
+                && stationJpaRepository.existsByName(newName)) {
+            throw CustomException.domain(DomainErrorCode.STATION_NAME_DUPLICATED);
+        }
+        entity.setName(domain.getName());
+        entity.setActiveType(domain.getActiveType());
     }
 }

@@ -19,9 +19,17 @@ public class StationViewController {
 
     // get stations by activeType
     @GetMapping("")
-    public ResponseEntity<CustomResponse<List<StationResponse>>> getStation(
+    public ResponseEntity<CustomResponse<List<StationResponse>>> getStations(
             @RequestParam(defaultValue = "ACTIVE") StatusFilter status
     ) {
         return CustomResponse.ok(stationViewService.getStations(status));
+    }
+
+    @GetMapping("/{stationId}")
+    public ResponseEntity<CustomResponse<StationResponse>> getStation(
+            @PathVariable Integer stationId
+    ) {
+        StationResponse res = stationViewService.getStationById(stationId);
+        return CustomResponse.ok(res);
     }
 }

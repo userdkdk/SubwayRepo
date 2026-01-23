@@ -13,8 +13,8 @@ import lombok.Getter;
 public class Station {
 
     private final Integer id;
-    private final String name;
-    private final ActiveType activeType;
+    private String name;
+    private ActiveType activeType;
 
     private static final NameValidator NAME_VALIDATOR = NameValidator.of(2, 20);
 
@@ -27,8 +27,12 @@ public class Station {
         return new Station(id, name, activeType);
     }
 
-    public Station activate() {
-        return new Station(this.id, this.name, ActiveType.ACTIVE);
+    public void changeName(String name) {
+        this.name = validateName(name);
+    }
+
+    public void changeActiveType(ActiveType activeType) {
+        this.activeType = activeType;
     }
 
     private static String validateName(String name) {
