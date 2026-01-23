@@ -3,13 +3,11 @@ package com.example.app.business.station;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationRepository;
-import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
