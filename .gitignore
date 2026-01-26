@@ -36,6 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-!**/.env
-!**/db_root.sql
-env/.env
+**/.env
+**/db_root.sql
