@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    COMPOSE_PROJECT_NAME = "buildtest"
+    COMPOSE_PROJECT_NAME = "subway_repo"
   }
 
   stages {
@@ -19,14 +19,6 @@ pipeline {
         ]) {
           sh '''
             ./deploy/deploy.sh
-
-            docker compose \
-              -f docker/docker-compose-blue.yml \
-              --env-file $ENV_FILE \
-              -p ${COMPOSE_PROJECT_NAME} \
-              up -d --build
-
-            docker compose -p ${COMPOSE_PROJECT_NAME} ps
           '''
         }
       }
