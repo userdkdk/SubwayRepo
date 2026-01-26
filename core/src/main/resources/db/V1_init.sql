@@ -1,66 +1,54 @@
-CREATE DATABASE SUBWAYMAP;
+create table `stations` (
+    id bigint primary key auto_increment,
+    name varchar(255) collate utf8mb4_0900_ai_ci not null,
+    status enum ('ACTIVE', 'INACTIVE') not null default 'ACTIVE',
+    created_at datetime(6) not null,
+    updated_at datetime(6) not null,
+    unique key uk_stations_name (name)
+) engine = innodb;
 
-USE SUBWAYMAP;
+create table `lines` (
+    id bigint primary key auto_increment,
+    name varchar(255) collate utf8mb4_0900_ai_ci not null,
+    status enum ('ACTIVE', 'INACTIVE') not null default 'ACTIVE',
+    created_at datetime(6) not null,
+    updated_at datetime(6) not null,
+    unique key uk_lines_name (name)
+) engine = innodb;
 
-CREATE USER IF NOT EXISTS 'subway_user'@'%' IDENTIFIED BY 'subway_pw';
-GRANT ALL PRIVILEGES ON SUBWAYMAP.* TO 'subway_user'@'%';
+create table `line_stations` (
+    id bigint primary key auto_increment,
+    line_id bigint not null,
+    station_id bigint not null,
+    seq int not null,
+    status enum ('ACTIVE', 'INACTIVE') not null default 'ACTIVE',
+    created_at datetime(6) not null,
+    updated_at datetime(6) not null,
+    unique key uk_ls_line_seq (line_id, seq),
+    unique key uk_ls_line_station (line_id, station_id),
+    constraint fk_ls_line foreign key (line_id) references `lines` (id),
+    constraint fk_ls_station foreign key (station_id) references stations (id)
+) engine = innodb;
 
-CREATE TABLE STATIONS
-(
-	ID         BIGINT PRIMARY KEY AUTO_INCREMENT,
-    NAME       VARCHAR(255) COLLATE utf8mb4_0900_ai_ci NOT NULL,
-    STATUS     ENUM('ACTIVE','INACTIVE') NOT NULL DEFAULT 'ACTIVE',
-    CREATED_AT DATETIME(6) NOT NULL,
-    UPDATED_AT DATETIME(6) NOT NULL,
-    UNIQUE KEY uk_stations_name (`NAME`)
-) ENGINE = InnoDB;
+create table `segments` (
+    id bigint primary key auto_increment,
+    line_id bigint not null,
+    before_station_id bigint not null,
+    after_station_id bigint not null,
+    distance double not null,
+    spend_time bigint not null,
+    status enum ('ACTIVE', 'INACTIVE') not null default 'ACTIVE',
+    created_at datetime(6) not null,
+    updated_at datetime(6) not null,
+    constraint fk_segments_line foreign key (line_id) references `lines` (id),
+    constraint fk_segments_before_station foreign key (before_station_id) references stations (id),
+    constraint fk_segments_after_station foreign key (after_station_id) references stations (id)
+) engine = innodb;
 
-CREATE TABLE `LINES`
-(
-	ID         BIGINT PRIMARY KEY AUTO_INCREMENT,
-    NAME       VARCHAR(255) COLLATE utf8mb4_0900_ai_ci NOT NULL,
-	STATUS     ENUM('ACTIVE','INACTIVE') NOT NULL DEFAULT 'ACTIVE',
-    CREATED_AT DATETIME(6) NOT NULL,
-    UPDATED_AT DATETIME(6) NOT NULL,
-    UNIQUE KEY uk_lines_name (`NAME`)
-) ENGINE = InnoDB;
-
-CREATE TABLE LINE_STATIONS
-(
-	ID         BIGINT PRIMARY KEY AUTO_INCREMENT,
-    LINE_ID    BIGINT NOT NULL,
-    STATION_ID BIGINT NOT NULL,
-    SEQ        INT NOT NULL,
-    STATUS     ENUM('ACTIVE','INACTIVE') NOT NULL DEFAULT 'ACTIVE',
-    CREATED_AT DATETIME(6) NOT NULL,
-    UPDATED_AT DATETIME(6) NOT NULL,
-    UNIQUE KEY UK_LS_LINE_SEQ (LINE_ID, SEQ),
-    UNIQUE KEY UK_LS_LINE_STATION (LINE_ID, STATION_ID),
-    CONSTRAINT FK_LS_LINE FOREIGN KEY (LINE_ID) REFERENCES `LINES` (ID),
-    CONSTRAINT FK_LS_STATION FOREIGN KEY (STATION_ID) REFERENCES STATIONS (ID)
-) ENGINE = InnoDB;
-
-CREATE TABLE `SEGMENTS`
-(
-	ID                BIGINT PRIMARY KEY AUTO_INCREMENT,
-    LINE_ID           BIGINT NOT NULL,
-    BEFORE_STATION_ID BIGINT NOT NULL,
-    AFTER_STATION_ID  BIGINT NOT NULL,
-    DISTANCE          DOUBLE NOT NULL,
-    SPEND_TIME        BIGINT NOT NULL,
-    STATUS            ENUM('ACTIVE','INACTIVE') NOT NULL DEFAULT 'ACTIVE',
-    CREATED_AT        DATETIME(6) NOT NULL,
-    UPDATED_AT        DATETIME(6) NOT NULL,
-    CONSTRAINT FK_SEGMENTS_LINE FOREIGN KEY (LINE_ID) REFERENCES `LINES` (ID),
-    CONSTRAINT FK_SEGMENTS_BEFORE_STATION FOREIGN KEY (BEFORE_STATION_ID) REFERENCES STATIONS (ID),
-    CONSTRAINT FK_SEGMENTS_AFTER_STATION FOREIGN KEY (AFTER_STATION_ID) REFERENCES STATIONS (ID)
-) ENGINE = InnoDB;
-
-CREATE TABLE `SEGMENT_HISTORIES`
-(
-	ID         BIGINT PRIMARY KEY AUTO_INCREMENT,
-    SEGMENT_ID BIGINT NOT NULL,
-    ACTION     ENUM('CREATE','UPDATE','REACTIVATE','DEACTIVATE') NOT NULL,
-    CHANGED_AT DATETIME(6) NOT NULL,
-    CONSTRAINT FK_SH_SEGMENTS FOREIGN KEY (SEGMENT_ID) REFERENCES SEGMENTS (ID)
-) ENGINE = InnoDB;
+create table `segment_histories` (
+    id bigint primary key auto_increment,
+    segment_id bigint not null,
+    action enum ('CREATE', 'UPDATE', 'REACTIVATE', 'DEACTIVATE') not null,
+    changed_at datetime(6) not null,
+    constraint fk_sh_segments foreign key (segment_id) references segments (id)
+) engine = innodb;

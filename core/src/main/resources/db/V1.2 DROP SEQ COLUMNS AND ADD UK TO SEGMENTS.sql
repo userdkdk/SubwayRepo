@@ -1,4 +1,4 @@
-ALTER TABLE `LINE_STATIONS` DROP column SEQ;
+alter table `line_stations` drop column seq;
 
-ALTER TABLE `SEGMENTS` 
-ADD UNIQUE KEY UK_SEGMENTS_LINE_BS_AS (LINE_ID, BEFORE_STATION_ID, AFTER_STATION_ID);
+alter table `segments`
+add unique key uk_segments_line_bs_as (line_id, before_station_id, after_station_id);

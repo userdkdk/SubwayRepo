@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        globally_quoted_identifiers: true
+    defer-datasource-initialization: true
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/subwaymap?serverTimezone=Asia/Seoul
+    username: subway_user
+    password: subway_pw
+    driver-class-name: com.mysql.cj.jdbc.Driver

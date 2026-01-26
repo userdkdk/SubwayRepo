@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    networks:
+      - subway-net
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8090
+
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      # yml에서 읽는 키로 맞춰줌
+      DB_URL: jdbc:mysql://subway-mysql:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      DB_USERNAME: ${DB_USER}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8091:8090"
+networks:
+  subway-net:
+    external: true

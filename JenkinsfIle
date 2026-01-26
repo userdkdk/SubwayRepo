@@ -1,0 +1,43 @@
+pipeline {
+  agent any
+
+  environment {
+    COMPOSE_PROJECT_NAME = "buildtest"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Deploy with docker compose') {
+      steps {
+        withCredentials([
+          file(credentialsId: 'ENV_FILE', variable: 'ENV_FILE')
+        ]) {
+          sh '''
+            ./deploy/deploy.sh
+
+            docker compose \
+              -f docker/docker-compose-blue.yml \
+              --env-file $ENV_FILE \
+              -p ${COMPOSE_PROJECT_NAME} \
+              up -d --build
+
+            docker compose -p ${COMPOSE_PROJECT_NAME} ps
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      sh '''
+        docker compose -p ${COMPOSE_PROJECT_NAME} logs --tail=80 || true
+      '''
+    }
+  }
+}
