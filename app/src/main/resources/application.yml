@@ -5,4 +5,4 @@ spring:
     name: subway
   profiles:
     include: secret
-    active: dev
+    active: local

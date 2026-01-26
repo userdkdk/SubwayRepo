@@ -17,14 +17,13 @@ public class StationApiMapper {
     }
 
     public StationSegmentResponse segmentEntityToDto(SegmentJpaEntity entity) {
-        return StationSegmentResponse.builder()
-                .segmentId(entity.getId())
-                .beforeId(entity.getBeforeStationJpaEntity().getId())
-                .beforeName(entity.getBeforeStationJpaEntity().getName())
-                .afterId(entity.getAfterStationJpaEntity().getId())
-                .afterName(entity.getAfterStationJpaEntity().getName())
-                .distance(entity.getDistance())
-                .spendTime(entity.getSpendTime())
-                .build();
+        return new StationSegmentResponse(
+                entity.getId(),
+                entity.getBeforeStationJpaEntity().getId(),
+                entity.getBeforeStationJpaEntity().getName(),
+                entity.getAfterStationJpaEntity().getId(),
+                entity.getAfterStationJpaEntity().getName(),
+                entity.getDistance(),
+                entity.getSpendTime());
     }
 }

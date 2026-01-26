@@ -5,7 +5,6 @@ import com.example.app.api.line.application.LineViewService;
 import com.example.app.api.station.api.dto.response.StationSegmentResponse;
 import com.example.app.common.response.CustomResponse;
 import com.example.app.common.response.enums.StatusFilter;
-import com.example.core.common.domain.enums.ActiveType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/line")
+@RequestMapping("/api/lines")
 @RequiredArgsConstructor
 public class LineViewController {
 
