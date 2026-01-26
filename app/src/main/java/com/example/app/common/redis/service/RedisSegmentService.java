@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RedisStationService {
+public class RedisSegmentService {
 
     private final StringRedisTemplate redis;
 
