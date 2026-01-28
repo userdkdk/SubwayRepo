@@ -27,12 +27,11 @@ public class StationController {
 
     // patch station
     @PatchMapping("/{stationId}")
-    public ResponseEntity<CustomResponse<Void>> updateStationActivate(
+    public ResponseEntity<CustomResponse<Void>> updateStation(
             @PathVariable Integer stationId,
             @Valid @RequestBody UpdateStationRequest request
     ) {
         stationService.updateStation(stationId, request);
-        return CustomResponse.created();
+        return CustomResponse.ok();
     }
-
 }

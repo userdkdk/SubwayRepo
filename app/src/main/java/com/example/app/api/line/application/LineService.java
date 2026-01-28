@@ -11,6 +11,7 @@ import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineRepository;
 import com.example.core.business.segment.Segment;
+import com.example.core.business.segment.SegmentAttribute;
 import com.example.core.business.segment.SegmentRepository;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +45,9 @@ public class LineService {
         Line savedLine = lineRepository.save(line);
 
         // create segment
+        SegmentAttribute segmentAttribute = new SegmentAttribute(distance, spendTIme);
         Segment segment = Segment.create(savedLine.getId(), startId, endId,
-                distance, spendTIme);
+                segmentAttribute);
         segmentRepository.save(segment);
     }
 
@@ -54,10 +56,10 @@ public class LineService {
         Integer stationId = request.getStationId();
         Integer beforeId = request.getBeforeId();
         Integer afterId = request.getAfterId();
-        double beforeDistance = request.getBeforeDistance();
-        int beforeSpendTIme = request.getBeforeSpendTime();
-        double afterDistance = request.getAfterDistance();
-        int afterSpendTIme = request.getAfterSpendTime();
+        Double beforeDistance = request.getBeforeDistance();
+        Integer beforeSpendTIme = request.getBeforeSpendTime();
+        Double afterDistance = request.getAfterDistance();
+        Integer afterSpendTIme = request.getAfterSpendTime();
 
         // check line and station exists
         checkLineExists(lineId);
@@ -70,7 +72,9 @@ public class LineService {
             // check end id
             segmentQueryRepository.ensureIsHead(lineId, afterId);
             // save
-            Segment segment = Segment.create(lineId, stationId, afterId, afterDistance, afterSpendTIme);
+            checkDistAndTime(afterDistance, afterSpendTIme);
+            SegmentAttribute segmentAttribute = new SegmentAttribute(afterDistance, afterSpendTIme);
+            Segment segment = Segment.create(lineId, stationId, afterId, segmentAttribute);
             segmentRepository.save(segment);
             return;
         }
@@ -78,7 +82,9 @@ public class LineService {
             // check start id
             segmentQueryRepository.ensureIsTail(lineId, beforeId);
             // save
-            Segment segment = Segment.create(lineId, beforeId, stationId, beforeDistance, beforeSpendTIme);
+            checkDistAndTime(beforeDistance, beforeSpendTIme);
+            SegmentAttribute segmentAttribute = new SegmentAttribute(beforeDistance, beforeSpendTIme);
+            Segment segment = Segment.create(lineId, beforeId, stationId, segmentAttribute);
             segmentRepository.save(segment);
             return;
         }
@@ -91,9 +97,12 @@ public class LineService {
                             .addParam("start id", beforeId)
                             .addParam("end id", afterId));
             cur.inActivate();
-
-            Segment s1 = Segment.create(lineId, beforeId, stationId, beforeDistance, beforeSpendTIme);
-            Segment s2 = Segment.create(lineId, stationId, afterId, afterDistance, afterSpendTIme);
+            checkDistAndTime(beforeDistance, beforeSpendTIme);
+            checkDistAndTime(afterDistance, afterSpendTIme);
+            SegmentAttribute beforeSegmentAttribute = new SegmentAttribute(beforeDistance, beforeSpendTIme);
+            SegmentAttribute afterSegmentAttribute = new SegmentAttribute(afterDistance, afterSpendTIme);
+            Segment s1 = Segment.create(lineId, beforeId, stationId, beforeSegmentAttribute);
+            Segment s2 = Segment.create(lineId, stationId, afterId, afterSegmentAttribute);
             segmentRepository.save(s1);
             segmentRepository.save(s2);
             return;
@@ -127,5 +136,10 @@ public class LineService {
                     .addParam("id", id);
         }
     }
-
+    private void checkDistAndTime(Double distance, Integer spendTime) {
+        if (distance==null || spendTime==null) {
+            throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
+                    "Input invalid segment Attribute");
+        }
+    }
 }

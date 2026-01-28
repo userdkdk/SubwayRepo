@@ -15,26 +15,20 @@ public class Segment {
     private final Integer lineId;
     private final Integer beforeStationId;
     private final Integer afterStationId;
-    private Double distance;
-    private Integer spendTime;
+    private SegmentAttribute segmentAttribute;
     private ActiveType activeType;
 
     public static Segment create(Integer lineId, Integer beforeStationId, Integer afterStationId,
-                                  double distance, int spendTime) {
-        String segmentAttributes = "line id: "+ lineId + ", before station: "+beforeStationId+
-                ", after station id"+afterStationId;
+                                  SegmentAttribute segmentAttribute) {
         if (beforeStationId.equals(afterStationId)) {
             throw CustomException.domain(DomainErrorCode.SEGMENT_INPUT_STATION_SAME)
-                    .addParam("segment attribute", segmentAttributes);
-        }
-        if (distance<=0 || spendTime<=0) {
-            throw CustomException.domain(DomainErrorCode.SEGMENT_INPUT_VALUE_ERROR)
-                    .addParam("segment attribute", segmentAttributes)
-                    .addParam("distance", distance)
-                    .addParam("spend time", spendTime);
+                    .addParam("station id", beforeStationId);
         }
         return new Segment(null, lineId, beforeStationId, afterStationId,
-                distance, spendTime, ActiveType.ACTIVE);
+                segmentAttribute, ActiveType.ACTIVE);
     }
 
+    public void changeSegmentAttribute(SegmentAttribute segmentAttribute) {
+        this.segmentAttribute = segmentAttribute;
+    }
 }
