@@ -25,7 +25,7 @@ public class RedisLineService {
 
     public void setSegments(Integer lineId, StatusFilter status, String json) {
         String key = cacheKey(lineId,status);
-        redis.opsForValue().set(key,json, RedisConstants.CACHE_TTL);
+        redis.opsForValue().set(key,json, RedisConstants.LINE_CACHE_TTL);
     }
 
     public void evictSegments(Integer lineId, StatusFilter status) {

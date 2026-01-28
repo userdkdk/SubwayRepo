@@ -25,6 +25,10 @@ public class SegmentQueryRepository {
         return segmentJpaRepository.findByLineJpaEntity_Id(lineId);
     }
 
+    public List<SegmentJpaEntity> findAllActive() {
+        return segmentJpaRepository.findByActiveType(ActiveType.ACTIVE);
+    }
+
     public void ensureStationNotInLine(Integer lineId, Integer stationId) {
         Optional<SegmentJpaEntity> seg = segmentJpaRepository.
                 findByLineJpaEntity_idAndBeforeStationJpaEntity_idAndActiveType(

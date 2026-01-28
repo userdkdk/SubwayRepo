@@ -11,6 +11,7 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
 
     List<SegmentJpaEntity> findByLineJpaEntity_Id(Integer lineId);
 
+    List<SegmentJpaEntity> findByActiveType(ActiveType activeType);
     @EntityGraph(attributePaths = {
             "beforeStationJpaEntity",
             "afterStationJpaEntity"
@@ -18,5 +19,6 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
     List<SegmentJpaEntity> findByLineJpaEntity_IdAndActiveType(Integer lineId, ActiveType activeType);
     Optional<SegmentJpaEntity> findByLineJpaEntity_idAndBeforeStationJpaEntity_idAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
     Optional<SegmentJpaEntity> findByLineJpaEntity_idAndAfterStationJpaEntity_idAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
+
     Optional<SegmentJpaEntity> findByLineJpaEntity_idAndBeforeStationJpaEntity_idAndAfterStationJpaEntity_idAndActiveType(Integer lineId, Integer startId, Integer endId, ActiveType activeType);
 }

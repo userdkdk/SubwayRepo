@@ -17,12 +17,11 @@ public class PathController {
 
     @GetMapping("/{lineId}/{startId}/{endId}")
     public ResponseEntity<CustomResponse<PathResponse>> getPath(
-            @PathVariable Integer lineId,
             @PathVariable Integer startId,
             @PathVariable Integer endId,
             @RequestParam(defaultValue = "TIME") PathFilter pathFilter
             ) {
-        PathResponse res = pathService.getPath(lineId, startId, endId, pathFilter);
+        PathResponse res = pathService.getPath(startId, endId, pathFilter);
         return CustomResponse.ok(res);
     }
 }
