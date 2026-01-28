@@ -12,8 +12,8 @@ public class SegmentMapper {
                 lineRef,
                 beforeRef,
                 afterRef,
-                segment.getDistance(),
-                segment.getSpendTime()
+                segment.getSegmentAttribute().distance(),
+                segment.getSegmentAttribute().spendTimeSeconds()
         );
     }
 }

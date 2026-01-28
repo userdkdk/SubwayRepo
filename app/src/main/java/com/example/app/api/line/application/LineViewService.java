@@ -8,7 +8,7 @@ import com.example.app.business.line.LineQueryRepository;
 import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.business.segment.SegmentQueryRepository;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.app.common.redis.service.RedisSegmentService;
+import com.example.app.common.redis.service.RedisLineService;
 import com.example.app.common.response.enums.StatusFilter;
 import com.example.core.common.exception.CustomException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -31,11 +31,11 @@ public class LineViewService {
     private final StationSorter stationSorter;
     private final StationApiMapper stationApiMapper;
     private final LineApiMapper lineApiMapper;
-    private final RedisSegmentService redisSegmentService;
+    private final RedisLineService redisLineService;
     private final ObjectMapper redisObjectMapper;
 
     public List<StationSegmentResponse> getStationsById(Integer lineId, StatusFilter status) {
-        String cachedJson = redisSegmentService.getSegments(lineId, status);
+        String cachedJson = redisLineService.getSegments(lineId, status);
         if (cachedJson != null && !cachedJson.isBlank()) {
             List<StationSegmentResponse> cached = tryReadList(cachedJson, lineId, status);
             if (cached != null) return cached;
@@ -53,7 +53,7 @@ public class LineViewService {
                 .toList(); // 불변 OK (캐시값은 수정되면 안 됨)
 
         String json = writeJson(result);
-        redisSegmentService.setSegments(lineId, status, json);
+        redisLineService.setSegments(lineId, status, json);
 
         return result;
     }
@@ -69,7 +69,7 @@ public class LineViewService {
         try {
             return redisObjectMapper.readValue(json, new TypeReference<>() {});
         } catch (Exception e) {
-            redisSegmentService.evictSegments(lineId, status);
+            redisLineService.evictSegments(lineId, status);
             // 캐시 깨졌으면 로그 남기고 null 반환
             log.warn("redis cache parse fail. evict. lineId={}, status={}", lineId, status, e);
             return null;

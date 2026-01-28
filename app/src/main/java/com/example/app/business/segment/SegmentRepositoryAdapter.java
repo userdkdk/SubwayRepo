@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Consumer;
+
 @Component
 @RequiredArgsConstructor
 public class SegmentRepositoryAdapter implements SegmentRepository {
@@ -39,5 +41,10 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
                     .addParam("beforeStationId", beforeId)
                     .addParam("afterStationId", afterId);
         }
+    }
+
+    @Override
+    public void update(Integer id, Consumer<Segment> updater) {
+
     }
 }
