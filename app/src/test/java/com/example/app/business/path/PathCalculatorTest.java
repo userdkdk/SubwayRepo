@@ -68,7 +68,5 @@ class PathCalculatorTest {
 
     private static PathEdge edge(int to, double distance, int time) {
         return new PathEdge(to, distance, time);
-        // ✅ 만약 PathEdge가 record/static factory라면 여기를 프로젝트 구현에 맞게 바꿔.
-        // 예: PathEdge.of(from,to,time) / new PathEdge(to,time) 등
     }
 }
