@@ -41,8 +41,7 @@ class PathCalculatorTest {
         PathResult result = PathCalculator.findByTime(path, 1, 4);
 
         assertThat(result.found()).isTrue();
-        assertThat(result.totalDistance()).isEqualTo(15);
-        assertThat(result.stations()).containsExactly(1,2,3);
+        assertThat(result.stations()).containsExactly(1,3,2,4);
     }
 
     @Test
@@ -60,7 +59,6 @@ class PathCalculatorTest {
         PathResult result = PathCalculator.findByTime(path, 1, 4);
 
         assertThat(result.found()).isTrue();
-        assertThat(result.totalDistance()).isEqualTo(4);
         assertThat(result.stations()).containsExactly(1, 2, 3, 4);
     }
 

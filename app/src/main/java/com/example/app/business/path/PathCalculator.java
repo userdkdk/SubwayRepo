@@ -45,14 +45,15 @@ public class PathCalculator {
             }
         }
 
-        Integer totalTime = dist.get(endId).totalTime;
-        int totalDistance = Math.toIntExact(Math.round(dist.get(endId).totalDistance));
-        if (totalTime==null) {
+        TimeDistance end = dist.get(endId);
+        if (end == null) {
             return PathResult.notFound(startId, endId);
         }
+        int totalTime = end.totalTime();
+        int totalDistance = (int) Math.round(end.totalDistance());
         List<Integer> stations = rebuildPath(prev, startId, endId);
 
-        return PathResult.found(startId, endId, stations,totalTime,totalDistance);
+        return PathResult.found(startId, endId, stations, totalTime, totalDistance);
     }
 
     private static List<Integer> rebuildPath(Map<Integer, Integer> prev,
