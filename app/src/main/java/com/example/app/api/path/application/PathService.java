@@ -40,7 +40,7 @@ public class PathService {
 
         // calculate
         if (pathFilter==PathFilter.TIME) {
-            PathResult res = PathCalculator.findTime(path, startId, endId);
+            PathResult res = PathCalculator.findByTime(path, startId, endId);
             return PathResponse.from(res);
         }
 
