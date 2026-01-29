@@ -1,8 +1,6 @@
 package com.example.app.business.segment.segmentHistory;
 
-import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.core.business.segmentHistory.HistoryType;
-import com.example.core.business.segmentHistory.SegmentHistory;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

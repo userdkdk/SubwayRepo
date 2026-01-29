@@ -1,6 +1,5 @@
 package com.example.core.business.segmentHistory;
 
-import com.example.core.common.domain.enums.ActiveType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
