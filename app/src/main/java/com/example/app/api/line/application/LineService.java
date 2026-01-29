@@ -13,6 +13,8 @@ import com.example.core.business.line.LineRepository;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentAttribute;
 import com.example.core.business.segment.SegmentRepository;
+import com.example.core.business.segmentHistory.SegmentHistory;
+import com.example.core.business.segmentHistory.SegmentHistoryRepository;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class LineService {
     private final SegmentRepository segmentRepository;
     private final LineQueryRepository lineQueryRepository;
     private final SegmentQueryRepository segmentQueryRepository;
+    private final SegmentHistoryRepository segmentHistoryRepository;
 
     @Transactional
     public void createLine(CreateLineRequest request) {
@@ -48,7 +51,8 @@ public class LineService {
         SegmentAttribute segmentAttribute = new SegmentAttribute(distance, spendTIme);
         Segment segment = Segment.create(savedLine.getId(), startId, endId,
                 segmentAttribute);
-        segmentRepository.save(segment);
+        Integer segmentId = segmentRepository.save(segment);
+        segmentHistoryRepository.save(SegmentHistory.create(segmentId));
     }
 
     @Transactional
@@ -75,7 +79,8 @@ public class LineService {
             checkDistAndTime(afterDistance, afterSpendTIme);
             SegmentAttribute segmentAttribute = new SegmentAttribute(afterDistance, afterSpendTIme);
             Segment segment = Segment.create(lineId, stationId, afterId, segmentAttribute);
-            segmentRepository.save(segment);
+            Integer segmentId = segmentRepository.save(segment);
+            segmentHistoryRepository.save(SegmentHistory.create(segmentId));
             return;
         }
         if (beforeId!=null && afterId==null) {
@@ -85,7 +90,8 @@ public class LineService {
             checkDistAndTime(beforeDistance, beforeSpendTIme);
             SegmentAttribute segmentAttribute = new SegmentAttribute(beforeDistance, beforeSpendTIme);
             Segment segment = Segment.create(lineId, beforeId, stationId, segmentAttribute);
-            segmentRepository.save(segment);
+            Integer segmentId = segmentRepository.save(segment);
+            segmentHistoryRepository.save(SegmentHistory.create(segmentId));
             return;
         }
         if (beforeId!=null && afterId!=null) {
@@ -103,8 +109,10 @@ public class LineService {
             SegmentAttribute afterSegmentAttribute = new SegmentAttribute(afterDistance, afterSpendTIme);
             Segment s1 = Segment.create(lineId, beforeId, stationId, beforeSegmentAttribute);
             Segment s2 = Segment.create(lineId, stationId, afterId, afterSegmentAttribute);
-            segmentRepository.save(s1);
-            segmentRepository.save(s2);
+            Integer s1Id = segmentRepository.save(s1);
+            segmentHistoryRepository.save(SegmentHistory.create(s1Id));
+            Integer s2Id = segmentRepository.save(s2);
+            segmentHistoryRepository.save(SegmentHistory.create(s2Id));
             return;
         }
         throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,

@@ -23,7 +23,7 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     private final SegmentMapper segmentMapper;
 
     @Override
-    public void save(Segment segment) {
+    public Integer save(Segment segment) {
         Integer lineId = segment.getLineId();
         Integer beforeId = segment.getBeforeStationId();
         Integer afterId = segment.getAfterStationId();
@@ -34,8 +34,10 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
             StationJpaEntity afterRef = stationJpaRepository.getReferenceById(afterId);
 
             SegmentJpaEntity entity = segmentMapper.toNewEntity(segment, lineRef, beforeRef, afterRef);
-            segmentJpaRepository.save(entity);
+            SegmentJpaEntity saved = segmentJpaRepository.save(entity);
+            return saved.getId();
         } catch (DataIntegrityViolationException e) {
+
             throw CustomException.domain(AppErrorCode.SEGMENT_ALREADY_EXISTS)
                     .addParam("lineId", lineId)
                     .addParam("beforeStationId", beforeId)

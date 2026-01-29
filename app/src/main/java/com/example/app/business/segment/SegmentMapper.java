@@ -3,6 +3,7 @@ package com.example.app.business.segment;
 import com.example.app.business.line.LineJpaEntity;
 import com.example.app.business.station.StationJpaEntity;
 import com.example.core.business.segment.Segment;
+import com.example.core.business.segment.SegmentAttribute;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,5 +16,14 @@ public class SegmentMapper {
                 segment.getSegmentAttribute().distance(),
                 segment.getSegmentAttribute().spendTimeSeconds()
         );
+    }
+    public Segment toDomain(SegmentJpaEntity saved) {
+        SegmentAttribute segmentAttribute = new SegmentAttribute(saved.getDistance(), saved.getSpendTime());
+        return Segment.of(saved.getId(),
+                saved.getLineJpaEntity().getId(),
+                saved.getBeforeStationJpaEntity().getId(),
+                saved.getAfterStationJpaEntity().getId(),
+                segmentAttribute,
+                saved.getActiveType());
     }
 }

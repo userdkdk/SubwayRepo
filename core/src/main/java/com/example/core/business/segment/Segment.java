@@ -28,6 +28,11 @@ public class Segment {
                 segmentAttribute, ActiveType.ACTIVE);
     }
 
+    public static Segment of(Integer id, Integer lineId, Integer beforeStationId,
+                             Integer afterStationId, SegmentAttribute segmentAttribute, ActiveType activeType) {
+        return new Segment(id, lineId, beforeStationId, afterStationId, segmentAttribute, activeType);
+    }
+
     public void changeSegmentAttribute(SegmentAttribute segmentAttribute) {
         this.segmentAttribute = segmentAttribute;
     }
