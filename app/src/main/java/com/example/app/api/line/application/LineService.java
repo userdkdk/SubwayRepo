@@ -122,7 +122,7 @@ public class LineService {
     @Transactional
     public void updateLine(Integer lineId, UpdateLineRequest request) {
         lineRepository.update(lineId, line -> {
-            if (request.getName().isBlank()) {
+            if (request.getName()!=null && !request.getName().isBlank()) {
                 line.changeName(request.getName());
             }
             if (request.getStatus()!=null) {

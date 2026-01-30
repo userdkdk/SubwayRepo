@@ -24,7 +24,7 @@ public class StationService {
     @Transactional
     public void updateStation(Integer id, UpdateStationRequest request) {
         stationRepository.update(id, station->{
-            if (!request.getName().isBlank()) {
+            if (request.getName()!=null && !request.getName().isBlank()) {
                 station.changeName(request.getName());
             }
             if (request.getStatus()!=null) {
