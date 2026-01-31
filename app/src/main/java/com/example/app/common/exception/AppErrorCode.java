@@ -13,8 +13,10 @@ public enum AppErrorCode implements ErrorCode {
     DATA_INTEGRITY_VIOLATION("A-002", "DB Save Error", HttpStatus.CONFLICT),
     INVALID_INPUT_ERROR("A-003", "Invalid input error", HttpStatus.BAD_REQUEST),
     REDIS_SERIALIZATION_ERROR("A-004", "Redis serialization failed", HttpStatus.INTERNAL_SERVER_ERROR),
+
     // station
     STATION_NOT_FOUND("AS-001", "Station not found", HttpStatus.NOT_FOUND),
+    STATION_ALREADY_EXISTS_IN_LINE("AS-002", "Station already exists in line", HttpStatus.BAD_REQUEST),
 
     // line
     LINE_NOT_FOUND("AL-001", "Line not found", HttpStatus.NOT_FOUND),
@@ -22,7 +24,10 @@ public enum AppErrorCode implements ErrorCode {
     // segment,
     SEGMENT_NOT_FOUND("ASG-001", "Segment not found", HttpStatus.NOT_FOUND),
     SEGMENT_ALREADY_EXISTS("ASG-002", "Segment already exists", HttpStatus.CONFLICT),
-    SEGMENT_INPUT_VALUE_ERROR("ASG-003", "Segment input value error", HttpStatus.BAD_REQUEST);
+    SEGMENT_INPUT_VALUE_ERROR("ASG-003", "Segment input value error", HttpStatus.BAD_REQUEST),
+
+    // history
+    HISTORY_CONDITION_INValid("AH-001", "History input condition invalid", HttpStatus.BAD_REQUEST);
 
 
     private final String code;

@@ -13,7 +13,6 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class LineQueryRepository {
     private final SpringDataLineJpaRepository lineJpaRepository;
-    private final LineMapper lineMapper;
 
     public boolean existsActiveById(Integer id) {
         return lineJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);

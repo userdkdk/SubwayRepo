@@ -1,4 +1,4 @@
-package com.example.app.business.segment.segmentHistory;
+package com.example.app.business.segmentHistory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

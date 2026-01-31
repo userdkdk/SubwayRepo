@@ -1,4 +1,4 @@
-package com.example.app.business.segment.segmentHistory;
+package com.example.app.business.segmentHistory;
 
 import com.example.core.business.segmentHistory.SegmentHistory;
 import com.example.core.business.segmentHistory.SegmentHistoryRepository;

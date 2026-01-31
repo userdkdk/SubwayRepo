@@ -1,0 +1,42 @@
+package com.example.app.business.segmentHistory;
+
+import com.example.app.business.segmentHistory.projection.QSegmentHistoryProjection;
+import com.example.app.business.segmentHistory.projection.SegmentHistoryProjection;
+import com.example.core.business.segmentHistory.HistoryType;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class SegmentHistoryQueryRepository {
+    private final JPAQueryFactory queryFactory;
+
+    public List<SegmentHistoryProjection> findHistory(Integer segmentId, List<HistoryType> actions, LocalDateTime from, LocalDateTime to) {
+        QSegmentHistoryJpaEntity h = QSegmentHistoryJpaEntity.segmentHistoryJpaEntity;
+        BooleanBuilder builder = new BooleanBuilder();
+        if (segmentId != null) {
+            builder.and(h.segmentId.eq(segmentId));
+        }
+        if (actions != null && !actions.isEmpty()) {
+            builder.and(h.historyType.in(actions));
+        }
+        if (from != null) {
+            builder.and(h.changedAt.goe(from));
+        }
+        if (to != null) {
+            builder.and(h.changedAt.lt(to));
+        }
+
+        return queryFactory.select(new QSegmentHistoryProjection(
+                        h.id, h.segmentId, h.historyType, h.changedAt))
+                .from(h)
+                .where(builder)
+                .orderBy(h.changedAt.desc(), h.id.desc())
+                .fetch();
+    }
+}

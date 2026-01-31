@@ -4,10 +4,9 @@ import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.UpdateLineRequest;
 import com.example.app.business.line.LineQueryRepository;
-import com.example.app.business.segment.SegmentJpaEntity;
-import com.example.app.business.segment.SegmentQueryRepository;
 import com.example.app.business.station.StationQueryRepository;
 import com.example.app.common.exception.AppErrorCode;
+import com.example.app.common.redis.service.RedisSegmentService;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineRepository;
 import com.example.core.business.segment.Segment;
@@ -15,7 +14,9 @@ import com.example.core.business.segment.SegmentAttribute;
 import com.example.core.business.segment.SegmentRepository;
 import com.example.core.business.segmentHistory.SegmentHistory;
 import com.example.core.business.segmentHistory.SegmentHistoryRepository;
+import com.example.core.business.station.StationRoleInLine;
 import com.example.core.common.exception.CustomException;
+import com.example.core.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,15 +32,15 @@ public class LineService {
     private final StationQueryRepository stationQueryRepository;
     private final SegmentRepository segmentRepository;
     private final LineQueryRepository lineQueryRepository;
-    private final SegmentQueryRepository segmentQueryRepository;
     private final SegmentHistoryRepository segmentHistoryRepository;
+    private final RedisSegmentService redisSegmentService;
 
     @Transactional
     public void createLine(CreateLineRequest request) {
         Integer startId = request.getStartId();
         Integer endId = request.getEndId();
-        double distance = request.getDistance();
-        int spendTIme = request.getSpendTime();
+        Double distance = request.getDistance();
+        Integer spendTime = request.getSpendTime();
         // check stations
         checkStationExists(startId);
         checkStationExists(endId);
@@ -48,73 +49,69 @@ public class LineService {
         Line savedLine = lineRepository.save(line);
 
         // create segment
-        SegmentAttribute segmentAttribute = new SegmentAttribute(distance, spendTIme);
-        Segment segment = Segment.create(savedLine.getId(), startId, endId,
-                segmentAttribute);
-        Integer segmentId = segmentRepository.save(segment);
-        segmentHistoryRepository.save(SegmentHistory.create(segmentId));
+        saveSegment(savedLine.getId(), startId, endId, distance, spendTime);
     }
-
     @Transactional
     public void addStation(Integer lineId, CreateSegmentRequest request) {
         Integer stationId = request.getStationId();
         Integer beforeId = request.getBeforeId();
         Integer afterId = request.getAfterId();
         Double beforeDistance = request.getBeforeDistance();
-        Integer beforeSpendTIme = request.getBeforeSpendTime();
+        Integer beforeSpendTime = request.getBeforeSpendTime();
         Double afterDistance = request.getAfterDistance();
-        Integer afterSpendTIme = request.getAfterSpendTime();
+        Integer afterSpendTime = request.getAfterSpendTime();
 
         // check line and station exists
         checkLineExists(lineId);
         checkStationExists(stationId);
-
-        // station already exists in line
-        segmentQueryRepository.ensureStationNotInLine(lineId, stationId);
+        redisSegmentService.evictPath();
+        // check station exists in line
+        if (segmentRepository.existsActiveStationInLine(lineId, stationId)) {
+            throw CustomException.app(AppErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
+                    .addParam("line id", lineId)
+                    .addParam("station id", stationId);
+        }
 
         if (beforeId==null && afterId!=null) {
+            // check domain
+            checkDistAndTime(afterDistance, afterSpendTime);
             // check end id
-            segmentQueryRepository.ensureIsHead(lineId, afterId);
+            ensureHead(lineId, afterId);
             // save
-            checkDistAndTime(afterDistance, afterSpendTIme);
-            SegmentAttribute segmentAttribute = new SegmentAttribute(afterDistance, afterSpendTIme);
-            Segment segment = Segment.create(lineId, stationId, afterId, segmentAttribute);
-            Integer segmentId = segmentRepository.save(segment);
-            segmentHistoryRepository.save(SegmentHistory.create(segmentId));
+            saveSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
             return;
         }
         if (beforeId!=null && afterId==null) {
+            // check domain
+            checkDistAndTime(beforeDistance, beforeSpendTime);
             // check start id
-            segmentQueryRepository.ensureIsTail(lineId, beforeId);
+            ensureTail(lineId, beforeId);
             // save
-            checkDistAndTime(beforeDistance, beforeSpendTIme);
-            SegmentAttribute segmentAttribute = new SegmentAttribute(beforeDistance, beforeSpendTIme);
-            Segment segment = Segment.create(lineId, beforeId, stationId, segmentAttribute);
-            Integer segmentId = segmentRepository.save(segment);
-            segmentHistoryRepository.save(SegmentHistory.create(segmentId));
+            saveSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
             return;
         }
         if (beforeId!=null && afterId!=null) {
-            // find seg
-            SegmentJpaEntity cur = segmentQueryRepository
-                    .findActiveByLineAndStation(lineId, beforeId, afterId)
-                    .orElseThrow(()->CustomException.app(AppErrorCode.SEGMENT_NOT_FOUND)
-                            .addParam("line id", lineId)
-                            .addParam("start id", beforeId)
-                            .addParam("end id", afterId));
-            cur.inActivate();
-            checkDistAndTime(beforeDistance, beforeSpendTIme);
-            checkDistAndTime(afterDistance, afterSpendTIme);
-            SegmentAttribute beforeSegmentAttribute = new SegmentAttribute(beforeDistance, beforeSpendTIme);
-            SegmentAttribute afterSegmentAttribute = new SegmentAttribute(afterDistance, afterSpendTIme);
-            Segment s1 = Segment.create(lineId, beforeId, stationId, beforeSegmentAttribute);
-            Segment s2 = Segment.create(lineId, stationId, afterId, afterSegmentAttribute);
-            Integer s1Id = segmentRepository.save(s1);
-            segmentHistoryRepository.save(SegmentHistory.create(s1Id));
-            Integer s2Id = segmentRepository.save(s2);
-            segmentHistoryRepository.save(SegmentHistory.create(s2Id));
+            // check domain
+            checkDistAndTime(beforeDistance, beforeSpendTime);
+            checkDistAndTime(afterDistance, afterSpendTime);
+
+            // inactivate seg
+            int updated = segmentRepository
+                    .inactivateActiveSegment(lineId, beforeId, afterId);
+
+            if (updated == 0) {
+                throw CustomException.app(AppErrorCode.SEGMENT_NOT_FOUND)
+                        .addParam("line id", lineId)
+                        .addParam("start id", beforeId)
+                        .addParam("end id", afterId);
+            }
+
+            // save
+            saveSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
+            saveSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
             return;
         }
+
         throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
                 "startId, endId input이 올바르지 않습니다.");
     }
@@ -129,6 +126,37 @@ public class LineService {
                 line.changeActiveType(request.getStatus().toActiveType());
             }
         });
+    }
+
+    private void saveSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {
+        SegmentAttribute segmentAttribute = new SegmentAttribute(distance, spendTime);
+        Segment segment = Segment.create(id, startId, endId,
+                segmentAttribute);
+        Integer segmentId = segmentRepository.save(segment);
+        segmentHistoryRepository.save(SegmentHistory.create(segmentId));
+    }
+
+    private void ensureHead(Integer lineId, Integer stationId) {
+        StationRoleInLine role = segmentRepository.findActiveRole(lineId, stationId);
+
+        if (role == StationRoleInLine.NOT_IN_LINE) {
+            throwExceptionByLineIdAndStationId(AppErrorCode.SEGMENT_NOT_FOUND, lineId, stationId);
+        }
+        if (role != StationRoleInLine.HEAD) {
+            // INTERNAL or TAIL이면 “head가 아님”
+            throwExceptionByLineIdAndStationId(AppErrorCode.SEGMENT_ALREADY_EXISTS, lineId, stationId);
+        }
+    }
+
+    private void ensureTail(Integer lineId, Integer stationId) {
+        StationRoleInLine role = segmentRepository.findActiveRole(lineId, stationId);
+
+        if (role == StationRoleInLine.NOT_IN_LINE) {
+            throwExceptionByLineIdAndStationId(AppErrorCode.SEGMENT_NOT_FOUND, lineId, stationId);
+        }
+        if (role != StationRoleInLine.TAIL) {
+            throwExceptionByLineIdAndStationId(AppErrorCode.SEGMENT_ALREADY_EXISTS, lineId, stationId);
+        }
     }
 
     private void checkLineExists(Integer id) {
@@ -149,5 +177,10 @@ public class LineService {
             throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
                     "Input invalid segment Attribute");
         }
+    }
+    private void throwExceptionByLineIdAndStationId(ErrorCode errorCode, Integer lineId, Integer stationId) {
+        throw CustomException.app(errorCode)
+                .addParam("line id", lineId)
+                .addParam("station id", stationId);
     }
 }

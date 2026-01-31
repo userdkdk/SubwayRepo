@@ -7,6 +7,8 @@ import com.example.app.business.station.StationJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentRepository;
+import com.example.core.business.station.StationRoleInLine;
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -49,4 +51,32 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     public void update(Integer id, Consumer<Segment> updater) {
 
     }
+
+    @Override
+    public boolean existsActiveStationInLine(Integer lineId, Integer stationId) {
+        return segmentJpaRepository.existsActiveStationInLine(lineId, stationId, ActiveType.ACTIVE);
+    }
+
+    @Override
+    public StationRoleInLine findActiveRole(Integer lineId, Integer stationId) {
+        boolean asBefore = segmentJpaRepository.existsByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndActiveType(lineId, stationId, ActiveType.ACTIVE);
+        boolean asAfter  = segmentJpaRepository.existsByLineJpaEntity_IdAndAfterStationJpaEntity_IdAndActiveType(lineId, stationId, ActiveType.ACTIVE);
+
+        if (asBefore && asAfter) {
+            return StationRoleInLine.INTERNAL;
+        }
+        if (asBefore) {
+            return StationRoleInLine.HEAD;
+        }
+        if (asAfter) {
+            return StationRoleInLine.TAIL;
+        }
+        return StationRoleInLine.NOT_IN_LINE;
+    }
+
+    @Override
+    public int inactivateActiveSegment(Integer lineId, Integer beforeId, Integer afterId) {
+        return segmentJpaRepository.inactivateActivateSegment(lineId, beforeId, afterId, ActiveType.INACTIVE, ActiveType.ACTIVE);
+    }
+
 }
