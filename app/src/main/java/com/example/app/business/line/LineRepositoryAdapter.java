@@ -3,6 +3,7 @@ package com.example.app.business.line;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineRepository;
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.DomainErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,10 @@ public class LineRepositoryAdapter implements LineRepository {
 
         entity.setName(line.getName());
         entity.setActiveType(line.getActiveType());
+    }
+
+    @Override
+    public boolean existsActiveById(Integer id) {
+        return lineJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
     }
 }

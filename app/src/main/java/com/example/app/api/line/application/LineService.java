@@ -3,8 +3,6 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.UpdateLineRequest;
-import com.example.app.business.line.LineQueryRepository;
-import com.example.app.business.station.StationQueryRepository;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.redis.service.RedisSegmentService;
 import com.example.core.business.line.Line;
@@ -14,6 +12,7 @@ import com.example.core.business.segment.SegmentAttribute;
 import com.example.core.business.segment.SegmentRepository;
 import com.example.core.business.segmentHistory.SegmentHistory;
 import com.example.core.business.segmentHistory.SegmentHistoryRepository;
+import com.example.core.business.station.StationRepository;
 import com.example.core.business.station.StationRoleInLine;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.ErrorCode;
@@ -29,9 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationQueryRepository stationQueryRepository;
+    private final StationRepository stationRepository;
     private final SegmentRepository segmentRepository;
-    private final LineQueryRepository lineQueryRepository;
     private final SegmentHistoryRepository segmentHistoryRepository;
     private final RedisSegmentService redisSegmentService;
 
@@ -143,7 +141,6 @@ public class LineService {
             throwExceptionByLineIdAndStationId(AppErrorCode.SEGMENT_NOT_FOUND, lineId, stationId);
         }
         if (role != StationRoleInLine.HEAD) {
-            // INTERNAL or TAIL이면 “head가 아님”
             throwExceptionByLineIdAndStationId(AppErrorCode.SEGMENT_ALREADY_EXISTS, lineId, stationId);
         }
     }
@@ -160,14 +157,14 @@ public class LineService {
     }
 
     private void checkLineExists(Integer id) {
-        if (!lineQueryRepository.existsActiveById(id)) {
+        if (!lineRepository.existsActiveById(id)) {
             throw CustomException.domain(AppErrorCode.LINE_NOT_FOUND)
                     .addParam("id", id);
         }
     }
 
     private void checkStationExists(Integer id) {
-        if (!stationQueryRepository.existsActiveById(id)) {
+        if (!stationRepository.existsActiveById(id)) {
             throw CustomException.domain(AppErrorCode.STATION_NOT_FOUND)
                     .addParam("id", id);
         }

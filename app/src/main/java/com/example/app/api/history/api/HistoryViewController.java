@@ -3,14 +3,16 @@ package com.example.app.api.history.api;
 import com.example.app.api.history.api.dto.item.SegmentHistorySearchCondition;
 import com.example.app.api.history.api.dto.response.SegmentHistoryResponse;
 import com.example.app.api.history.application.HistoryViewService;
+import com.example.app.common.response.CustomPage;
 import com.example.app.common.response.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/histories")
@@ -20,17 +22,19 @@ public class HistoryViewController {
     private final HistoryViewService historyViewService;
 
     @GetMapping()
-    public ResponseEntity<CustomResponse<List<SegmentHistoryResponse>>> histories (
-            @Valid @ParameterObject SegmentHistorySearchCondition cond
-    ) {
-        return CustomResponse.ok(historyViewService.search(null,cond));
+    public ResponseEntity<CustomResponse<CustomPage<SegmentHistoryResponse>>> histories (
+            @Valid @ParameterObject SegmentHistorySearchCondition cond,
+            @PageableDefault(size = 5, sort = "changed_at", direction = Sort.Direction.DESC) Pageable pageable
+            ) {
+        return CustomResponse.ok(historyViewService.search(null,cond, pageable));
     }
 
     @GetMapping("/{segmentId}")
-    public ResponseEntity<CustomResponse<List<SegmentHistoryResponse>>> historiesBySeg (
+    public ResponseEntity<CustomResponse<CustomPage<SegmentHistoryResponse>>> historiesBySeg (
             @PathVariable Integer segmentId,
-            @Valid @ParameterObject SegmentHistorySearchCondition cond
+            @Valid @ParameterObject SegmentHistorySearchCondition cond,
+            @PageableDefault(size = 2, sort = "changed_at", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return CustomResponse.ok(historyViewService.search(segmentId,cond));
+        return CustomResponse.ok(historyViewService.search(segmentId,cond, pageable));
     }
 }

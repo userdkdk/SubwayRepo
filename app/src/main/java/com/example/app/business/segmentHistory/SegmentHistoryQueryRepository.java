@@ -6,6 +6,9 @@ import com.example.core.business.segmentHistory.HistoryType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -16,7 +19,12 @@ import java.util.List;
 public class SegmentHistoryQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<SegmentHistoryProjection> findHistory(Integer segmentId, List<HistoryType> actions, LocalDateTime from, LocalDateTime to) {
+    public Page<SegmentHistoryProjection> findHistory(
+            Integer segmentId,
+            List<HistoryType> actions,
+            LocalDateTime from,
+            LocalDateTime to,
+            Pageable pageable) {
         QSegmentHistoryJpaEntity h = QSegmentHistoryJpaEntity.segmentHistoryJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
         if (segmentId != null) {
@@ -31,12 +39,21 @@ public class SegmentHistoryQueryRepository {
         if (to != null) {
             builder.and(h.changedAt.lt(to));
         }
-
-        return queryFactory.select(new QSegmentHistoryProjection(
+        List<SegmentHistoryProjection> list = queryFactory
+                .select(new QSegmentHistoryProjection(
                         h.id, h.segmentId, h.historyType, h.changedAt))
                 .from(h)
                 .where(builder)
                 .orderBy(h.changedAt.desc(), h.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+        Long total = queryFactory
+                .select(h.count())
+                .from(h)
+                .where(builder)
+                .fetchOne();
+        long totalCount = total==null ? 0:total;
+        return new PageImpl<>(list, pageable, totalCount);
     }
 }

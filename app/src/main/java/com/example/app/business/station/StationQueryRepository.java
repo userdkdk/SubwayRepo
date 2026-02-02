@@ -16,10 +16,6 @@ import java.util.List;
 public class StationQueryRepository {
     private final SpringDataStationJpaRepository stationJpaRepository;
 
-    public boolean existsActiveById(Integer id) {
-        return stationJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
-    }
-
     public List<StationJpaEntity> findByActiveType(StatusFilter status) {
         if (status != StatusFilter.ALL) {
             return stationJpaRepository.findByActiveType(status.toActiveType());
