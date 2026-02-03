@@ -1,7 +1,7 @@
 package com.example.app.common.exception;
 
-import com.example.core.common.exception.ErrorCode;
-import com.example.core.common.exception.ErrorType;
+import com.example.core.exception.ErrorCode;
+import com.example.core.exception.ErrorType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

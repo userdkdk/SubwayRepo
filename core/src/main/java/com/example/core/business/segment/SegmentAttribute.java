@@ -1,7 +1,7 @@
 package com.example.core.business.segment;
 
-import com.example.core.common.exception.CustomException;
-import com.example.core.common.exception.DomainErrorCode;
+import com.example.core.exception.CustomException;
+import com.example.core.exception.DomainErrorCode;
 
 public record SegmentAttribute(double distance, int spendTimeSeconds) {
 

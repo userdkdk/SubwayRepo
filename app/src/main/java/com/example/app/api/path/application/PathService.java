@@ -8,7 +8,7 @@ import com.example.app.business.path.model.Path;
 import com.example.app.business.path.model.PathResult;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.redis.service.RedisSegmentService;
-import com.example.core.common.exception.CustomException;
+import com.example.core.exception.CustomException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

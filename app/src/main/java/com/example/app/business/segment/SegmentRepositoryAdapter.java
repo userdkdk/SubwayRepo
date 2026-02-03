@@ -9,7 +9,7 @@ import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentRepository;
 import com.example.core.business.station.StationRoleInLine;
 import com.example.core.common.domain.enums.ActiveType;
-import com.example.core.common.exception.CustomException;
+import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;

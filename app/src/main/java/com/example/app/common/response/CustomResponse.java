@@ -1,6 +1,6 @@
 package com.example.app.common.response;
 
-import com.example.core.common.exception.ErrorCode;
+import com.example.core.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

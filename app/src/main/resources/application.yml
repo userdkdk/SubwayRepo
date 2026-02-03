@@ -6,3 +6,8 @@ spring:
   profiles:
     include: secret
     active: local
+
+app:
+  logging:
+    enabled: true
+    access-log-enabled: true

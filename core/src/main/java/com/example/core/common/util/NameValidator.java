@@ -1,7 +1,7 @@
 package com.example.core.common.util;
 
-import com.example.core.common.exception.CustomException;
-import com.example.core.common.exception.DomainErrorCode;
+import com.example.core.exception.CustomException;
+import com.example.core.exception.DomainErrorCode;
 
 import java.util.regex.Pattern;
 

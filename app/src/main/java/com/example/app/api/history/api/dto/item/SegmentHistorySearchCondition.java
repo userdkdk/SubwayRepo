@@ -2,7 +2,7 @@ package com.example.app.api.history.api.dto.item;
 
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.segmentHistory.HistoryType;
-import com.example.core.common.exception.CustomException;
+import com.example.core.exception.CustomException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.format.annotation.DateTimeFormat;
 

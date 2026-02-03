@@ -1,0 +1,43 @@
+<configuration>
+
+    <springProfile name="dev,local">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{traceId}] %logger - %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <logger name="ACCESS_LOG" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <logger name="ERROR_LOG" level="WARN" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>{"service":"subway-app"}</customFields>
+            </encoder>
+        </appender>
+
+        <logger name="ACCESS_LOG" level="INFO" additivity="false">
+            <appender-ref ref="JSON"/>
+        </logger>
+
+        <logger name="ERROR_LOG" level="WARN" additivity="false">
+            <appender-ref ref="JSON"/>
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="JSON"/>
+        </root>
+    </springProfile>
+
+</configuration>

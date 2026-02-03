@@ -3,7 +3,7 @@ package com.example.app.business.station;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.response.enums.StatusFilter;
 import com.example.core.common.domain.enums.ActiveType;
-import com.example.core.common.exception.CustomException;
+import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

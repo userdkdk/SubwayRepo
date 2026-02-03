@@ -2,7 +2,7 @@ package com.example.app.api.line.application;
 
 import com.example.app.business.segment.SegmentJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.core.common.exception.CustomException;
+import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

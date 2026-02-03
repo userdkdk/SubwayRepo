@@ -10,7 +10,7 @@ import com.example.app.business.segment.SegmentQueryRepository;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.redis.service.RedisLineService;
 import com.example.app.common.response.enums.StatusFilter;
-import com.example.core.common.exception.CustomException;
+import com.example.core.exception.CustomException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
