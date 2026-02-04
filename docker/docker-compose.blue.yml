@@ -13,7 +13,6 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-
       # yml에서 읽는 키로 맞춰줌
       DB_URL: jdbc:mysql://subway-mysql:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
       DB_USERNAME: ${DB_USER}
@@ -21,6 +20,11 @@ services:
       - "host.docker.internal:host-gateway"
     ports:
       - "8090:8090"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   subway-net:
