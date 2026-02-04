@@ -1,43 +1,31 @@
 <configuration>
-
+    <property name="APP_NAME" value="subway"/>
     <springProfile name="dev,local">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{traceId}] %logger - %msg%n</pattern>
-            </encoder>
-        </appender>
-
-        <logger name="ACCESS_LOG" level="INFO" additivity="false">
-            <appender-ref ref="CONSOLE"/>
-        </logger>
-
-        <logger name="ERROR_LOG" level="WARN" additivity="false">
-            <appender-ref ref="CONSOLE"/>
-        </logger>
-
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="prod">
-        <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <customFields>{"service":"subway-app"}</customFields>
+                <customFields>{"app":"${APP_NAME}"}</customFields>
+                <includeMdc>true</includeMdc>
+                <includeMdcKeyName>traceId</includeMdcKeyName>
+                <fieldNames>
+                    <timestamp>ts</timestamp>
+                    <level>level</level>
+                    <logger>logger</logger>
+                    <thread>thread</thread>
+                    <message>message</message>
+                </fieldNames>
             </encoder>
         </appender>
 
         <logger name="ACCESS_LOG" level="INFO" additivity="false">
-            <appender-ref ref="JSON"/>
+            <appender-ref ref="CONSOLE"/>
         </logger>
 
-        <logger name="ERROR_LOG" level="WARN" additivity="false">
-            <appender-ref ref="JSON"/>
+        <logger name="ERROR_LOG" level="ERROR" additivity="false">
+            <appender-ref ref="CONSOLE"/>
         </logger>
 
         <root level="INFO">
-            <appender-ref ref="JSON"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
-
 </configuration>

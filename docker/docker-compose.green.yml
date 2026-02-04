@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: subway-app-green
     build:
       context: ..
       dockerfile: docker/Dockerfile

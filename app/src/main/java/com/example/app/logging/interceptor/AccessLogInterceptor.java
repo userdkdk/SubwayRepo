@@ -1,17 +1,15 @@
 package com.example.app.logging.interceptor;
 
-import com.example.app.logging.filter.MdcFilter;
+import com.example.app.logging.event.AccessLogEvent;
+import com.example.app.logging.event.AppLogEvent;
+import com.example.app.logging.logger.LogEventLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -29,19 +27,14 @@ public class AccessLogInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
                                 Object handler, Exception ex) {
         long start = (long) request.getAttribute(START);
-        long times = System.currentTimeMillis() - start;
-
-        Map<String, Object> params = new HashMap<>();
-        request.getParameterMap().forEach((k, v) -> params.put(k, v.length == 1 ? v[0] : v));
-
-        access.info(
-                "method={}, path={}, status={}, times={}, traceId={}, params={}",
+        long elapsed = System.currentTimeMillis() - start;
+        AppLogEvent log = new AccessLogEvent(
+                "ACCESS LOG",
                 request.getMethod(),
                 request.getRequestURI(),
                 response.getStatus(),
-                times,
-                MDC.get(MdcFilter.TRACE_ID),
-                params
+                elapsed
         );
+        LogEventLogger.log(log);
     }
 }
