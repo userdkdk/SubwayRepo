@@ -17,7 +17,7 @@ public class NameValidator {
 
     public static NameValidator of (int min, int max) {
         if (min<=0 || max < min) {
-            throw CustomException.domain(DomainErrorCode.POLICY_ERROR,
+            throw CustomException.domain(DomainErrorCode.NAME_POLICY_ERROR,
                     "name normalize policy error");
         }
         return new NameValidator(min, max);

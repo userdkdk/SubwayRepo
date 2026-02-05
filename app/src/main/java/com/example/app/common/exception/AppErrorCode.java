@@ -16,11 +16,15 @@ public enum AppErrorCode implements ErrorCode {
 
     // station
     STATION_NOT_FOUND("AS-001", "Station not found", HttpStatus.NOT_FOUND),
-    STATION_ALREADY_EXISTS_IN_LINE("AS-002", "Station already exists in line", HttpStatus.BAD_REQUEST),
-    ACTIVE_STATION_EXISTS("AS-003", "Active station exists", HttpStatus.CONFLICT),
+    STATION_NAME_DUPLICATED("AS-002", "Station name duplicated", HttpStatus.CONFLICT),
+    STATION_ALREADY_EXISTS_IN_LINE("AS-003", "Station already exists in line", HttpStatus.BAD_REQUEST),
+    ACTIVE_STATION_EXISTS("AS-004", "Active segments exists in station", HttpStatus.CONFLICT),
 
     // line
     LINE_NOT_FOUND("AL-001", "Line not found", HttpStatus.NOT_FOUND),
+    LINE_NAME_DUPLICATED("AL-002", "Line name duplicated", HttpStatus.CONFLICT),
+    ACTIVE_LINE_EXISTS("AL-004", "Active segments exists in line", HttpStatus.CONFLICT),
+
 
     // segment,
     SEGMENT_NOT_FOUND("ASG-001", "Segment not found", HttpStatus.NOT_FOUND),

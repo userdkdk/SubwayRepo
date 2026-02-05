@@ -11,6 +11,7 @@ import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -28,28 +29,23 @@ public class StationService {
 
     @Transactional
     public void updateStation(Integer id, UpdateStationRequest request) {
-        // check station exists
-        if (!stationRepository.existsById(id)) {
-            throw CustomException.app(AppErrorCode.STATION_NOT_FOUND)
-                    .addParam("id", id);
-        }
         // update station
         stationRepository.update(id, station->{
-            if (request.getStatus()!=null) {
-                // check segment when change to inactive
-                if (request.getStatus()== StatusFilter.INACTIVE &&
-                        segmentRepository.existsActiveStation(id)) {
+            StatusFilter newStatus = request.getStatus();
+            String newName = request.getName();
+            if (newStatus!=null && newStatus!=StatusFilter.ALL) {
+                // check active segment when change to inactive
+                if (newStatus== StatusFilter.INACTIVE &&
+                        segmentRepository.existsActiveSegmentByStation(id)) {
                     throw CustomException.app(AppErrorCode.ACTIVE_STATION_EXISTS)
                             .addParam("id", id);
                 }
 
-
-                station.changeActiveType(request.getStatus().toActiveType());
+                station.changeActiveType(newStatus.toActiveType());
             }
-            if (request.getName()!=null && !request.getName().isBlank()) {
-                station.changeName(request.getName());
+            if (StringUtils.hasText(newName)) {
+                station.changeName(newName);
             }
         });
     }
-
 }

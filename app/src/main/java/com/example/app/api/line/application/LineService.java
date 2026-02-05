@@ -5,6 +5,7 @@ import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.UpdateLineRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.redis.service.RedisSegmentService;
+import com.example.app.common.response.enums.StatusFilter;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineRepository;
 import com.example.core.business.segment.Segment;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -39,7 +41,7 @@ public class LineService {
         Integer endId = request.getEndId();
         Double distance = request.getDistance();
         Integer spendTime = request.getSpendTime();
-        // check stations
+        // check station exists and isActive
         checkStationExists(startId);
         checkStationExists(endId);
         // create line
@@ -115,13 +117,20 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Integer lineId, UpdateLineRequest request) {
-        lineRepository.update(lineId, line -> {
-            if (request.getName()!=null && !request.getName().isBlank()) {
-                line.changeName(request.getName());
-            }
-            if (request.getStatus()!=null) {
+    public void updateLine(Integer id, UpdateLineRequest request) {
+        lineRepository.update(id, line -> {
+            StatusFilter newStatus = request.getStatus();
+            String newName = request.getName();
+            if (newStatus!=null && newStatus!=StatusFilter.ALL) {
+                if (request.getStatus()== StatusFilter.INACTIVE &&
+                        segmentRepository.existsActiveSegmentByLine(id)) {
+                    throw CustomException.app(AppErrorCode.ACTIVE_LINE_EXISTS)
+                            .addParam("id", id);
+                }
                 line.changeActiveType(request.getStatus().toActiveType());
+            }
+            if (StringUtils.hasText(newName)) {
+                line.changeName(newName);
             }
         });
     }

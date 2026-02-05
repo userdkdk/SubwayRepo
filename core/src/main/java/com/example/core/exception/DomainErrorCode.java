@@ -7,16 +7,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum DomainErrorCode implements ErrorCode {
     NAME_ERROR("D-001", "Input Name Invalid",400),
-    POLICY_ERROR("D-002", "Input Policy Invalid",400),
+    NAME_POLICY_ERROR("D-002", "Input Policy Invalid",400),
     // station
     STATION_NAME_ERROR("DS-001", "Station name invalid", 400),
-    STATION_NAME_DUPLICATED("DS-002", "Station name duplicated", 409),
-    STATION_DELETE_ERROR("DS-004", "Can not delete station", 400),
+    STATION_DELETE_ERROR("DS-002", "Can not delete station", 400),
 
     // line
     LINE_NAME_ERROR("DL-001", "Line name invalid", 400),
-    LINE_NAME_DUPLICATED("DL-002", "Line name duplicated", 409),
-    LINE_INPUT_STATION_SAME("DL-004","Input stations are same", 400),
+    LINE_INPUT_STATION_SAME("DL-002","Input stations are same", 400),
 
     // segment
     SEGMENT_INPUT_STATION_SAME("DSG-001", "Input stations are same", 400),

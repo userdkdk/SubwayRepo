@@ -19,14 +19,14 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
     })
     List<SegmentJpaEntity> findByLineJpaEntity_IdAndActiveType(Integer lineId, ActiveType activeType);
 
-    // check exists station
+    // check exists segment by station
     @Query("""
         select count(s) > 0
         from SegmentJpaEntity s
         where s.activeType = :activeType
             and (s.beforeStationJpaEntity.id = :stationId or s.afterStationJpaEntity.id = :stationId)
     """)
-    boolean existsActiveStation(Integer stationId, ActiveType activeType);
+    boolean existsActiveSegmentByStation(Integer stationId, ActiveType activeType);
 
     // check exists station in line
     @Query("""
@@ -39,6 +39,15 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
     boolean existsActiveStationInLine(Integer lineId, Integer stationId, ActiveType activeType);
     boolean existsByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
     boolean existsByLineJpaEntity_IdAndAfterStationJpaEntity_IdAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
+
+    // check exists segment by line
+    @Query("""
+        select count(s) > 0
+        from SegmentJpaEntity s
+        where s.activeType = :activeType
+            and s.lineJpaEntity.id = :lineId
+    """)
+    boolean existsActiveSegmentByLine(Integer lineId, ActiveType activeType);
 
     @Modifying
     @Query("""
