@@ -18,7 +18,7 @@ public class StationRepositoryAdapter implements StationRepository {
     private final StationMapper stationMapper;
 
     @Override
-    public Station save(Station station) {
+    public void save(Station station) {
         String name = station.getName();
 
         if (stationJpaRepository.existsByName(name)) {
@@ -26,10 +26,9 @@ public class StationRepositoryAdapter implements StationRepository {
                     .addParam("name", name);
         }
 
-        StationJpaEntity saved = stationJpaRepository.save(
+        stationJpaRepository.save(
                 stationMapper.toNewEntity(station)
         );
-        return stationMapper.toDomain(saved);
     }
 
     @Override
@@ -47,6 +46,12 @@ public class StationRepositoryAdapter implements StationRepository {
         }
         entity.setName(domain.getName());
         entity.setActiveType(domain.getActiveType());
+    }
+
+
+    @Override
+    public boolean existsById(Integer id) {
+        return stationJpaRepository.existsById(id);
     }
 
     @Override

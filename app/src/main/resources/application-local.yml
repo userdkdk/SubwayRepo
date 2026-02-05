@@ -1,4 +1,6 @@
 spring:
+  flyway:
+    enabled: true
   jpa:
     hibernate:
       ddl-auto: validate
@@ -6,7 +8,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         globally_quoted_identifiers: true
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
 
   datasource:
     url: jdbc:mysql://localhost:3306/subwaymap?serverTimezone=Asia/Seoul

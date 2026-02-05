@@ -63,7 +63,7 @@ public class LineService {
         checkLineExists(lineId);
         checkStationExists(stationId);
         redisSegmentService.evictPath();
-        // check station exists in line
+        // check station exists in line -> duplicated
         if (segmentRepository.existsActiveStationInLine(lineId, stationId)) {
             throw CustomException.app(AppErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
                     .addParam("line id", lineId)

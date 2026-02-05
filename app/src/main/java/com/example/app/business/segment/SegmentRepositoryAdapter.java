@@ -58,6 +58,11 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     }
 
     @Override
+    public boolean existsActiveStation(Integer stationId) {
+        return segmentJpaRepository.existsActiveStation(stationId, ActiveType.ACTIVE);
+    }
+
+    @Override
     public StationRoleInLine findActiveRole(Integer lineId, Integer stationId) {
         boolean asBefore = segmentJpaRepository.existsByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndActiveType(lineId, stationId, ActiveType.ACTIVE);
         boolean asAfter  = segmentJpaRepository.existsByLineJpaEntity_IdAndAfterStationJpaEntity_IdAndActiveType(lineId, stationId, ActiveType.ACTIVE);

@@ -35,8 +35,8 @@ public class LineJpaEntity extends BaseEntity {
         this.activeType = activeType;
     }
 
-    public static LineJpaEntity create(String name) {
-        return new LineJpaEntity(name, ActiveType.ACTIVE);
+    public static LineJpaEntity create(String name, ActiveType activeType) {
+        return new LineJpaEntity(name, activeType);
     }
 
     public void activate() {

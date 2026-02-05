@@ -8,6 +8,7 @@ public interface SegmentRepository{
     Integer save(Segment segment);
     void update(Integer id, Consumer<Segment> updater);
     boolean existsActiveStationInLine(Integer lineId, Integer stationId);
+    boolean existsActiveStation(Integer stationId);
     StationRoleInLine findActiveRole(Integer lineId, Integer stationId);
     int inactivateActiveSegment(Integer lineId, Integer beforeId, Integer afterId);
 }

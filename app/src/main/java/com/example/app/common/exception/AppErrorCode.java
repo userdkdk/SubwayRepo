@@ -17,6 +17,7 @@ public enum AppErrorCode implements ErrorCode {
     // station
     STATION_NOT_FOUND("AS-001", "Station not found", HttpStatus.NOT_FOUND),
     STATION_ALREADY_EXISTS_IN_LINE("AS-002", "Station already exists in line", HttpStatus.BAD_REQUEST),
+    ACTIVE_STATION_EXISTS("AS-003", "Active station exists", HttpStatus.CONFLICT),
 
     // line
     LINE_NOT_FOUND("AL-001", "Line not found", HttpStatus.NOT_FOUND),
