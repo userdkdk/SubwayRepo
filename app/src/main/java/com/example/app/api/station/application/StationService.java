@@ -34,21 +34,18 @@ public class StationService {
         // update station
         StationName name = new StationName(request.name());
         stationRepository.ensureNameUnique(name.value());
-        stationRepository.update(id, station->{station.changeName(name);});
+        stationRepository.update(id, station->station.changeName(name));
     }
 
     @Transactional
     public void updateStationStatus(Integer id, UpdateStationStatusRequest request) {
         // update station
-        stationRepository.update(id, station->{
-            ActionType action = request.actionType();
-            // check active segment when change to inactive
-            if (action== ActionType.INACTIVE &&
-                    segmentRepository.existsActiveSegmentByStation(id)) {
-                throw CustomException.app(AppErrorCode.ACTIVE_STATION_EXISTS)
-                        .addParam("id", id);
-            }
-            station.changeActiveType(action.toActiveType());
-        });
+        ActionType action = request.actionType();
+        if (action== ActionType.INACTIVE &&
+                segmentRepository.existsActiveSegmentByStation(id)) {
+            throw CustomException.app(AppErrorCode.ACTIVE_STATION_EXISTS)
+                    .addParam("id", id);
+        }
+        stationRepository.update(id, station->station.changeActiveType(action.toActiveType()));
     }
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -40,6 +41,7 @@ public class SegmentJpaEntity extends BaseEntity {
     @Column(name = "spend_time", nullable = false)
     private Integer spendTime;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
@@ -53,18 +55,16 @@ public class SegmentJpaEntity extends BaseEntity {
         this.spendTime = spendTime;
         this.activeType = activeType;
     }
+
     public static SegmentJpaEntity create(LineJpaEntity lineRef, StationJpaEntity beforeRef, StationJpaEntity afterRef,
                                           double distance, int spendTime) {
         return new SegmentJpaEntity(lineRef, beforeRef, afterRef,
                 distance, spendTime, ActiveType.ACTIVE);
     }
 
-    public void activate() {
-        this.activeType = ActiveType.ACTIVE;
-    }
-
-    public void inActivate() {
-        this.activeType = ActiveType.INACTIVE;
+    public void setAttribute(Double distance, Integer spendTime) {
+        this.distance = distance;
+        this.spendTime = spendTime;
     }
 
     public boolean isActive() {

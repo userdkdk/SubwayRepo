@@ -54,7 +54,7 @@ public class LineService {
         Line savedLine = lineRepository.save(Line.create(name));
 
         // create segment
-        saveSegment(savedLine.getId(), startId, endId, distance, spendTime);
+        upsertSegment(savedLine.getId(), startId, endId, distance, spendTime);
     }
     @Transactional
     public void addStation(Integer lineId, CreateSegmentRequest request) {
@@ -69,6 +69,7 @@ public class LineService {
         // check line and station exists
         checkLineExists(lineId);
         checkStationExists(stationId);
+
         // check station exists in line -> duplicated
         if (segmentRepository.existsActiveStationInLine(lineId, stationId)) {
             throw CustomException.app(AppErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
@@ -76,29 +77,32 @@ public class LineService {
                     .addParam("station id", stationId);
         }
 
-        // Delete cache
+        // delete cache
         redisSegmentService.evictPath();
         redisLineService.evictSegments(lineId, StatusFilter.ALL);
 
         if (beforeId==null && afterId!=null) {
+            // head
             // check domain
             checkDistAndTime(afterDistance, afterSpendTime);
             // check end id
             ensureHead(lineId, afterId);
             // save
-            saveSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
+            upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
             return;
         }
         if (beforeId!=null && afterId==null) {
+            // tail
             // check domain
             checkDistAndTime(beforeDistance, beforeSpendTime);
             // check start id
             ensureTail(lineId, beforeId);
             // save
-            saveSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
+            upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
             return;
         }
         if (beforeId!=null && afterId!=null) {
+            // elapsed
             // check domain
             checkDistAndTime(beforeDistance, beforeSpendTime);
             checkDistAndTime(afterDistance, afterSpendTime);
@@ -115,8 +119,8 @@ public class LineService {
             }
 
             // save
-            saveSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
-            saveSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
+            upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
+            upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
             return;
         }
 
@@ -128,25 +132,22 @@ public class LineService {
     public void updateLineAttribute(Integer id, UpdateLineAttributeRequest request) {
         LineName name = new LineName(request.name());
         lineRepository.ensureNameUnique(name.value());
-        lineRepository.update(id, line -> {line.changeName(name);});
+        lineRepository.update(id, line -> line.changeName(name));
     }
 
     @Transactional
     public void updateLineStatus(Integer id, UpdateLineStatusRequest request) {
-        lineRepository.update(id, line -> {
-            ActionType action = request.actionType();
-            if (segmentRepository.existsActiveSegmentByLine(id)) {
-                throw CustomException.app(AppErrorCode.ACTIVE_LINE_EXISTS)
-                        .addParam("id", id);
-            }
-            line.changeActiveType(action.toActiveType());
-        });
+        ActionType action = request.actionType();
+        if (segmentRepository.existsActiveSegmentByLine(id)) {
+            throw CustomException.app(AppErrorCode.ACTIVE_LINE_EXISTS)
+                    .addParam("id", id);
+        }
+        lineRepository.update(id, line -> line.changeActiveType(action.toActiveType()));
     }
 
-    private void saveSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {
+    private void upsertSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {
         SegmentAttribute segmentAttribute = new SegmentAttribute(distance, spendTime);
-        Segment segment = Segment.create(id, startId, endId,
-                segmentAttribute);
+        Segment segment = Segment.create(id, startId, endId, segmentAttribute);
         Integer segmentId = segmentRepository.save(segment);
         segmentHistoryRepository.save(SegmentHistory.create(segmentId));
     }

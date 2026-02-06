@@ -1,6 +1,7 @@
 package com.example.app.api.segment.api;
 
-import com.example.app.api.segment.api.dto.request.UpdateSegmentRequest;
+import com.example.app.api.segment.api.dto.request.UpdateSegmentAttributeRequest;
+import com.example.app.api.segment.api.dto.request.UpdateSegmentStatusRequest;
 import com.example.app.api.segment.application.SegmentService;
 import com.example.app.common.response.CustomResponse;
 import jakarta.validation.Valid;
@@ -15,13 +16,23 @@ public class SegmentController {
 
     private final SegmentService segmentService;
 
-    // patch station
+    // update segment attribute
     @PatchMapping("/{segmentId}")
-    public ResponseEntity<CustomResponse<Void>> updateSegment(
+    public ResponseEntity<CustomResponse<Void>> updateSegmentAttribute(
             @PathVariable Integer segmentId,
-            @Valid @RequestBody UpdateSegmentRequest request
+            @Valid @RequestBody UpdateSegmentAttributeRequest request
     ) {
-        segmentService.updateSegment(segmentId, request);
+        segmentService.updateSegmentAttribute(segmentId, request);
+        return CustomResponse.ok();
+    }
+
+    // update segment status
+    @PostMapping("/{segmentId}/activation")
+    public ResponseEntity<CustomResponse<Void>> updateSegmentStatus(
+            @PathVariable Integer segmentId,
+            @Valid @RequestBody UpdateSegmentStatusRequest request
+    ) {
+        segmentService.updateSegmentStatus(segmentId, request);
         return CustomResponse.ok();
     }
 

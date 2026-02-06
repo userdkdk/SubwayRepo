@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
@@ -30,6 +31,19 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
         Integer beforeId = segment.getBeforeStationId();
         Integer afterId = segment.getAfterStationId();
 
+        Optional<SegmentJpaEntity> entityOpt =
+                segmentJpaRepository.findByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndAfterStationJpaEntity_Id(
+                        lineId, beforeId, afterId
+                );
+
+        if (entityOpt.isPresent()) {
+            SegmentJpaEntity entity = entityOpt.get();
+            entity.setActiveType(ActiveType.ACTIVE);
+            entity.setAttribute(segment.getSegmentAttribute().distance(),
+                    segment.getSegmentAttribute().spendTimeSeconds());
+            return entity.getId();
+        }
+
         try {
             LineJpaEntity lineRef = lineJpaRepository.getReferenceById(lineId);
             StationJpaEntity beforeRef = stationJpaRepository.getReferenceById(beforeId);
@@ -39,7 +53,6 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
             SegmentJpaEntity saved = segmentJpaRepository.save(entity);
             return saved.getId();
         } catch (DataIntegrityViolationException e) {
-
             throw CustomException.domain(AppErrorCode.SEGMENT_ALREADY_EXISTS)
                     .addParam("lineId", lineId)
                     .addParam("beforeStationId", beforeId)
@@ -49,7 +62,15 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
 
     @Override
     public void update(Integer id, Consumer<Segment> updater) {
+        SegmentJpaEntity entity = segmentJpaRepository.findById(id)
+                .orElseThrow(()->CustomException.app(AppErrorCode.SEGMENT_NOT_FOUND)
+                .addParam("id", id));
+        Segment domain = segmentMapper.toDomain(entity);
+        updater.accept(domain);
 
+        entity.setAttribute(domain.getSegmentAttribute().distance(),
+                domain.getSegmentAttribute().spendTimeSeconds());
+        entity.setActiveType(domain.getActiveType());
     }
 
     @Override

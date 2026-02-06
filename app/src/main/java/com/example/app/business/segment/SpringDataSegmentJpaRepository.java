@@ -7,12 +7,18 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpaEntity, Integer> {
 
     List<SegmentJpaEntity> findByLineJpaEntity_Id(Integer lineId);
 
     List<SegmentJpaEntity> findByActiveType(ActiveType activeType);
+
+    Optional<SegmentJpaEntity> findByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndAfterStationJpaEntity_Id(
+            Integer lineId, Integer beforeId, Integer afterId
+    );
+
     @EntityGraph(attributePaths = {
             "beforeStationJpaEntity",
             "afterStationJpaEntity"
