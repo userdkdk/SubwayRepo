@@ -2,7 +2,8 @@ package com.example.app.api.line.api;
 
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
-import com.example.app.api.line.api.dto.request.UpdateLineRequest;
+import com.example.app.api.line.api.dto.request.UpdateLineAttributeRequest;
+import com.example.app.api.line.api.dto.request.UpdateLineStatusRequest;
 import com.example.app.api.line.application.LineService;
 import com.example.app.common.response.CustomResponse;
 import jakarta.validation.Valid;
@@ -26,13 +27,23 @@ public class LineController {
         return CustomResponse.created();
     }
 
-    // patch line
+    // update line attribute
     @PatchMapping("/{lineId}")
+    public ResponseEntity<CustomResponse<Void>> updateLineAttribute(
+            @PathVariable Integer lineId,
+            @Valid @RequestBody UpdateLineAttributeRequest request
+    ) {
+        lineService.updateLineAttribute(lineId, request);
+        return CustomResponse.ok();
+    }
+
+    // update line status
+    @PostMapping("/{lineId}")
     public ResponseEntity<CustomResponse<Void>> updateLine(
             @PathVariable Integer lineId,
-            @Valid @RequestBody UpdateLineRequest request
+            @Valid @RequestBody UpdateLineStatusRequest request
     ) {
-        lineService.updateLine(lineId, request);
+        lineService.updateLineStatus(lineId, request);
         return CustomResponse.ok();
     }
 

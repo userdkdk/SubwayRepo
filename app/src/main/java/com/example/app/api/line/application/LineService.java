@@ -2,11 +2,15 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
-import com.example.app.api.line.api.dto.request.UpdateLineRequest;
+import com.example.app.api.line.api.dto.request.UpdateLineAttributeRequest;
+import com.example.app.api.line.api.dto.request.UpdateLineStatusRequest;
 import com.example.app.common.exception.AppErrorCode;
+import com.example.app.common.redis.service.RedisLineService;
 import com.example.app.common.redis.service.RedisSegmentService;
+import com.example.app.common.response.enums.ActionType;
 import com.example.app.common.response.enums.StatusFilter;
 import com.example.core.business.line.Line;
+import com.example.core.business.line.LineName;
 import com.example.core.business.line.LineRepository;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentAttribute;
@@ -21,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -34,43 +37,48 @@ public class LineService {
     private final SegmentRepository segmentRepository;
     private final SegmentHistoryRepository segmentHistoryRepository;
     private final RedisSegmentService redisSegmentService;
+    private final RedisLineService redisLineService;
 
     @Transactional
     public void createLine(CreateLineRequest request) {
-        Integer startId = request.getStartId();
-        Integer endId = request.getEndId();
-        Double distance = request.getDistance();
-        Integer spendTime = request.getSpendTime();
+        Integer startId = request.startId();
+        Integer endId = request.endId();
+        Double distance = request.distance();
+        Integer spendTime = request.spendTime();
         // check station exists and isActive
         checkStationExists(startId);
         checkStationExists(endId);
         // create line
-        Line line = Line.create(request.getName());
-        Line savedLine = lineRepository.save(line);
+        LineName name = new LineName(request.name());
+        lineRepository.ensureNameUnique(name.value());
+        Line savedLine = lineRepository.save(Line.create(name));
 
         // create segment
         saveSegment(savedLine.getId(), startId, endId, distance, spendTime);
     }
     @Transactional
     public void addStation(Integer lineId, CreateSegmentRequest request) {
-        Integer stationId = request.getStationId();
-        Integer beforeId = request.getBeforeId();
-        Integer afterId = request.getAfterId();
-        Double beforeDistance = request.getBeforeDistance();
-        Integer beforeSpendTime = request.getBeforeSpendTime();
-        Double afterDistance = request.getAfterDistance();
-        Integer afterSpendTime = request.getAfterSpendTime();
+        Integer stationId = request.stationId();
+        Integer beforeId = request.beforeId();
+        Integer afterId = request.afterId();
+        Double beforeDistance = request.beforeDistance();
+        Integer beforeSpendTime = request.beforeSpendTime();
+        Double afterDistance = request.afterDistance();
+        Integer afterSpendTime = request.afterSpendTime();
 
         // check line and station exists
         checkLineExists(lineId);
         checkStationExists(stationId);
-        redisSegmentService.evictPath();
         // check station exists in line -> duplicated
         if (segmentRepository.existsActiveStationInLine(lineId, stationId)) {
             throw CustomException.app(AppErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
                     .addParam("line id", lineId)
                     .addParam("station id", stationId);
         }
+
+        // Delete cache
+        redisSegmentService.evictPath();
+        redisLineService.evictSegments(lineId, StatusFilter.ALL);
 
         if (beforeId==null && afterId!=null) {
             // check domain
@@ -117,21 +125,21 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Integer id, UpdateLineRequest request) {
+    public void updateLineAttribute(Integer id, UpdateLineAttributeRequest request) {
+        LineName name = new LineName(request.name());
+        lineRepository.ensureNameUnique(name.value());
+        lineRepository.update(id, line -> {line.changeName(name);});
+    }
+
+    @Transactional
+    public void updateLineStatus(Integer id, UpdateLineStatusRequest request) {
         lineRepository.update(id, line -> {
-            StatusFilter newStatus = request.getStatus();
-            String newName = request.getName();
-            if (newStatus!=null && newStatus!=StatusFilter.ALL) {
-                if (request.getStatus()== StatusFilter.INACTIVE &&
-                        segmentRepository.existsActiveSegmentByLine(id)) {
-                    throw CustomException.app(AppErrorCode.ACTIVE_LINE_EXISTS)
-                            .addParam("id", id);
-                }
-                line.changeActiveType(request.getStatus().toActiveType());
+            ActionType action = request.actionType();
+            if (segmentRepository.existsActiveSegmentByLine(id)) {
+                throw CustomException.app(AppErrorCode.ACTIVE_LINE_EXISTS)
+                        .addParam("id", id);
             }
-            if (StringUtils.hasText(newName)) {
-                line.changeName(newName);
-            }
+            line.changeActiveType(action.toActiveType());
         });
     }
 

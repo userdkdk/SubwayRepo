@@ -18,13 +18,6 @@ public class LineRepositoryAdapter implements LineRepository {
 
     @Override
     public Line save(Line line) {
-        String name = line.getName();
-
-        if (lineJpaRepository.existsByName(name)) {
-            throw CustomException.app(AppErrorCode.LINE_NAME_DUPLICATED)
-                    .addParam("name", name);
-        }
-
         LineJpaEntity saved = lineJpaRepository.save(
                 lineMapper.toNewEntity(line)
         );
@@ -37,16 +30,18 @@ public class LineRepositoryAdapter implements LineRepository {
                 .orElseThrow(()->CustomException.app(AppErrorCode.LINE_NOT_FOUND)
                         .addParam("id", id));
         Line line = lineMapper.toDomain(entity);
-
         updater.accept(line);
-        String newName = line.getName();
-        if (!newName.equals(entity.getName())
-                && lineJpaRepository.existsByName(newName)) {
-            throw CustomException.app(AppErrorCode.LINE_NAME_DUPLICATED);
-        }
 
-        entity.setName(line.getName());
+        entity.setName(line.getName().value());
         entity.setActiveType(line.getActiveType());
+    }
+
+    @Override
+    public void ensureNameUnique(String name) {
+        if (lineJpaRepository.existsByName(name)) {
+            throw CustomException.app(AppErrorCode.LINE_NAME_DUPLICATED)
+                    .addParam("name", name);
+        }
     }
 
     @Override

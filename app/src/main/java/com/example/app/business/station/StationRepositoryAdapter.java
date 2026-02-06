@@ -18,13 +18,6 @@ public class StationRepositoryAdapter implements StationRepository {
 
     @Override
     public void save(Station station) {
-        String name = station.getName();
-
-        if (stationJpaRepository.existsByName(name)) {
-            throw CustomException.app(AppErrorCode.STATION_NAME_DUPLICATED)
-                    .addParam("name", name);
-        }
-
         stationJpaRepository.save(
                 stationMapper.toNewEntity(station)
         );
@@ -37,16 +30,18 @@ public class StationRepositoryAdapter implements StationRepository {
                 .orElseThrow(()->CustomException.app(AppErrorCode.STATION_NOT_FOUND)
                         .addParam("id", id));
         Station domain = stationMapper.toDomain(entity);
-
         updater.accept(domain);
 
-        String newName = domain.getName();
-        if (!newName.equals(entity.getName())
-                && stationJpaRepository.existsByName(newName)) {
-            throw CustomException.app(AppErrorCode.STATION_NAME_DUPLICATED);
-        }
-        entity.setName(domain.getName());
+        entity.setName(domain.getName().value());
         entity.setActiveType(domain.getActiveType());
+    }
+
+    @Override
+    public void ensureNameUnique(String name) {
+        if (stationJpaRepository.existsByName(name)) {
+            throw CustomException.app(AppErrorCode.STATION_NAME_DUPLICATED)
+                    .addParam("name", name);
+        }
     }
 
     @Override
