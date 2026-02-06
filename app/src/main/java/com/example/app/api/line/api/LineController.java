@@ -38,7 +38,7 @@ public class LineController {
     }
 
     // update line status
-    @PostMapping("/{lineId}")
+    @PostMapping("/{lineId}/activation")
     public ResponseEntity<CustomResponse<Void>> updateLine(
             @PathVariable Integer lineId,
             @Valid @RequestBody UpdateLineStatusRequest request
