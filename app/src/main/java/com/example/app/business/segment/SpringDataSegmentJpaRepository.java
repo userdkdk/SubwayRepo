@@ -1,5 +1,6 @@
 package com.example.app.business.segment;
 
+import com.example.app.business.segment.projection.RoleCount;
 import com.example.core.common.domain.enums.ActiveType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,8 +44,17 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             and (s.beforeStationJpaEntity.id = :stationId or s.afterStationJpaEntity.id = :stationId)
     """)
     boolean existsActiveStationInLine(Integer lineId, Integer stationId, ActiveType activeType);
-    boolean existsByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
-    boolean existsByLineJpaEntity_IdAndAfterStationJpaEntity_IdAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
+
+    @Query("""
+        select new com.example.app.business.segment.projection.RoleCount(
+          sum(case when s.beforeStationJpaEntity.id = :stationId then 1 else 0 end),
+          sum(case when s.afterStationJpaEntity.id  = :stationId then 1 else 0 end)
+        )
+        from SegmentJpaEntity s
+        where s.lineJpaEntity.id = :lineId
+          and s.activeType = :active
+    """)
+    RoleCount countRole(Integer lineId, Integer stationId, ActiveType active);
 
     // check exists segment by line
     @Query("""

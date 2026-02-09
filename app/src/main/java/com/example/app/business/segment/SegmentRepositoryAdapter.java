@@ -2,6 +2,7 @@ package com.example.app.business.segment;
 
 import com.example.app.business.line.LineJpaEntity;
 import com.example.app.business.line.SpringDataLineJpaRepository;
+import com.example.app.business.segment.projection.RoleCount;
 import com.example.app.business.station.SpringDataStationJpaRepository;
 import com.example.app.business.station.StationJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
@@ -90,8 +91,9 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
 
     @Override
     public StationRoleInLine findActiveRole(Integer lineId, Integer stationId) {
-        boolean asBefore = segmentJpaRepository.existsByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndActiveType(lineId, stationId, ActiveType.ACTIVE);
-        boolean asAfter  = segmentJpaRepository.existsByLineJpaEntity_IdAndAfterStationJpaEntity_IdAndActiveType(lineId, stationId, ActiveType.ACTIVE);
+        RoleCount c = segmentJpaRepository.countRole(lineId, stationId, ActiveType.ACTIVE);
+        boolean asBefore = c.beforeCount() > 0;
+        boolean asAfter  = c.afterCount()  > 0;
 
         if (asBefore && asAfter) {
             return StationRoleInLine.INTERNAL;

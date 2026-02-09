@@ -1,9 +1,8 @@
 package com.example.app.api.line.api;
 
-import com.example.app.api.line.api.dto.request.CreateLineRequest;
-import com.example.app.api.line.api.dto.request.CreateSegmentRequest;
-import com.example.app.api.line.api.dto.request.UpdateLineAttributeRequest;
-import com.example.app.api.line.api.dto.request.UpdateLineStatusRequest;
+import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
+import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
+import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
 import com.example.app.api.line.application.LineService;
 import com.example.app.common.response.CustomResponse;
 import jakarta.validation.Valid;
@@ -45,16 +44,6 @@ public class LineController {
     ) {
         lineService.updateLineStatus(lineId, request);
         return CustomResponse.ok();
-    }
-
-    // create segment
-    @PostMapping("/{lineId}/stations")
-    public ResponseEntity<CustomResponse<Void>> addStation(
-            @PathVariable Integer lineId,
-            @Valid @RequestBody CreateSegmentRequest request
-    ) {
-        lineService.addStation(lineId, request);
-        return CustomResponse.created();
     }
 
 }

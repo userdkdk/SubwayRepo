@@ -30,6 +30,7 @@ public enum AppErrorCode implements ErrorCode {
     SEGMENT_NOT_FOUND("ASG-001", "Segment not found", HttpStatus.NOT_FOUND),
     SEGMENT_ALREADY_EXISTS("ASG-002", "Segment already exists", HttpStatus.CONFLICT),
     SEGMENT_INPUT_VALUE_ERROR("ASG-003", "Segment input value error", HttpStatus.BAD_REQUEST),
+    STATION_NOT_EXISTS_IN_LINE("ASG-004", "Station not exists in line", HttpStatus.BAD_REQUEST),
 
     // history
     HISTORY_CONDITION_INValid("AH-001", "History input condition invalid", HttpStatus.BAD_REQUEST);

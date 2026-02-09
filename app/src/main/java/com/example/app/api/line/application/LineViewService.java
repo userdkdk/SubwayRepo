@@ -69,7 +69,7 @@ public class LineViewService {
         try {
             return redisObjectMapper.readValue(json, new TypeReference<>() {});
         } catch (Exception e) {
-            redisLineService.evictSegments(lineId, status);
+            redisLineService.evictSegments(lineId);
             // 캐시 깨졌으면 로그 남기고 null 반환
             log.warn("redis cache parse fail. evict. lineId={}, status={}", lineId, status, e);
             return null;
