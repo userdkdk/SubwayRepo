@@ -1,5 +1,9 @@
 package com.example.app.common.redis.service;
 
+import com.example.app.common.exception.AppErrorCode;
+import com.example.app.logging.event.AppLogEvent;
+import com.example.app.logging.event.ErrorLogEvent;
+import com.example.app.logging.logger.LogEventLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -18,6 +22,15 @@ public class LineCacheEvictionListener {
             redisSegmentService.evictPath();
             redisLineService.evictSegments(lineId);
         } catch (Exception e) {
+            AppLogEvent log = new ErrorLogEvent(
+                    "Redis line cache evict error",
+                    null,
+                    null,
+                    AppErrorCode.INTERNAL_SERVER_ERROR,
+                    null,
+                    e.getMessage()
+            );
+            LogEventLogger.log(log);
         }
     }
 }

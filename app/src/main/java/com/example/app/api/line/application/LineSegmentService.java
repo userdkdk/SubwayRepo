@@ -130,7 +130,7 @@ public class LineSegmentService {
                 ensureInactivateSegment(lineId, stationId, afterId);
 
                 // update or save
-                upsertSegment(lineId, beforeId, stationId, distance, spendTime);
+                upsertSegment(lineId, beforeId, afterId, distance, spendTime);
             }
             default -> {
                 throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
@@ -143,6 +143,59 @@ public class LineSegmentService {
 
     @Transactional
     public void restoreStationInLine(Integer lineId, Integer stationId, RestoreStationRequest request) {
+        Integer beforeId = request.beforeId();
+        Integer afterId = request.afterId();
+        Double beforeDistance = request.before().distance();
+        Integer beforeSpendTime = request.before().spendTime();
+        Double afterDistance = request.after().distance();
+        Integer afterSpendTime = request.after().spendTime();
+
+        // check line and station exists
+        checkLineExists(lineId);
+        checkStationExists(stationId);
+
+        // check inactive station exists in line
+        if (!segmentRepository.existsInactiveStationInLine(lineId, stationId)) {
+            throw CustomException.app(AppErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
+                    .addParam("line id", lineId)
+                    .addParam("station id", stationId);
+        }
+
+        Position pos = requiredRole(beforeId, afterId);
+
+        switch (pos) {
+            case HEAD -> {
+                // check after is head
+                StationRoleInLine actual = actualRole(lineId, afterId);
+                ensureRole(lineId, afterId, pos, actual);
+                // save
+                upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
+                break;
+            }
+            case TAIL -> {
+                // check before is tail
+                StationRoleInLine actual = actualRole(lineId, beforeId);
+                ensureRole(lineId, beforeId, pos, actual);
+                // save
+                upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
+                break;
+            }
+            case INTERNAL -> {
+                // inactivate segment
+                ensureInactivateSegment(lineId, beforeId, afterId);
+
+                // save
+                upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
+                upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
+                break;
+            }
+            default -> {
+                throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
+                        "startId, endId input이 올바르지 않습니다.");
+            }
+        }
+        // delete cache
+        eventPublisher.publishEvent(new LineSegmentChangedEvent(lineId));
     }
 
     private void ensureInactivateSegment(Integer lineId, Integer beforeId, Integer afterId) {

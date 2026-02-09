@@ -3,9 +3,10 @@ package com.example.app.api.line.api.dto.request.segment;
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public record RemoveStationRequest (
-        @NotNull Integer beforeId,
-        @NotNull Integer afterId,
+        @Positive Integer beforeId,
+        @Positive Integer afterId,
         @Valid @NotNull SegmentAttributeRequest merged
 ) {}

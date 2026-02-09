@@ -76,7 +76,12 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
 
     @Override
     public boolean existsActiveStationInLine(Integer lineId, Integer stationId) {
-        return segmentJpaRepository.existsActiveStationInLine(lineId, stationId, ActiveType.ACTIVE);
+        return segmentJpaRepository.existsStationByLineAndActiveType(lineId, stationId, ActiveType.ACTIVE);
+    }
+
+    @Override
+    public boolean existsInactiveStationInLine(Integer lineId, Integer stationId) {
+        return segmentJpaRepository.existsStationByLineAndActiveType(lineId, stationId, ActiveType.INACTIVE);
     }
 
     @Override

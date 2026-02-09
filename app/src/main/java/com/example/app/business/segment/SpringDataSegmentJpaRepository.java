@@ -43,7 +43,7 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             and s.activeType = :activeType
             and (s.beforeStationJpaEntity.id = :stationId or s.afterStationJpaEntity.id = :stationId)
     """)
-    boolean existsActiveStationInLine(Integer lineId, Integer stationId, ActiveType activeType);
+    boolean existsStationByLineAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
 
     @Query("""
         select new com.example.app.business.segment.projection.RoleCount(
