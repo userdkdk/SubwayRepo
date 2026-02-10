@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum DomainErrorCode implements ErrorCode {
-    NAME_ERROR("D-001", "Input Name Invalid",400),
-    NAME_POLICY_ERROR("D-002", "Input Policy Invalid",400),
+    NAME_ERROR("D-001", "Input Name is empty",400),
+    NAME_POLICY_ERROR("D-002", "Name validator length error",400),
     // station
     STATION_NAME_ERROR("DS-001", "Station name invalid", 400),
     STATION_DELETE_ERROR("DS-002", "Can not delete station", 400),

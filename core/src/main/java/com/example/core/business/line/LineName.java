@@ -5,7 +5,7 @@ import com.example.core.exception.CustomException;
 import com.example.core.exception.DomainErrorCode;
 
 public record LineName (String value) {
-    private static final NameValidator NAME_VALIDATOR = NameValidator.of(2, 20);
+    private static final NameValidator NAME_VALIDATOR = NameValidator.of(2, 15);
 
     public LineName {
         String normalized = NameValidator.normalizeName(value);

@@ -3,19 +3,23 @@ package com.example.app.business.station;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
-import com.example.core.common.domain.enums.ActiveType;
+import com.example.core.business.station.Station;
+import com.example.core.business.station.StationName;
 import com.example.core.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @Import({StationRepositoryAdapter.class, DbHelper.class, StationMapper.class})
@@ -32,35 +36,33 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
     }
 
     @Test
-    void save() {
-    }
-
-    @Test
-    @DisplayName("업데이트 확인")
-    void update_success() {
+    @DisplayName("정상적인_경우_이름을_업데이트_할_수_있다")
+    void 정상적인_경우_이름을_업데이트_할_수_있다() {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
+        dbHelper.insertStation("station 2");
 
         stationAdapter.update(s1.getId(), station -> {
-            station.changeName("station 1-new");
-            station.changeActiveType(ActiveType.INACTIVE);
+            StationName name = new StationName("station 1-new");
+            station.changeName(name);
         });
 
         StationJpaEntity reloaded = dbHelper.getStationById(s1.getId());
         assertEquals("station 1-new", reloaded.getName());
-        assertEquals(ActiveType.INACTIVE, reloaded.getActiveType());
     }
 
-    @Test
-    @DisplayName("업데이트시 이름 같은 경우 실패")
-    void updateDuplicatedName() {
-        StationJpaEntity s1 = dbHelper.insertStation("station 1");
-        dbHelper.insertStation("station 2");
+    @ParameterizedTest
+    @ValueSource(strings = {"station 1", "Station 1", "STATION 1"})
+    @DisplayName("중복된_이름이_있는_경우_이름을_업데이트_할_수_없다")
+    void 중복된_이름이_있는_경우_이름을_업데이트_할_수_없다(String input) {
+        dbHelper.insertStation("station 1");
 
-        CustomException ex = assertThrows(CustomException.class, () ->
-                stationAdapter.update(s1.getId(), st -> st.changeName("station 2"))
-        );
+        assertThatThrownBy(()->dbHelper.insertStation(input))
+                .isInstanceOf(DataIntegrityViolationException.class);
 
-        assertEquals(AppErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
+        Station station = Station.create(new StationName("  station 1 "));
+        assertThatThrownBy(()->stationAdapter.save(station))
+                .isInstanceOf(DataIntegrityViolationException.class);
+
     }
 
     @Test

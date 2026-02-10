@@ -35,6 +35,7 @@ public class NameValidator {
     }
 
     public boolean isValidate(String name) {
-        return pattern.matcher(name).matches();
+        return pattern.matcher(name).matches() &&
+                !name.startsWith("-") && !name.endsWith("-");
     }
 }
