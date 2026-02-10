@@ -1,11 +1,9 @@
 package com.example.app.business.station;
 
-import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationName;
-import com.example.core.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
