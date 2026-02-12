@@ -1,6 +1,6 @@
 package com.example.app.common.exception;
 
-import com.example.app.common.response.CustomResponse;
+import com.example.app.common.dto.response.CustomResponse;
 import com.example.app.logging.event.AppLogEvent;
 import com.example.app.logging.event.ErrorLogEvent;
 import com.example.app.logging.logger.LogEventLogger;

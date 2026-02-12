@@ -4,7 +4,7 @@ import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.app.common.response.enums.ActionType;
+import com.example.app.common.dto.request.enums.ActionType;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineName;
 import com.example.core.business.line.LineRepository;

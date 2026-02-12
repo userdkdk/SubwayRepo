@@ -1,7 +1,7 @@
 package com.example.app.common.redis.service;
 
 import com.example.app.common.redis.constans.RedisConstants;
-import com.example.app.common.response.enums.StatusFilter;
+import com.example.app.common.dto.request.enums.StatusFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;

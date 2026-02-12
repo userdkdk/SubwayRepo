@@ -4,7 +4,7 @@ import com.example.app.api.history.api.dto.item.SegmentHistorySearchCondition;
 import com.example.app.api.history.api.dto.response.SegmentHistoryResponse;
 import com.example.app.business.segmentHistory.SegmentHistoryQueryRepository;
 import com.example.app.business.segmentHistory.projection.SegmentHistoryProjection;
-import com.example.app.common.response.CustomPage;
+import com.example.app.common.dto.response.CustomPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

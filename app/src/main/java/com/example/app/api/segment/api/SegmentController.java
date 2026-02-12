@@ -2,7 +2,7 @@ package com.example.app.api.segment.api;
 
 import com.example.app.api.segment.api.dto.request.UpdateSegmentAttributeRequest;
 import com.example.app.api.segment.application.SegmentService;
-import com.example.app.common.response.CustomResponse;
+import com.example.app.common.dto.response.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

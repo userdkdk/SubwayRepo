@@ -1,6 +1,6 @@
 package com.example.app.business.line;
 
-import com.example.app.common.response.enums.StatusFilter;
+import com.example.app.common.dto.request.enums.StatusFilter;
 import com.example.core.common.domain.enums.ActiveType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.example.app.common.response;
+package com.example.app.common.dto.response;
 
 import com.example.core.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;

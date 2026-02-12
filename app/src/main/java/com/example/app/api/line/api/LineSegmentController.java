@@ -4,7 +4,7 @@ import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.segment.RemoveStationRequest;
 import com.example.app.api.line.api.dto.request.segment.RestoreStationRequest;
 import com.example.app.api.line.application.LineSegmentService;
-import com.example.app.common.response.CustomResponse;
+import com.example.app.common.dto.response.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

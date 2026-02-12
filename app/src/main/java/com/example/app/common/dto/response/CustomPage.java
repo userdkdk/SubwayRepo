@@ -1,4 +1,4 @@
-package com.example.app.common.response;
+package com.example.app.common.dto.response;
 
 import lombok.Getter;
 import org.springframework.data.domain.Page;

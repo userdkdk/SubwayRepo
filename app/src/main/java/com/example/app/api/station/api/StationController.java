@@ -4,7 +4,7 @@ import com.example.app.api.station.api.dto.request.CreateStationRequest;
 import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest;
 import com.example.app.api.station.api.dto.request.UpdateStationStatusRequest;
 import com.example.app.api.station.application.StationService;
-import com.example.app.common.response.CustomResponse;
+import com.example.app.common.dto.response.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

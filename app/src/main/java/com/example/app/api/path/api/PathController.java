@@ -3,7 +3,7 @@ package com.example.app.api.path.api;
 import com.example.app.api.path.api.dto.response.PathResponse;
 import com.example.app.api.path.api.enums.PathFilter;
 import com.example.app.api.path.application.PathService;
-import com.example.app.common.response.CustomResponse;
+import com.example.app.common.dto.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
