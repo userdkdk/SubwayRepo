@@ -3,6 +3,7 @@ package com.example.app.api.station.api;
 import com.example.app.api.station.api.dto.response.StationDetailResponse;
 import com.example.app.api.station.api.dto.response.StationSummaryResponse;
 import com.example.app.api.station.application.StationViewService;
+import com.example.app.common.dto.request.enums.SortType;
 import com.example.app.common.dto.response.CustomPage;
 import com.example.app.common.dto.response.CustomResponse;
 import com.example.app.common.dto.request.enums.StatusFilter;
@@ -24,9 +25,11 @@ public class StationViewController {
     @GetMapping("")
     public ResponseEntity<CustomResponse<CustomPage<StationSummaryResponse>>> getStations(
             @RequestParam(defaultValue = "ACTIVE") StatusFilter status,
-            @PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable
+            @RequestParam(defaultValue = "ID") SortType sortType,
+            @RequestParam(defaultValue = "ASC") Sort.Direction direction,
+            @PageableDefault(size = 5) Pageable pageable
     ) {
-        return CustomResponse.ok(stationViewService.getStations(status, pageable));
+        return CustomResponse.ok(stationViewService.getStations(status, pageable, sortType, direction));
     }
 
     @GetMapping("/{stationId}")

@@ -2,12 +2,11 @@ package com.example.app.business.segmentHistory;
 
 import com.example.app.business.segmentHistory.projection.QSegmentHistoryProjection;
 import com.example.app.business.segmentHistory.projection.SegmentHistoryProjection;
+import com.example.app.common.dto.response.CustomPage;
 import com.example.core.business.segmentHistory.HistoryType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +18,7 @@ import java.util.List;
 public class SegmentHistoryQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public Page<SegmentHistoryProjection> findHistory(
+    public CustomPage<SegmentHistoryProjection> findHistory(
             Integer segmentId,
             List<HistoryType> actions,
             LocalDateTime from,
@@ -54,6 +53,6 @@ public class SegmentHistoryQueryRepository {
                 .where(builder)
                 .fetchOne();
         long totalCount = total==null ? 0:total;
-        return new PageImpl<>(list, pageable, totalCount);
+        return CustomPage.of(list, pageable.getPageNumber(), pageable.getPageSize(), totalCount);
     }
 }
