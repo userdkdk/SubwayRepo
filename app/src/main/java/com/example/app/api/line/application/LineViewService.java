@@ -1,6 +1,7 @@
 package com.example.app.api.line.application;
 
 import com.example.app.api.line.adapter.LineApiMapper;
+import com.example.app.api.line.api.dto.response.LineDetailResponse;
 import com.example.app.api.line.api.dto.response.LineResponse;
 import com.example.app.api.station.adapter.StationApiMapper;
 import com.example.app.api.station.api.dto.response.StationSegmentResponse;
@@ -34,13 +35,16 @@ public class LineViewService {
     private final RedisLineService redisLineService;
     private final ObjectMapper redisObjectMapper;
 
-    public List<StationSegmentResponse> getStationsById(Integer lineId, StatusFilter status) {
+    public LineDetailResponse getStationsById(Integer lineId, StatusFilter status) {
         String cachedJson = redisLineService.getSegments(lineId, status);
         if (cachedJson != null && !cachedJson.isBlank()) {
             List<StationSegmentResponse> cached = tryReadList(cachedJson, lineId, status);
-            if (cached != null) return cached;
+            if (cached != null) {
+                return null;
+            }
         }
 
+        //
         if (!lineQueryRepository.existsActiveById(lineId)) {
             throw CustomException.domain(AppErrorCode.LINE_NOT_FOUND)
                     .addParam("line id", lineId);
@@ -55,7 +59,7 @@ public class LineViewService {
         String json = writeJson(result);
         redisLineService.setSegments(lineId, status, json);
 
-        return result;
+        return null;
     }
     // return line by activeType
 

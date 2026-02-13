@@ -12,6 +12,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class StationSorter {
 
+    // active type도 같이 입력받게해서 경우따라 에러 반환하게하기
     public List<SegmentJpaEntity> sortSegments(List<SegmentJpaEntity> segs) {
         if (segs.isEmpty()) return List.of();
         Map<Integer, SegmentJpaEntity> nextByBefore = new HashMap<>(segs.size() * 2);

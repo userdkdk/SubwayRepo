@@ -1,8 +1,8 @@
 package com.example.app.api.line.api;
 
+import com.example.app.api.line.api.dto.response.LineDetailResponse;
 import com.example.app.api.line.api.dto.response.LineResponse;
 import com.example.app.api.line.application.LineViewService;
-import com.example.app.api.station.api.dto.response.StationSegmentResponse;
 import com.example.app.common.dto.response.CustomResponse;
 import com.example.app.common.dto.request.enums.StatusFilter;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +28,11 @@ public class LineViewController {
     }
 
     @GetMapping("/{lineId}")
-    public ResponseEntity<CustomResponse<List<StationSegmentResponse>>> getStationsById(
+    public ResponseEntity<CustomResponse<LineDetailResponse>> getStationsById(
             @PathVariable Integer lineId,
             @RequestParam(defaultValue = "ACTIVE") StatusFilter status
     ) {
-        List<StationSegmentResponse> res = lineViewService.getStationsById(lineId, status);
+        LineDetailResponse res = lineViewService.getStationsById(lineId, status);
         return CustomResponse.ok(res);
     }
 }

@@ -9,6 +9,8 @@ import com.example.app.business.station.projection.StationProjection;
 import com.example.app.common.dto.request.enums.SortType;
 import com.example.app.common.dto.request.enums.StatusFilter;
 import com.example.app.common.dto.response.CustomPage;
+import com.example.app.common.exception.AppErrorCode;
+import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -33,7 +35,11 @@ public class StationViewService {
     }
 
     public StationDetailResponse getStationById(Integer stationId) {
-        StationProjection stations = stationQueryRepository.findById(stationId);
+        StationProjection station = stationQueryRepository.findById(stationId);
+        if (station == null) {
+            throw CustomException.app(AppErrorCode.STATION_NOT_FOUND)
+                    .addParam("id", stationId);
+        }
         List<StationSegmentLineIdProjection> lineItem = segmentQueryRepository.findByStationId(stationId);
         Map<Integer, List<StationDetailResponse.SegmentItem>> map = lineItem.stream()
                 .collect(Collectors.groupingBy(
@@ -43,7 +49,7 @@ public class StationViewService {
                                 Collectors.toList()
                         )
                 ));
-        return new StationDetailResponse(stationId, stations.name(), stations.activeType(),
+        return new StationDetailResponse(station.id(), station.name(), station.activeType(),
                 map.entrySet().stream()
                         .map(e-> new StationDetailResponse.LineItem(
                                 e.getKey(),

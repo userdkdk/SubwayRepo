@@ -42,6 +42,7 @@ public class SegmentQueryRepository {
                 ))
                 .from(s)
                 .where(stationMatch)
+                .orderBy(s.lineJpaEntity.id.asc(), s.id.asc())
                 .fetch();
     }
 }

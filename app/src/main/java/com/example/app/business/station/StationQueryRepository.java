@@ -55,15 +55,13 @@ public class StationQueryRepository {
 
     public StationProjection findById(Integer stationId) {
         QStationJpaEntity s = QStationJpaEntity.stationJpaEntity;
-        BooleanExpression stationMatch =
-                s.id.eq(stationId);
 
         return queryFactory
                 .select(new QStationProjection(
                         s.id, s.name, s.activeType
                 ))
                 .from(s)
-                .where(stationMatch)
+                .where(s.id.eq(stationId))
                 .fetchOne();
     }
 
