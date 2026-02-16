@@ -47,8 +47,8 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
 
     @Query("""
         select new com.example.app.business.segment.projection.RoleCount(
-          sum(case when s.beforeStationJpaEntity.id = :stationId then 1 else 0 end),
-          sum(case when s.afterStationJpaEntity.id  = :stationId then 1 else 0 end)
+          coalesce(sum(case when s.beforeStationJpaEntity.id = :stationId then 1 else 0 end), 0),
+          coalesce(sum(case when s.afterStationJpaEntity.id  = :stationId then 1 else 0 end), 0)
         )
         from SegmentJpaEntity s
         where s.lineJpaEntity.id = :lineId

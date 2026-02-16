@@ -21,6 +21,10 @@ public class Station {
         return new Station(id, name, activeType);
     }
 
+    public String getName() {
+        return this.name.value();
+    }
+
     public void changeName(StationName name) {
         this.name = name;
     }

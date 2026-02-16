@@ -1,5 +1,6 @@
 package com.example.app.support;
 
+import com.example.app.common.config.JpaAuditingConfig;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -8,7 +9,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@Import(TestJpaAuditingConfig.class)
+@Import(JpaAuditingConfig.class)
 public abstract class MySqlFlywayTcConfig {
     @Container
     static final MySQLContainer<?> MYSQL =

@@ -12,4 +12,8 @@ public interface SpringDataStationJpaRepository extends JpaRepository<StationJpa
     List<StationJpaEntity> findByActiveType(ActiveType activeType);
     boolean existsByIdAndActiveType(Integer id, ActiveType activeType);
     Optional<StationJpaEntity> findByIdAndActiveType(Integer stationId, ActiveType activeType);
+
+
+    // test
+    int countByName(String name);
 }

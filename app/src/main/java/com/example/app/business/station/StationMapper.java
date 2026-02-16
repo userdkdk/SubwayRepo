@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class StationMapper {
     public StationJpaEntity toNewEntity(Station station) {
         return StationJpaEntity.create(
-                station.getName().value(),
+                station.getName(),
                 station.getActiveType());
     }
 

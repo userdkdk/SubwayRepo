@@ -12,12 +12,14 @@ import com.example.core.business.station.StationRoleInLine;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SegmentRepositoryAdapter implements SegmentRepository {
@@ -96,9 +98,11 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
 
     @Override
     public StationRoleInLine findActiveRole(Integer lineId, Integer stationId) {
+        log.info("----check----");
         RoleCount c = segmentJpaRepository.countRole(lineId, stationId, ActiveType.ACTIVE);
         boolean asBefore = c.beforeCount() > 0;
         boolean asAfter  = c.afterCount()  > 0;
+        log.info("before: {}, after: {}", asBefore, asAfter);
 
         if (asBefore && asAfter) {
             return StationRoleInLine.INTERNAL;

@@ -21,8 +21,8 @@ public record LineDetailResponse (
             List<StationSegmentResponse> items
     ) {
         int totalCount = items.size();
-        String head = totalCount > 0 ? items.get(1).beforeName() : null;
-        String tail = totalCount > 0 ? items.get(totalCount - 2).afterName() : null;
+        String head = totalCount > 0 ? items.getFirst().beforeName() : null;
+        String tail = totalCount > 0 ? items.getLast().afterName() : null;
 
         return new LineDetailResponse(
                 id,

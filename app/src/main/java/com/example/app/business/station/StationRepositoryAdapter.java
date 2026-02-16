@@ -6,6 +6,7 @@ import com.example.core.business.station.StationRepository;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
@@ -18,9 +19,12 @@ public class StationRepositoryAdapter implements StationRepository {
 
     @Override
     public void save(Station station) {
-        stationJpaRepository.save(
-                stationMapper.toNewEntity(station)
-        );
+        try {
+            stationJpaRepository.save(stationMapper.toNewEntity(station));
+        } catch (DataIntegrityViolationException e) {
+            throw CustomException.app(AppErrorCode.STATION_NAME_DUPLICATED)
+                    .addParam("name", station.getName());
+        }
     }
 
     @Override
@@ -32,7 +36,7 @@ public class StationRepositoryAdapter implements StationRepository {
         Station domain = stationMapper.toDomain(entity);
         updater.accept(domain);
 
-        entity.setName(domain.getName().value());
+        entity.setName(domain.getName());
         entity.setActiveType(domain.getActiveType());
     }
 
