@@ -36,8 +36,7 @@ class SegmentRepositoryAdapterTest extends MySqlFlywayTcConfig {
     void existsActiveStation() {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
-        LineJpaEntity line = dbHelper.insertLine("line 1");
-        dbHelper.insertSegment(line, s1, s2, 3.3, 4);
+        LineJpaEntity line = dbHelper.insertLine("line 1", s1, s2, 3.3, 4);
 
         em.flush();
         em.clear();

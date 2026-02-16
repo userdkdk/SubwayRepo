@@ -23,8 +23,16 @@ public class DbHelper {
         return stationRepository.save(TestFixture.station(name));
     }
 
-    public LineJpaEntity insertLine(String name) {
-        return lineRepository.save(TestFixture.line(name));
+    public LineJpaEntity insertLine(String name,
+                                    StationJpaEntity s1,
+                                    StationJpaEntity s2,
+                                    Double distance,
+                                    Integer spendTime) {
+        LineJpaEntity line = lineRepository.save(TestFixture.line(name));
+        segmentRepository.save(TestFixture.segment(
+                line, s1, s2, distance, spendTime
+        ));
+        return line;
     }
 
     public SegmentJpaEntity insertSegment(LineJpaEntity line,

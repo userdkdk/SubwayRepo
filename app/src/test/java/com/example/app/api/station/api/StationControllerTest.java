@@ -53,4 +53,31 @@ class StationControllerTest {
                         .content("{\"name\":\"   \"}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("station_상태변경시_null이면_에러_반환")
+    void station_상태변경시_null이면_에러_반환() throws Exception {
+        mvc.perform(post("/api/stations/1/activation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"actiontype\":null}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("station_상태변경시_정상동작")
+    void station_상태변경시_정상동작() throws Exception {
+        mvc.perform(post("/api/stations/1/activation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"actionType\":\"ACTIVE\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("station_상태변경시_타입다르면_에러_반환")
+    void station_상태변경시_타입다르면_에러_반환() throws Exception {
+        mvc.perform(post("/api/stations/1/activation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"actionType\":\"WRONG\"}"))
+                .andExpect(status().isBadRequest());
+    }
 }

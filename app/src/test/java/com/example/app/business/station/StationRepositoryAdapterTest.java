@@ -72,6 +72,7 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
     }
 
     @Test
+    @DisplayName("adapter_save_유니크위반이면_중복에러로_변환")
     void adapter_save_유니크위반이면_중복에러로_변환() {
         dbHelper.insertStation("station 1");
         Station station = Station.create(new StationName("station 1"));
@@ -83,6 +84,7 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
     }
 
     @Test
+    @DisplayName("adapter_update_유니크위반이면_중복에러로_변환")
     void adapter_update_유니크위반이면_중복에러로_변환() {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
@@ -91,9 +93,5 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
                 .isEqualTo(AppErrorCode.STATION_NAME_DUPLICATED);
-    }
-
-    @Test
-    void existsActiveById() {
     }
 }
