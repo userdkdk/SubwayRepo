@@ -1,9 +1,11 @@
 package com.example.app.business.station;
 
+import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationName;
+import com.example.core.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,17 +52,45 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
 
     @ParameterizedTest
     @ValueSource(strings = {"station 1", "Station 1", "STATION 1"})
-    @DisplayName("중복된_이름이_있는_경우_이름을_업데이트_할_수_없다")
-    void 중복된_이름이_있는_경우_이름을_업데이트_할_수_없다(String input) {
+    @DisplayName("ensureNameUnique_중복이면_409")
+    void ensureNameUnique_중복이면_409(String input) {
         dbHelper.insertStation("station 1");
 
-        assertThatThrownBy(()->dbHelper.insertStation(input))
-                .isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> stationAdapter.ensureNameUnique(input))
+                .isInstanceOf(CustomException.class)
+                .extracting("errorCode")
+                .isEqualTo(AppErrorCode.STATION_NAME_DUPLICATED);
+    }
 
-        Station station = Station.create(new StationName("  station 1 "));
-        assertThatThrownBy(()->stationAdapter.save(station))
-                .isInstanceOf(DataIntegrityViolationException.class);
+    @Test
+    @DisplayName("db_unique_key_중복이면_에러")
+    void db_unique_key_중복이면_에러() {
+        dbHelper.insertStation("station 1");
 
+        assertThatThrownBy(() -> dbHelper.insertStation("station 1"))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void adapter_save_유니크위반이면_중복에러로_변환() {
+        dbHelper.insertStation("station 1");
+        Station station = Station.create(new StationName("station 1"));
+
+        assertThatThrownBy(() -> stationAdapter.save(station))
+                .isInstanceOf(CustomException.class)
+                .extracting("errorCode")
+                .isEqualTo(AppErrorCode.STATION_NAME_DUPLICATED);
+    }
+
+    @Test
+    void adapter_update_유니크위반이면_중복에러로_변환() {
+        StationJpaEntity s1 = dbHelper.insertStation("station 1");
+        StationJpaEntity s2 = dbHelper.insertStation("station 2");
+
+        assertThatThrownBy(() -> stationAdapter.update(s2.getId(), st -> st.changeName(new StationName("station 1"))))
+                .isInstanceOf(CustomException.class)
+                .extracting("errorCode")
+                .isEqualTo(AppErrorCode.STATION_NAME_DUPLICATED);
     }
 
     @Test

@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -22,14 +21,16 @@ public class StationJpaEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
+
+    @Version
+    @Column(nullable = false)
+    private Long version;
 
     private StationJpaEntity(String name, ActiveType activeType) {
         this.name = name;
@@ -40,7 +41,11 @@ public class StationJpaEntity extends BaseEntity {
         return new StationJpaEntity(name, activeType);
     }
 
-    public void activate() {
-        this.activeType = ActiveType.ACTIVE;
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changeActiveType(ActiveType activeType) {
+        this.activeType = activeType;
     }
 }

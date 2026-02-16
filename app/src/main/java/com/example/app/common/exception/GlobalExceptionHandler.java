@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +24,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // custom error
     @ExceptionHandler(CustomException.class)
     protected ResponseEntity<CustomResponse<Object>> handleCustomException(CustomException e, HttpServletRequest request) {
         logWarn(request, e.getErrorCode(), e.getParams(), e);
@@ -32,6 +34,7 @@ public class GlobalExceptionHandler {
         return CustomResponse.error(e.getErrorCode());
     }
 
+    // db handle error
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<CustomResponse<Object>> handleDataIntegrity(DataIntegrityViolationException e, HttpServletRequest request) {
         logError(request,e);
@@ -55,8 +58,18 @@ public class GlobalExceptionHandler {
         return CustomResponse.error(AppErrorCode.INVALID_INPUT_ERROR);
     }
 
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<CustomResponse<Object>> handleOptimisticLock(
+            ObjectOptimisticLockingFailureException e,
+            HttpServletRequest request
+    ) {
+        logError(request, e);
+        return CustomResponse.error(AppErrorCode.CONCURRENT_MODIFICATION, "다른 요청에 의해 먼저 수정되었습니다.");
+    }
+
+    // UnHandled error
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<CustomResponse<Object>> handleException(
+    protected ResponseEntity<CustomResponse<Object>> unHandleException(
             Exception e, HttpServletRequest request) {
         logError(request, e);
         return CustomResponse.error(AppErrorCode.INTERNAL_SERVER_ERROR,e.getMessage());

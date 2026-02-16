@@ -30,6 +30,10 @@ public class LineJpaEntity extends BaseEntity {
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
     private LineJpaEntity(String name, ActiveType activeType) {
         this.name = name;
         this.activeType = activeType;

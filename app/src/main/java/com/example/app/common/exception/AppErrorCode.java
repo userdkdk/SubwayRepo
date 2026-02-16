@@ -13,6 +13,7 @@ public enum AppErrorCode implements ErrorCode {
     DATA_INTEGRITY_VIOLATION("A-002", "DB Save Error", HttpStatus.CONFLICT),
     INVALID_INPUT_ERROR("A-003", "Invalid input error", HttpStatus.BAD_REQUEST),
     REDIS_SERIALIZATION_ERROR("A-004", "Redis serialization failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    CONCURRENT_MODIFICATION("A-005", "Input data conflict error", HttpStatus.CONFLICT),
 
     // station
     STATION_NOT_FOUND("AS-001", "Station not found", HttpStatus.NOT_FOUND),

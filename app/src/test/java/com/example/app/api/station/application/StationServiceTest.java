@@ -1,6 +1,7 @@
 package com.example.app.api.station.application;
 
 import com.example.app.api.station.api.dto.request.CreateStationRequest;
+import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest;
 import com.example.app.business.station.StationJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
@@ -45,17 +46,6 @@ class StationServiceTest extends MySqlFlywayTcConfig {
     }
 
     @Test
-    @DisplayName("이름_중복이면_로직에서_에러_빈환")
-    void 이름_중복이면_로직에서_에러_빈환() {
-        dbHelper.insertStation("station 1");
-
-        assertThatThrownBy(()->stationService.createStation(new CreateStationRequest("station 1")))
-                .isInstanceOf(CustomException.class)
-                .extracting("errorCode")
-                .isEqualTo(AppErrorCode.STATION_NAME_DUPLICATED);
-    }
-
-    @Test
     @DisplayName("같은_이름_동시_생성시_하나는_저장_하나는_에러_반환")
     void 같은_이름_동시_생성시_하나는_저장_하나는_에러_반환() throws Exception {
         int threads = 2;
@@ -92,5 +82,105 @@ class StationServiceTest extends MySqlFlywayTcConfig {
         assertEquals(1, errors.size());
         CustomException ex = (CustomException) errors.get(0);
         assertEquals(AppErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
+
+        pool.shutdown();
+    }
+
+    @Test
+    @DisplayName("같은_station_동시_이름변경이면_한쪽은_낙관락_실패")
+    void 같은_station_동시_이름변경이면_한쪽은_낙관락_실패() throws Exception {
+        StationJpaEntity s = dbHelper.insertStation("station 1");
+        Integer id = s.getId();
+
+        int threads = 2;
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+
+        CountDownLatch ready = new CountDownLatch(threads);
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch done = new CountDownLatch(threads);
+
+        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
+
+        for (int i = 0; i < threads; i++) {
+            final String newName = (i == 0) ? "station A" : "station B";
+            pool.submit(() -> {
+                try {
+                    ready.countDown();
+                    start.await();
+                    stationService.updateStationAttribute(id,
+                            new UpdateStationAttributeRequest(newName));
+
+                } catch (Throwable t) {
+                    errors.add(t);
+                } finally {
+                    done.countDown();
+                }
+            });
+        }
+
+        ready.await();
+        start.countDown();
+        done.await();
+
+        // 하나는 실패해야 한다
+        assertEquals(1, errors.size());
+
+        Throwable t = errors.get(0);
+        assertTrue(
+                t instanceof org.springframework.orm.ObjectOptimisticLockingFailureException
+                        || t instanceof jakarta.persistence.OptimisticLockException
+                        || (t.getCause() != null && t.getCause() instanceof jakarta.persistence.OptimisticLockException)
+        );
+
+        pool.shutdown();
+    }
+
+    @Test
+    @DisplayName("동시에_같은_이름으로_수정시_하나는_200_하나는_에러_반환")
+    void 동시에_같은_이름으로_수정시_하나는_200_하나는_에러_반환() throws Exception {
+        StationJpaEntity s1 = dbHelper.insertStation("station 1");
+        StationJpaEntity s2 = dbHelper.insertStation("station 2");
+        Integer[] idArr = {s1.getId(), s2.getId()};
+
+        int threads = 2;
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+
+        CountDownLatch ready = new CountDownLatch(threads);
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch done = new CountDownLatch(threads);
+
+        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
+
+        String newName = "station A";
+        for (int i = 0; i < threads; i++) {
+            final int idx = i;
+            pool.submit(() -> {
+                try {
+                    ready.countDown();
+                    start.await();
+                    stationService.updateStationAttribute(idArr[idx],
+                            new UpdateStationAttributeRequest(newName));
+
+                } catch (Throwable t) {
+                    errors.add(t);
+                } finally {
+                    done.countDown();
+                }
+            });
+        }
+
+        ready.await();
+        start.countDown();
+        done.await();
+
+        // 성공 시
+        assertEquals(1, dbHelper.countByName("station A"));
+
+        // 실패는 1개
+        assertEquals(1, errors.size());
+        CustomException ex = (CustomException) errors.get(0);
+        assertEquals(AppErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
+
+        pool.shutdown();
     }
 }

@@ -36,8 +36,15 @@ public class StationRepositoryAdapter implements StationRepository {
         Station domain = stationMapper.toDomain(entity);
         updater.accept(domain);
 
-        entity.setName(domain.getName());
-        entity.setActiveType(domain.getActiveType());
+        entity.changeName(domain.getName());
+        entity.changeActiveType(domain.getActiveType());
+
+        try {
+            stationJpaRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw CustomException.app(AppErrorCode.STATION_NAME_DUPLICATED)
+                    .addParam("name", domain.getName());
+        }
     }
 
     @Override
