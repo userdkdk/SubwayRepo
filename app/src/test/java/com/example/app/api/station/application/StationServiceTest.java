@@ -79,7 +79,7 @@ class StationServiceTest extends MySqlFlywayTcConfig {
         done.await();
 
         // 성공 시
-        assertEquals(1, dbHelper.countByName("station A"));
+        assertEquals(1, dbHelper.countStationByName("station A"));
 
         // 실패는 1개
         assertEquals(1, errors.size());
@@ -177,7 +177,7 @@ class StationServiceTest extends MySqlFlywayTcConfig {
         done.await();
 
         // 성공 시
-        assertEquals(1, dbHelper.countByName("station A"));
+        assertEquals(1, dbHelper.countStationByName("station A"));
 
         // 실패는 1개
         assertEquals(1, errors.size());

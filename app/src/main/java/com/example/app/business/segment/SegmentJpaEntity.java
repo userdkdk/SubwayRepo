@@ -41,7 +41,6 @@ public class SegmentJpaEntity extends BaseEntity {
     @Column(name = "spend_time", nullable = false)
     private Integer spendTime;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
@@ -62,7 +61,11 @@ public class SegmentJpaEntity extends BaseEntity {
                 distance, spendTime, ActiveType.ACTIVE);
     }
 
-    public void setAttribute(Double distance, Integer spendTime) {
+    public void changeActiveType(ActiveType activeType) {
+        this.activeType = activeType;
+    }
+
+    public void changeAttribute(Double distance, Integer spendTime) {
         this.distance = distance;
         this.spendTime = spendTime;
     }

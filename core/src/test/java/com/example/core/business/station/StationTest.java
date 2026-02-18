@@ -36,7 +36,7 @@ class StationTest {
     @ParameterizedTest
     @ValueSource(strings = {"a", "  a  ", "1234567890123456",
             "abcdefghijklmnopq"})
-    @DisplayName("아름의_길이는_2~15자여야_한다")
+    @DisplayName("이름의_길이는_2~15자여야_한다")
     void 이름의_길이는_2에서_15자여야_한다(String input) {
         assertThatThrownBy(() -> new StationName(input))
                 .isInstanceOf(CustomException.class)

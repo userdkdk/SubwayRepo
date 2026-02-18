@@ -17,7 +17,9 @@ public class TestFixture {
     public static SegmentJpaEntity segment(
             LineJpaEntity line,
             StationJpaEntity s1, StationJpaEntity s2,
-            Double distance, Integer spendTime) {
-        return SegmentJpaEntity.create(line, s1, s2, distance, spendTime);
+            Double distance, Integer spendTime, ActiveType activeType) {
+        SegmentJpaEntity entity = SegmentJpaEntity.create(line, s1, s2, distance, spendTime);
+        entity.changeActiveType(activeType);
+        return entity;
     }
 }

@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -24,43 +26,27 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class SegmentRepositoryAdapter implements SegmentRepository {
     private final SpringDataSegmentJpaRepository segmentJpaRepository;
-    private final SpringDataLineJpaRepository lineJpaRepository;
-    private final SpringDataStationJpaRepository stationJpaRepository;
     private final SegmentMapper segmentMapper;
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
     public Integer save(Segment segment) {
-        Integer lineId = segment.getLineId();
-        Integer beforeId = segment.getBeforeStationId();
-        Integer afterId = segment.getAfterStationId();
+        segmentJpaRepository.upsertSegment(
+                segment.getLineId(),
+                segment.getBeforeStationId(),
+                segment.getAfterStationId(),
+                ActiveType.ACTIVE.name(),
+                segment.getSegmentAttribute().distance(),
+                segment.getSegmentAttribute().spendTimeSeconds()
+        );
 
-        Optional<SegmentJpaEntity> entityOpt =
-                segmentJpaRepository.findByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndAfterStationJpaEntity_Id(
-                        lineId, beforeId, afterId
-                );
-
-        if (entityOpt.isPresent()) {
-            SegmentJpaEntity entity = entityOpt.get();
-            entity.setActiveType(ActiveType.ACTIVE);
-            entity.setAttribute(segment.getSegmentAttribute().distance(),
-                    segment.getSegmentAttribute().spendTimeSeconds());
-            return entity.getId();
-        }
-
-        try {
-            LineJpaEntity lineRef = lineJpaRepository.getReferenceById(lineId);
-            StationJpaEntity beforeRef = stationJpaRepository.getReferenceById(beforeId);
-            StationJpaEntity afterRef = stationJpaRepository.getReferenceById(afterId);
-
-            SegmentJpaEntity entity = segmentMapper.toNewEntity(segment, lineRef, beforeRef, afterRef);
-            SegmentJpaEntity saved = segmentJpaRepository.save(entity);
-            return saved.getId();
-        } catch (DataIntegrityViolationException e) {
-            throw CustomException.domain(AppErrorCode.SEGMENT_ALREADY_EXISTS)
-                    .addParam("lineId", lineId)
-                    .addParam("beforeStationId", beforeId)
-                    .addParam("afterStationId", afterId);
-        }
+        // id가 필요하면 재조회
+        return segmentJpaRepository.findByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndAfterStationJpaEntity_Id(
+                segment.getLineId(), segment.getBeforeStationId(), segment.getAfterStationId()
+        ).orElseThrow(()->CustomException.app(AppErrorCode.SEGMENT_NOT_FOUND)
+                .addParam("line id", segment.getLineId())
+                .addParam("before id", segment.getBeforeStationId())
+                .addParam("after id", segment.getAfterStationId())).getId();
     }
 
     @Override
@@ -71,9 +57,9 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
         Segment domain = segmentMapper.toDomain(entity);
         updater.accept(domain);
 
-        entity.setAttribute(domain.getSegmentAttribute().distance(),
+        entity.changeAttribute(domain.getSegmentAttribute().distance(),
                 domain.getSegmentAttribute().spendTimeSeconds());
-        entity.setActiveType(domain.getActiveType());
+        entity.changeActiveType(domain.getActiveType());
     }
 
     @Override

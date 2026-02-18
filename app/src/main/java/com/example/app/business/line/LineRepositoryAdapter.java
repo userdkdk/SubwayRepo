@@ -6,6 +6,7 @@ import com.example.core.business.line.LineRepository;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
@@ -18,10 +19,15 @@ public class LineRepositoryAdapter implements LineRepository {
 
     @Override
     public Line save(Line line) {
-        LineJpaEntity saved = lineJpaRepository.save(
-                lineMapper.toNewEntity(line)
-        );
-        return lineMapper.toDomain(saved);
+        try {
+            LineJpaEntity saved = lineJpaRepository.save(
+                    lineMapper.toNewEntity(line)
+            );
+            return lineMapper.toDomain(saved);
+        } catch (DataIntegrityViolationException e) {
+            throw CustomException.app(AppErrorCode.LINE_NAME_DUPLICATED)
+                    .addParam("name", line.getName());
+        }
     }
 
     @Override

@@ -19,4 +19,7 @@ public interface SpringDataLineJpaRepository extends JpaRepository<LineJpaEntity
     int setActivateByName(String name, ActiveType activeType);
 
     boolean existsByIdAndActiveType(Integer id, ActiveType activeType);
+
+    // test
+    int countByName(String name);
 }
