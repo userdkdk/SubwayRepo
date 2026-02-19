@@ -18,6 +18,7 @@ import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -31,7 +32,7 @@ public class LineService {
     private final SegmentRepository segmentRepository;
     private final SegmentHistoryRepository segmentHistoryRepository;
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void createLine(CreateLineRequest request) {
         Integer startId = request.startId();
         Integer endId = request.endId();
@@ -70,7 +71,8 @@ public class LineService {
     private void upsertSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {
         SegmentAttribute segmentAttribute = new SegmentAttribute(distance, spendTime);
         Segment segment = Segment.create(id, startId, endId, segmentAttribute);
-        Integer segmentId = segmentRepository.save(segment);
+        segmentRepository.upsert(segment);
+        Integer segmentId = segmentRepository.findIdByUniqueKey(segment);
         segmentHistoryRepository.save(SegmentHistory.create(segmentId));
     }
 

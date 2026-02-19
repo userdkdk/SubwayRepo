@@ -2,7 +2,6 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
-import com.example.app.api.station.api.dto.request.CreateStationRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
@@ -59,10 +58,8 @@ class LineServiceTest extends MySqlFlywayTcConfig {
     void 같은_이름_동시_생성시_하나는_저장_하나는_에러_반환() throws Exception {
         dbHelper.insertStation("station 1");
         dbHelper.insertStation("station 2");
-        SegmentAttributeRequest seg = new SegmentAttributeRequest(1.0,2);
-        CreateLineRequest req = new CreateLineRequest("line", 1, 2,seg);
 
-        int threads = 2;
+        int threads = 3;
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         CountDownLatch ready = new CountDownLatch(threads);
@@ -76,6 +73,9 @@ class LineServiceTest extends MySqlFlywayTcConfig {
                 try {
                     ready.countDown();
                     start.await();
+
+                    SegmentAttributeRequest seg = new SegmentAttributeRequest(1.0,2);
+                    CreateLineRequest req = new CreateLineRequest("line", 1, 2,seg);
                     lineService.createLine(req);
                 } catch (Throwable t) {
                     errors.add(t);
@@ -93,7 +93,7 @@ class LineServiceTest extends MySqlFlywayTcConfig {
         assertEquals(1, dbHelper.countLineByName("line"));
 
         // 실패는 1개
-        assertEquals(1, errors.size());
+        assertEquals(2, errors.size());
         CustomException ex = (CustomException) errors.get(0);
         assertEquals(AppErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode());
 

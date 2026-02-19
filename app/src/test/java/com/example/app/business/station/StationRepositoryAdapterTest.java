@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
-@Import({StationRepositoryAdapter.class, DbHelper.class, StationMapper.class})
+@Import({StationRepositoryAdapter.class, StationMapper.class, DbHelper.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
 
@@ -52,8 +52,8 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
 
     @ParameterizedTest
     @ValueSource(strings = {"station 1", "Station 1", "STATION 1"})
-    @DisplayName("ensureNameUnique_중복이면_409")
-    void ensureNameUnique_중복이면_409(String input) {
+    @DisplayName("이름 조회후 중복이름 존재하면 로직에서 에러 반환")
+    void 이름_조회후_중복이름_존재하면_로직에서_에러_반환(String input) {
         dbHelper.insertStation("station 1");
 
         assertThatThrownBy(() -> stationAdapter.ensureNameUnique(input))
@@ -63,8 +63,8 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
     }
 
     @Test
-    @DisplayName("db_unique_key_중복이면_에러")
-    void db_unique_key_중복이면_에러() {
+    @DisplayName("DB에 직접 저장시 중복 이름 존재하면 에러 반환")
+    void DB에_직접_저장시_중복_이름_존재하면_에러_반환() {
         dbHelper.insertStation("station 1");
 
         assertThatThrownBy(() -> dbHelper.insertStation("station 1"))
@@ -72,8 +72,8 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
     }
 
     @Test
-    @DisplayName("adapter_save_유니크위반이면_중복에러로_변환")
-    void adapter_save_유니크위반이면_중복에러로_변환() {
+    @DisplayName("저장_로직에서_이름_중복이면_에러_반환")
+    void 저장_로직에서_이름_중복이면_에러_반환() {
         dbHelper.insertStation("station 1");
         Station station = Station.create(new StationName("station 1"));
 

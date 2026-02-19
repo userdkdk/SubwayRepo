@@ -5,7 +5,8 @@ import com.example.core.business.station.StationRoleInLine;
 import java.util.function.Consumer;
 
 public interface SegmentRepository{
-    Integer save(Segment segment);
+    int upsert(Segment segment);
+    Integer findIdByUniqueKey(Segment segment);
     void update(Integer id, Consumer<Segment> updater);
     boolean existsActiveStationInLine(Integer lineId, Integer stationId);
     boolean existsInactiveStationInLine(Integer lineId, Integer stationId);

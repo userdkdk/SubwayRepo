@@ -1,10 +1,6 @@
 package com.example.app.business.segment;
 
-import com.example.app.business.line.LineJpaEntity;
-import com.example.app.business.line.SpringDataLineJpaRepository;
 import com.example.app.business.segment.projection.RoleCount;
-import com.example.app.business.station.SpringDataStationJpaRepository;
-import com.example.app.business.station.StationJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentRepository;
@@ -13,12 +9,8 @@ import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -28,10 +20,9 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     private final SpringDataSegmentJpaRepository segmentJpaRepository;
     private final SegmentMapper segmentMapper;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public Integer save(Segment segment) {
-        segmentJpaRepository.upsertSegment(
+    public int upsert(Segment segment) {
+        return segmentJpaRepository.upsertSegment(
                 segment.getLineId(),
                 segment.getBeforeStationId(),
                 segment.getAfterStationId(),
@@ -39,8 +30,10 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
                 segment.getSegmentAttribute().distance(),
                 segment.getSegmentAttribute().spendTimeSeconds()
         );
+    }
 
-        // id가 필요하면 재조회
+    @Override
+    public Integer findIdByUniqueKey(Segment segment) {
         return segmentJpaRepository.findByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndAfterStationJpaEntity_Id(
                 segment.getLineId(), segment.getBeforeStationId(), segment.getAfterStationId()
         ).orElseThrow(()->CustomException.app(AppErrorCode.SEGMENT_NOT_FOUND)

@@ -239,7 +239,8 @@ public class LineSegmentService {
     private void upsertSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {
         SegmentAttribute segmentAttribute = new SegmentAttribute(distance, spendTime);
         Segment segment = Segment.create(id, startId, endId, segmentAttribute);
-        Integer segmentId = segmentRepository.save(segment);
+        segmentRepository.upsert(segment);
+        Integer segmentId = segmentRepository.findIdByUniqueKey(segment);
         segmentHistoryRepository.save(SegmentHistory.create(segmentId));
     }
 

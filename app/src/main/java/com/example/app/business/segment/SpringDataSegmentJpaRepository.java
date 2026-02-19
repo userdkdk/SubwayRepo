@@ -27,7 +27,7 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
                 spend_time = values(spend_time),
                 updated_at = now()
             """, nativeQuery = true)
-    void upsertSegment(
+    int upsertSegment(
             @Param("lineId") Integer lineId,
             @Param("beforeId") Integer beforeId,
             @Param("afterId") Integer afterId,
@@ -35,6 +35,7 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             @Param("distance") Double distance,
             @Param("spendTime") Integer spendTime
     );
+
     List<SegmentJpaEntity> findByLineJpaEntity_Id(Integer lineId);
 
     List<SegmentJpaEntity> findByActiveType(ActiveType activeType);
