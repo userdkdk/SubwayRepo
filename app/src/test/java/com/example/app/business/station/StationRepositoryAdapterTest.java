@@ -50,18 +50,6 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
         assertEquals("station 1-new", reloaded.getName());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"station 1", "Station 1", "STATION 1"})
-    @DisplayName("이름 조회후 중복이름 존재하면 로직에서 에러 반환")
-    void 이름_조회후_중복이름_존재하면_로직에서_에러_반환(String input) {
-        dbHelper.insertStation("station 1");
-
-        assertThatThrownBy(() -> stationAdapter.ensureNameUnique(input))
-                .isInstanceOf(CustomException.class)
-                .extracting("errorCode")
-                .isEqualTo(AppErrorCode.STATION_NAME_DUPLICATED);
-    }
-
     @Test
     @DisplayName("DB에 직접 저장시 중복 이름 존재하면 에러 반환")
     void DB에_직접_저장시_중복_이름_존재하면_에러_반환() {
@@ -84,8 +72,8 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
     }
 
     @Test
-    @DisplayName("adapter_update_유니크위반이면_중복에러로_변환")
-    void adapter_update_유니크위반이면_중복에러로_변환() {
+    @DisplayName("업데이트시_중복_이름_존재하면_에러_반환")
+    void 업데이트시_중복_이름_존재하면_에러_반환() {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
 

@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,6 +34,24 @@ class LineControllerTest {
         mvc.perform(post("/api/lines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("line_update시_name_null이면_400_반환")
+    void line_update시_name_null이면_400_반환() throws Exception {
+        mvc.perform(patch("/api/lines/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":null}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("line_update시_name_blank이면_400_반환")
+    void line_update시_name_blank이면_400_반환() throws Exception {
+        mvc.perform(patch("/api/lines/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"   \"}"))
                 .andExpect(status().isBadRequest());
     }
 

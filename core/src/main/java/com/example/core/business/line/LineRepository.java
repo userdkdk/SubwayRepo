@@ -4,7 +4,8 @@ import java.util.function.Consumer;
 
 public interface LineRepository{
     Line save(Line line);
-    void update(Integer id, Consumer<Line> updater);
-    void ensureNameUnique(String name);
+    void updateAttribute(Integer id, LineName name);
+    void deActiveLine(Integer id);
+    void activeLine(Integer id);
     boolean existsActiveById(Integer id);
 }

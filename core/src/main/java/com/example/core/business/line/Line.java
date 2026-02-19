@@ -21,6 +21,10 @@ public class Line {
         return new Line(id, name, activeType);
     }
 
+    public String getName() {
+        return this.name.value();
+    }
+
     public void changeName(LineName name) {
         this.name = name;
     }

@@ -25,7 +25,6 @@ public class StationService {
     @Transactional
     public void createStation(CreateStationRequest request) {
         StationName name = new StationName(request.name());
-        stationRepository.ensureNameUnique(name.value());
         stationRepository.save(Station.create(name));
     }
 
@@ -33,7 +32,6 @@ public class StationService {
     public void updateStationAttribute(Integer id, UpdateStationAttributeRequest request) {
         // update station
         StationName name = new StationName(request.name());
-        stationRepository.ensureNameUnique(name.value());
         stationRepository.update(id, station->station.changeName(name));
     }
 

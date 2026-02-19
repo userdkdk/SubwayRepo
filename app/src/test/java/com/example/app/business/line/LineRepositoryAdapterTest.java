@@ -8,6 +8,7 @@ import com.example.core.business.line.LineName;
 import com.example.core.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @Import({LineRepositoryAdapter.class, LineMapper.class, DbHelper.class})
@@ -32,18 +35,6 @@ class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
     @BeforeEach
     void clean() {
         dbHelper.truncateAll();
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"line 1", "LINE 1", "Line 1"})
-    @DisplayName("이름 조회후 중복이름 존재하면 로직에서 에러 반환")
-    void 이름_조회후_중복이름_존재하면_로직에서_에러_반환(String input) {
-        dbHelper.insertLineNoSegment("line 1");
-
-        assertThatThrownBy(() -> lineRepo.ensureNameUnique(input))
-                .isInstanceOf(CustomException.class)
-                .extracting("errorCode")
-                .isEqualTo(AppErrorCode.LINE_NAME_DUPLICATED);
     }
 
     @ParameterizedTest
@@ -64,6 +55,29 @@ class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
         Line line = Line.create(new LineName(input));
 
         assertThatThrownBy(() -> lineRepo.save(line))
+                .isInstanceOf(CustomException.class)
+                .extracting("errorCode")
+                .isEqualTo(AppErrorCode.LINE_NAME_DUPLICATED);
+    }
+
+    @Test
+    @DisplayName("정상적인_경우_이름을_업데이트_할_수_있다")
+    void 정상적인_경우_이름을_업데이트_할_수_있다() {
+        LineJpaEntity l = dbHelper.insertLineNoSegment("line 1");
+
+        lineRepo.updateAttribute(l.getId(),new LineName("line 2"));
+
+        LineJpaEntity reloaded = dbHelper.getLineById(l.getId());
+        assertEquals("line 2", reloaded.getName());
+    }
+
+    @Test
+    @DisplayName("업데이트시_중복_이름_존재하면_에러_반환")
+    void 업데이트시_중복_이름_존재하면_에러_반환() {
+        LineJpaEntity l1 = dbHelper.insertLineNoSegment("line 1");
+        LineJpaEntity l2 = dbHelper.insertLineNoSegment("line 2");
+
+        assertThatThrownBy(()->lineRepo.updateAttribute(l1.getId(),new LineName("line 2")))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
                 .isEqualTo(AppErrorCode.LINE_NAME_DUPLICATED);

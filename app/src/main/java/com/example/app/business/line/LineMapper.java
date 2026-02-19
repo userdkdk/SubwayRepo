@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class LineMapper {
     public LineJpaEntity toNewEntity(Line line) {
         return LineJpaEntity.create(
-                line.getName().value(),
+                line.getName(),
                 line.getActiveType());
     }
 

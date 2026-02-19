@@ -2,14 +2,14 @@ package com.example.app.business.line;
 
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.line.Line;
+import com.example.core.business.line.LineName;
 import com.example.core.business.line.LineRepository;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.exception.CustomException;
+import com.example.core.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-
-import java.util.function.Consumer;
 
 @Component
 @RequiredArgsConstructor
@@ -20,9 +20,8 @@ public class LineRepositoryAdapter implements LineRepository {
     @Override
     public Line save(Line line) {
         try {
-            LineJpaEntity saved = lineJpaRepository.save(
-                    lineMapper.toNewEntity(line)
-            );
+            LineJpaEntity saved = lineJpaRepository.save(lineMapper.toNewEntity(line));
+            lineJpaRepository.flush();
             return lineMapper.toDomain(saved);
         } catch (DataIntegrityViolationException e) {
             throw CustomException.app(AppErrorCode.LINE_NAME_DUPLICATED)
@@ -31,27 +30,38 @@ public class LineRepositoryAdapter implements LineRepository {
     }
 
     @Override
-    public void update(Integer id, Consumer<Line> updater) {
-        LineJpaEntity entity = lineJpaRepository.findById(id)
-                .orElseThrow(()->CustomException.app(AppErrorCode.LINE_NOT_FOUND)
-                        .addParam("id", id));
-        Line line = lineMapper.toDomain(entity);
-        updater.accept(line);
-
-        entity.setName(line.getName().value());
-        entity.setActiveType(line.getActiveType());
+    public void updateAttribute(Integer id, LineName name) {
+        LineJpaEntity entity = findById(id);
+        entity.changeName(name.value());
+        tryCommit(AppErrorCode.LINE_NAME_DUPLICATED, "중복된 이름입니다.");
     }
 
     @Override
-    public void ensureNameUnique(String name) {
-        if (lineJpaRepository.existsByName(name)) {
-            throw CustomException.app(AppErrorCode.LINE_NAME_DUPLICATED)
-                    .addParam("name", name);
-        }
+    public void deActiveLine(Integer id) {
+
+    }
+
+    @Override
+    public void activeLine(Integer id) {
+
     }
 
     @Override
     public boolean existsActiveById(Integer id) {
         return lineJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
+    }
+
+    private LineJpaEntity findById(Integer id) {
+        return lineJpaRepository.findById(id)
+                .orElseThrow(()->CustomException.app(AppErrorCode.LINE_NOT_FOUND)
+                        .addParam("id", id));
+    }
+
+    private void tryCommit(ErrorCode code, String message) {
+        try {
+            lineJpaRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw CustomException.app(code,message);
+        }
     }
 }

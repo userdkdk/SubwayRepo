@@ -43,8 +43,8 @@ public class LineJpaEntity extends BaseEntity {
         return new LineJpaEntity(name, activeType);
     }
 
-    public void activate() {
-        this.activeType = ActiveType.ACTIVE;
+    public void changeName(String name) {
+        this.name = name;
     }
 
 }

@@ -55,6 +55,8 @@ public class DbHelper {
         return stationRepository.findById(id).orElseThrow();
     }
 
+    public LineJpaEntity getLineById(Integer id) { return lineRepository.findById(id).orElseThrow(); }
+
     public SegmentJpaEntity getSegmentById(Integer id) {
         return segmentRepository.findById(id).orElseThrow();
     }

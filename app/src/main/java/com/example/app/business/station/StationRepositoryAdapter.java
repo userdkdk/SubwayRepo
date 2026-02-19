@@ -21,6 +21,7 @@ public class StationRepositoryAdapter implements StationRepository {
     public void save(Station station) {
         try {
             stationJpaRepository.save(stationMapper.toNewEntity(station));
+            stationJpaRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw CustomException.app(AppErrorCode.STATION_NAME_DUPLICATED)
                     .addParam("name", station.getName());
@@ -44,14 +45,6 @@ public class StationRepositoryAdapter implements StationRepository {
         } catch (DataIntegrityViolationException e) {
             throw CustomException.app(AppErrorCode.STATION_NAME_DUPLICATED)
                     .addParam("name", domain.getName());
-        }
-    }
-
-    @Override
-    public void ensureNameUnique(String name) {
-        if (stationJpaRepository.existsByName(name)) {
-            throw CustomException.app(AppErrorCode.STATION_NAME_DUPLICATED)
-                    .addParam("name", name);
         }
     }
 

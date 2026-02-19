@@ -2,6 +2,10 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
+import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
+import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest;
+import com.example.app.business.line.LineJpaEntity;
+import com.example.app.business.station.StationJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
@@ -99,6 +103,108 @@ class LineServiceTest extends MySqlFlywayTcConfig {
 
         pool.shutdown();
     }
+
+    @Test
+    @DisplayName("같은_역_동시_이름변경이면_한쪽은_낙관락_실패")
+    void 같은_역_동시_이름변경이면_한쪽은_낙관락_실패() throws Exception {
+        LineJpaEntity l = dbHelper.insertLineNoSegment("line 1");
+        Integer id = l.getId();
+
+        int threads = 2;
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+
+        CountDownLatch ready = new CountDownLatch(threads);
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch done = new CountDownLatch(threads);
+
+        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
+
+        for (int i = 0; i < threads; i++) {
+            final String newName = (i == 0) ? "line A" : "line B";
+            pool.submit(() -> {
+                try {
+                    ready.countDown();
+                    start.await();
+
+                    UpdateLineAttributeRequest req = new UpdateLineAttributeRequest(newName);
+                    lineService.updateLineAttribute(id,req);
+                } catch (Throwable t) {
+                    errors.add(t);
+                } finally {
+                    done.countDown();
+                }
+            });
+        }
+
+        ready.await();
+        start.countDown();
+        done.await();
+
+        // 하나는 실패해야 한다
+        assertEquals(1, errors.size());
+
+        Throwable t = errors.get(0);
+        System.out.println("ERROR TYPE "+ t.getClass());
+        System.out.println(t.getMessage());
+        assertTrue(
+                t instanceof org.springframework.orm.ObjectOptimisticLockingFailureException
+                        || t instanceof jakarta.persistence.OptimisticLockException
+                        || (t.getCause() != null && t.getCause() instanceof jakarta.persistence.OptimisticLockException)
+        );
+
+        pool.shutdown();
+    }
+
+    @Test
+    @DisplayName("동시에_같은_이름으로_수정시_하나는_200_하나는_에러_반환")
+    void 동시에_같은_이름으로_수정시_하나는_200_하나는_에러_반환() throws Exception {
+        LineJpaEntity l1 = dbHelper.insertLineNoSegment("line 1");
+        LineJpaEntity l2 = dbHelper.insertLineNoSegment("line 2");
+        Integer[] idArr = {l1.getId(), l2.getId()};
+
+        int threads = 2;
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+
+        CountDownLatch ready = new CountDownLatch(threads);
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch done = new CountDownLatch(threads);
+
+        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
+
+        String newName = "line A";
+        for (int i = 0; i < threads; i++) {
+            final int idx = i;
+            pool.submit(() -> {
+                try {
+                    ready.countDown();
+                    start.await();
+                    lineService.updateLineAttribute(idArr[idx],
+                            new UpdateLineAttributeRequest(newName));
+
+                } catch (Throwable t) {
+                    errors.add(t);
+                } finally {
+                    done.countDown();
+                }
+            });
+        }
+
+        ready.await();
+        start.countDown();
+        done.await();
+
+        // 성공 시
+        assertEquals(1, dbHelper.countLineByName("line A"));
+
+        // 실패는 1개
+        assertEquals(1, errors.size());
+        CustomException ex = (CustomException) errors.get(0);
+        assertEquals(AppErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode());
+
+        pool.shutdown();
+    }
+
+
 
     static Stream<Arguments> NotFoundStationId() {
         return Stream.of(

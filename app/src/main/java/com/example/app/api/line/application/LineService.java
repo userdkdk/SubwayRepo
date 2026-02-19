@@ -43,7 +43,6 @@ public class LineService {
         checkStationExists(endId);
         // create line
         LineName name = new LineName(request.name());
-        lineRepository.ensureNameUnique(name.value());
         Line savedLine = lineRepository.save(Line.create(name));
 
         // create segment
@@ -54,18 +53,17 @@ public class LineService {
     @Transactional
     public void updateLineAttribute(Integer id, UpdateLineAttributeRequest request) {
         LineName name = new LineName(request.name());
-        lineRepository.ensureNameUnique(name.value());
-        lineRepository.update(id, line -> line.changeName(name));
+        lineRepository.updateAttribute(id, name);
     }
 
     @Transactional
     public void updateLineStatus(Integer id, UpdateLineStatusRequest request) {
         ActionType action = request.actionType();
-        if (segmentRepository.existsActiveSegmentByLine(id)) {
-            throw CustomException.app(AppErrorCode.ACTIVE_LINE_EXISTS)
-                    .addParam("id", id);
+        if (action==ActionType.ACTIVE) {
+            lineRepository.activeLine(id);
+            return;
         }
-        lineRepository.update(id, line -> line.changeActiveType(action.toActiveType()));
+        lineRepository.deActiveLine(id);
     }
 
     private void upsertSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {
