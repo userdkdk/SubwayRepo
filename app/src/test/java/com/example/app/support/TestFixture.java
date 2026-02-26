@@ -1,8 +1,8 @@
 package com.example.app.support;
 
-import com.example.app.business.line.LineJpaEntity;
-import com.example.app.business.segment.SegmentJpaEntity;
-import com.example.app.business.station.StationJpaEntity;
+import com.example.db.business.line.LineJpaEntity;
+import com.example.db.business.segment.SegmentJpaEntity;
+import com.example.db.business.station.StationJpaEntity;
 import com.example.core.common.domain.enums.ActiveType;
 
 public class TestFixture {

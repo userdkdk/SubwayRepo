@@ -2,7 +2,7 @@ package com.example.app.api.line.api;
 
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
-import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
+import com.example.app.api.line.api.dto.request.line.ActivateLineRequest;
 import com.example.app.api.line.application.LineService;
 import com.example.app.common.dto.response.CustomResponse;
 import jakarta.validation.Valid;
@@ -36,14 +36,22 @@ public class LineController {
         return CustomResponse.ok();
     }
 
-    // update line status
-    @PostMapping("/{lineId}/activation")
-    public ResponseEntity<CustomResponse<Void>> updateLine(
+    // activate line
+    @PostMapping("/{lineId}/activate")
+    public ResponseEntity<CustomResponse<Void>> activateLine(
             @PathVariable Integer lineId,
-            @Valid @RequestBody UpdateLineStatusRequest request
+            @Valid @RequestBody ActivateLineRequest request
     ) {
-        lineService.updateLineStatus(lineId, request);
+        lineService.activateLine(lineId, request);
         return CustomResponse.ok();
     }
 
+    // deactivate line
+    @PostMapping("/{lineId}/deactivate")
+    public ResponseEntity<CustomResponse<Void>> deactivateLine(
+            @PathVariable Integer lineId
+    ) {
+        lineService.deactivateLine(lineId);
+        return CustomResponse.ok();
+    }
 }

@@ -3,7 +3,7 @@ package com.example.app.api.station.application;
 import com.example.app.api.station.api.dto.request.CreateStationRequest;
 import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest;
 import com.example.app.api.station.api.dto.request.UpdateStationStatusRequest;
-import com.example.app.business.station.StationJpaEntity;
+import com.example.db.business.station.StationJpaEntity;
 import com.example.app.common.dto.request.enums.ActionType;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;

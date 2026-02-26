@@ -1,11 +1,11 @@
 package com.example.app.support;
 
-import com.example.app.business.line.LineJpaEntity;
-import com.example.app.business.line.SpringDataLineJpaRepository;
-import com.example.app.business.segment.SegmentJpaEntity;
-import com.example.app.business.segment.SpringDataSegmentJpaRepository;
-import com.example.app.business.station.SpringDataStationJpaRepository;
-import com.example.app.business.station.StationJpaEntity;
+import com.example.db.business.line.LineJpaEntity;
+import com.example.db.business.line.SpringDataLineJpaRepository;
+import com.example.db.business.segment.SegmentJpaEntity;
+import com.example.db.business.segment.SpringDataSegmentJpaRepository;
+import com.example.db.business.station.SpringDataStationJpaRepository;
+import com.example.db.business.station.StationJpaEntity;
 import com.example.core.common.domain.enums.ActiveType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;

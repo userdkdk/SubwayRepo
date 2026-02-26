@@ -1,6 +1,7 @@
 package com.example.app.api.line.api;
 
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
+import com.example.app.api.line.api.dto.request.line.ActivateLineRequest;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.application.LineService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,7 @@ class LineControllerTest {
     }
 
     @Test
-    @DisplayName("line_update시_name_null이면_400_반환")
+    @DisplayName("line_속성_update시_name_null이면_400_반환")
     void line_update시_name_null이면_400_반환() throws Exception {
         mvc.perform(patch("/api/lines/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -47,13 +48,24 @@ class LineControllerTest {
     }
 
     @Test
-    @DisplayName("line_update시_name_blank이면_400_반환")
+    @DisplayName("line_속성_update시_name_blank이면_400_반환")
     void line_update시_name_blank이면_400_반환() throws Exception {
         mvc.perform(patch("/api/lines/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"   \"}"))
                 .andExpect(status().isBadRequest());
     }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidActivateLineRequest")
+    @DisplayName("line_activate_실패하면_400")
+    void line_activate_실패하면_400(String displayName, ActivateLineRequest req) throws Exception {
+        mvc.perform(post("/api/lines/1/activate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest());
+    }
+
 
     static Stream<Arguments> invalidCreateLineRequests() {
         SegmentAttributeRequest validSeg = new SegmentAttributeRequest(1.2, 3);
@@ -63,7 +75,18 @@ class LineControllerTest {
                 Arguments.of("beforeId null", new CreateLineRequest("line 1", null, 2, validSeg)),
                 Arguments.of("afterId null", new CreateLineRequest("line 1", 1, null, validSeg)),
                 Arguments.of("seg distance negative", new CreateLineRequest("line 1", 1, 2, new SegmentAttributeRequest(-1.2, 3))),
-                Arguments.of("seg time negative", new CreateLineRequest("line 1", 1, 2, new SegmentAttributeRequest(1.2, -3)))
+                Arguments.of("seg time negative", new CreateLineRequest("line 1", 1, 2, new SegmentAttributeRequest(1.2, -6)))
+        );
+    }
+
+    static Stream<Arguments> invalidActivateLineRequest() {
+        SegmentAttributeRequest validSeg = new SegmentAttributeRequest(1.2, 3);
+
+        return Stream.of(
+                Arguments.of("beforeId null", new ActivateLineRequest(null,1,validSeg)),
+                Arguments.of("afterId null", new ActivateLineRequest(1,null,validSeg)),
+                Arguments.of("seg distance negative", new ActivateLineRequest(1,2,new SegmentAttributeRequest(-1.2, 3))),
+                Arguments.of("seg time negative", new ActivateLineRequest(1,2,new SegmentAttributeRequest(1.2, -1)))
         );
     }
 }

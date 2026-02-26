@@ -15,4 +15,6 @@ public interface SegmentRepository{
 
     StationRoleInLine findActiveRole(Integer lineId, Integer stationId);
     int inactivateActiveSegment(Integer lineId, Integer beforeId, Integer afterId);
+
+    int inactivateByLineId(Integer id);
 }

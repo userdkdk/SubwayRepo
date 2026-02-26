@@ -20,6 +20,14 @@ public class CustomException extends RuntimeException{
         return new CustomException(code, ErrorType.DOMAIN, message);
     }
 
+    public static CustomException db(ErrorCode code) {
+        return new CustomException(code, ErrorType.DB, null);
+    }
+
+    public static CustomException db(ErrorCode code, String message) {
+        return new CustomException(code, ErrorType.DB, message);
+    }
+
     public static CustomException app(ErrorCode code) {
         return new CustomException(code, ErrorType.APPLICATION, null);
     }

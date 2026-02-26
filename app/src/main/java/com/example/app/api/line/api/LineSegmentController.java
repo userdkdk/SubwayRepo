@@ -4,6 +4,7 @@ import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.segment.RemoveStationRequest;
 import com.example.app.api.line.api.dto.request.segment.RestoreStationRequest;
 import com.example.app.api.line.application.LineSegmentService;
+import com.example.app.api.station.api.dto.request.UpdateStationStatusRequest;
 import com.example.app.common.dto.response.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,19 @@ public class LineSegmentController {
         return CustomResponse.created();
     }
 
+    // change station status in line
+    @PatchMapping("/{lineId}/stations/{stationId}")
+    public ResponseEntity<CustomResponse<Void>> updateStationStatusInLine(
+            @PathVariable Integer lineId,
+            @PathVariable Integer stationId,
+            @Valid @RequestBody UpdateStationStatusRequest request
+    ) {
+        lineSegmentService.updateStationStatusInLine(lineId, stationId, request);
+        return CustomResponse.ok();
+    }
+
     // remove station in line
-    @PostMapping("/{lineId}/stations/{stationId}/remove")
+    @DeleteMapping("/{lineId}/stations/{stationId}")
     public ResponseEntity<CustomResponse<Void>> removeStationInLine(
             @PathVariable Integer lineId,
             @PathVariable Integer stationId,

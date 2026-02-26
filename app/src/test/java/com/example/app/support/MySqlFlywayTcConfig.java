@@ -1,6 +1,6 @@
 package com.example.app.support;
 
-import com.example.app.common.config.JpaAuditingConfig;
+import com.example.db.common.config.JpaAuditingConfig;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;

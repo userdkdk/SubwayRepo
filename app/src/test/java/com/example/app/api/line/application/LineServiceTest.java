@@ -3,9 +3,7 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
-import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest;
-import com.example.app.business.line.LineJpaEntity;
-import com.example.app.business.station.StationJpaEntity;
+import com.example.db.business.line.LineJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
@@ -203,6 +201,8 @@ class LineServiceTest extends MySqlFlywayTcConfig {
 
         pool.shutdown();
     }
+
+
 
 
 

@@ -2,7 +2,7 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
-import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
+import com.example.app.api.line.api.dto.request.line.ActivateLineRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.dto.request.enums.ActionType;
 import com.example.core.business.line.Line;
@@ -45,7 +45,7 @@ public class LineService {
         LineName name = new LineName(request.name());
         Line savedLine = lineRepository.save(Line.create(name));
 
-        // create segment
+        // upsert segment
         upsertSegment(savedLine.getId(), startId, endId, distance, spendTime);
     }
 
@@ -57,13 +57,24 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLineStatus(Integer id, UpdateLineStatusRequest request) {
-        ActionType action = request.actionType();
-        if (action==ActionType.ACTIVE) {
-            lineRepository.activeLine(id);
-            return;
-        }
-        lineRepository.deActiveLine(id);
+    public void activateLine(Integer id, ActivateLineRequest request) {
+        Integer startId = request.startId();
+        Integer endId = request.endId();
+        Double distance = request.attribute().distance();
+        Integer spendTime = request.attribute().spendTime();
+        // check station exists and isActive
+        checkStationExists(startId);
+        checkStationExists(endId);
+
+        lineRepository.activeLine(id);
+        // upsert segment
+        upsertSegment(id, startId, endId, distance, spendTime);
+    }
+
+    @Transactional
+    public void deactivateLine(Integer id) {
+        segmentRepository.inactivateByLineId(id);
+        lineRepository.deactiveLine(id);
     }
 
     private void upsertSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {

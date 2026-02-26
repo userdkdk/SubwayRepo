@@ -6,6 +6,9 @@ import com.example.app.support.MySqlFlywayTcConfig;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineName;
 import com.example.core.exception.CustomException;
+import com.example.db.business.line.LineJpaEntity;
+import com.example.db.business.line.LineMapper;
+import com.example.db.business.line.LineRepositoryAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +23,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @Import({LineRepositoryAdapter.class, LineMapper.class, DbHelper.class})

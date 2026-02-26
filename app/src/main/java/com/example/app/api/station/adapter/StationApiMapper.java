@@ -1,7 +1,7 @@
 package com.example.app.api.station.adapter;
 
 import com.example.app.api.station.api.dto.response.StationSegmentResponse;
-import com.example.app.business.segment.SegmentJpaEntity;
+import com.example.db.business.segment.SegmentJpaEntity;
 import org.springframework.stereotype.Component;
 
 @Component

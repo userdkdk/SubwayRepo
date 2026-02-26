@@ -1,6 +1,6 @@
 package com.example.app.api.station.api.dto.response;
 
-import com.example.app.business.station.projection.StationProjection;
+import com.example.db.business.station.projection.StationProjection;
 import com.example.core.common.domain.enums.ActiveType;
 
 public record StationSummaryResponse(
