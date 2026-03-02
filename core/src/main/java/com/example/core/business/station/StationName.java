@@ -1,8 +1,8 @@
 package com.example.core.business.station;
 
 import com.example.core.common.util.NameValidator;
-import com.example.core.exception.CustomException;
-import com.example.core.exception.DomainErrorCode;
+import com.example.core.common.exception.CustomException;
+import com.example.core.common.exception.DomainErrorCode;
 
 public record StationName (String value){
     private static final NameValidator NAME_VALIDATOR = NameValidator.of(2, 15);
@@ -10,8 +10,8 @@ public record StationName (String value){
     public StationName {
         String normalized = NameValidator.normalizeName(value);
         if (!NAME_VALIDATOR.isValidate(normalized)) {
-            throw CustomException.domain(DomainErrorCode.STATION_NAME_ERROR)
-                    .addParam("name invalid",normalized);
+            throw CustomException.domain(DomainErrorCode.NAME_ERROR)
+                    .addParam("station name invalid",normalized);
         }
         value = normalized;
     }

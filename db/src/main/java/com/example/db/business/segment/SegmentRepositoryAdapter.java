@@ -1,12 +1,13 @@
 package com.example.db.business.segment;
 
+import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.segment.projection.RoleCount;
 import com.example.db.common.exception.DbErrorCode;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentRepository;
 import com.example.core.business.station.StationRoleInLine;
 import com.example.core.common.domain.enums.ActiveType;
-import com.example.core.exception.CustomException;
+import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     public Integer findIdByUniqueKey(Segment segment) {
         return segmentJpaRepository.findByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndAfterStationJpaEntity_Id(
                 segment.getLineId(), segment.getBeforeStationId(), segment.getAfterStationId()
-        ).orElseThrow(()->CustomException.app(DbErrorCode.SEGMENT_NOT_FOUND)
+        ).orElseThrow(()->CustomException.app(DomainErrorCode.SEGMENT_NOT_FOUND)
                 .addParam("line id", segment.getLineId())
                 .addParam("before id", segment.getBeforeStationId())
                 .addParam("after id", segment.getAfterStationId())).getId();
@@ -45,7 +46,7 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     @Override
     public void update(Integer id, Consumer<Segment> updater) {
         SegmentJpaEntity entity = segmentJpaRepository.findById(id)
-                .orElseThrow(()->CustomException.app(DbErrorCode.SEGMENT_NOT_FOUND)
+                .orElseThrow(()->CustomException.app(DomainErrorCode.SEGMENT_NOT_FOUND)
                 .addParam("id", id));
         Segment domain = segmentMapper.toDomain(entity);
         updater.accept(domain);

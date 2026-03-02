@@ -1,6 +1,6 @@
 package com.example.core.business.segment;
 
-import com.example.core.exception.CustomException;
+import com.example.core.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

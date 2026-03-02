@@ -9,7 +9,7 @@ import com.example.core.business.segment.SegmentRepository;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationName;
 import com.example.core.business.station.StationRepository;
-import com.example.core.exception.CustomException;
+import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

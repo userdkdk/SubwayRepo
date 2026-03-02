@@ -3,11 +3,13 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
+import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.line.LineJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
-import com.example.core.exception.CustomException;
+import com.example.core.common.exception.CustomException;
+import com.example.db.common.exception.DbErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,7 +99,7 @@ class LineServiceTest extends MySqlFlywayTcConfig {
         // 실패는 1개
         assertEquals(2, errors.size());
         CustomException ex = (CustomException) errors.get(0);
-        assertEquals(AppErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode());
+        assertEquals(DomainErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode());
 
         pool.shutdown();
     }
@@ -197,7 +199,7 @@ class LineServiceTest extends MySqlFlywayTcConfig {
         // 실패는 1개
         assertEquals(1, errors.size());
         CustomException ex = (CustomException) errors.get(0);
-        assertEquals(AppErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode());
+        assertEquals(DomainErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode());
 
         pool.shutdown();
     }

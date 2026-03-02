@@ -1,10 +1,11 @@
 package com.example.db.business.station;
 
+import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.common.exception.DbErrorCode;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationRepository;
 import com.example.core.common.domain.enums.ActiveType;
-import com.example.core.exception.CustomException;
+import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class StationRepositoryAdapter implements StationRepository {
             stationJpaRepository.save(stationMapper.toNewEntity(station));
             stationJpaRepository.flush();
         } catch (DataIntegrityViolationException e) {
-            throw CustomException.app(DbErrorCode.STATION_NAME_DUPLICATED)
+            throw CustomException.app(DomainErrorCode.STATION_NAME_DUPLICATED)
                     .addParam("name", station.getName());
         }
     }
@@ -32,20 +33,18 @@ public class StationRepositoryAdapter implements StationRepository {
     public void update(Integer id, Consumer<Station> updater) {
         // get station
         StationJpaEntity entity = stationJpaRepository.findById(id)
-                .orElseThrow(()->CustomException.app(DbErrorCode.STATION_NOT_FOUND)
+                .orElseThrow(()->CustomException.app(DomainErrorCode.STATION_NOT_FOUND)
                         .addParam("id", id));
         Station domain = stationMapper.toDomain(entity);
         updater.accept(domain);
 
         entity.changeName(domain.getName());
-        if (entity.getActiveType()!=domain.getActiveType()) {
-            entity.changeActiveType(domain.getActiveType());
-        }
+        entity.changeActiveType(domain.getActiveType());
 
         try {
             stationJpaRepository.flush();
         } catch (DataIntegrityViolationException e) {
-            throw CustomException.app(DbErrorCode.STATION_NAME_DUPLICATED)
+            throw CustomException.app(DomainErrorCode.STATION_NAME_DUPLICATED)
                     .addParam("name", domain.getName());
         }
     }

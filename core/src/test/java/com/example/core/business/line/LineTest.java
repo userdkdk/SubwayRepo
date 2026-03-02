@@ -1,7 +1,7 @@
 package com.example.core.business.line;
 
-import com.example.core.exception.CustomException;
-import com.example.core.exception.DomainErrorCode;
+import com.example.core.common.exception.CustomException;
+import com.example.core.common.exception.DomainErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,7 +42,7 @@ class LineTest {
         assertThatThrownBy(()->new LineName(input))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(DomainErrorCode.LINE_NAME_ERROR);
+                .isEqualTo(DomainErrorCode.NAME_ERROR);
     }
 
     @ParameterizedTest
@@ -52,6 +52,6 @@ class LineTest {
         assertThatThrownBy(()->new LineName(input))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(DomainErrorCode.LINE_NAME_ERROR);
+                .isEqualTo(DomainErrorCode.NAME_ERROR);
     }
 }

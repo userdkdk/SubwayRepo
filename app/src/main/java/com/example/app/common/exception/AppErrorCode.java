@@ -1,7 +1,7 @@
 package com.example.app.common.exception;
 
-import com.example.core.exception.ErrorCode;
-import com.example.core.exception.ErrorType;
+import com.example.core.common.exception.ErrorCode;
+import com.example.core.common.exception.ErrorType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,6 @@ public enum AppErrorCode implements ErrorCode {
 
     // station
     STATION_NOT_FOUND("AS-001", "Station not found", HttpStatus.NOT_FOUND),
-    STATION_NAME_DUPLICATED("AS-002", "Station name duplicated", HttpStatus.CONFLICT),
     STATION_ALREADY_EXISTS_IN_LINE("AS-003", "Station already exists in line", HttpStatus.BAD_REQUEST),
     ACTIVE_STATION_EXISTS("AS-004", "Active segments exists in station", HttpStatus.CONFLICT),
 

@@ -2,8 +2,8 @@ package com.example.db.business.station;
 
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationName;
-import com.example.core.exception.CustomException;
-import com.example.db.common.exception.DbErrorCode;
+import com.example.core.common.exception.CustomException;
+import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.support.DbHelper;
 import com.example.db.support.MySqlFlywayTcConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +67,7 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
         assertThatThrownBy(() -> stationAdapter.save(station))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(DbErrorCode.STATION_NAME_DUPLICATED);
+                .isEqualTo(DomainErrorCode.STATION_NAME_DUPLICATED);
     }
 
     @Test
@@ -79,6 +79,16 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
         assertThatThrownBy(() -> stationAdapter.update(s2.getId(), st -> st.changeName(new StationName("station 1"))))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(DbErrorCode.STATION_NAME_DUPLICATED);
+                .isEqualTo(DomainErrorCode.STATION_NAME_DUPLICATED);
+    }
+
+    @Test
+    @DisplayName("같은 이름으로 변경시 flush 여부 확인")
+    void checkVersionUpdateToSameName() {
+        StationJpaEntity s1 = dbHelper.insertStation("station 1");
+        stationAdapter.update(s1.getId(), st -> st.changeName(new StationName("station 1")));
+        StationJpaEntity reload = dbHelper.getStationById(1);
+        assertEquals(reload.getName(),"station 1");
+        assertEquals(reload.getVersion(),0);
     }
 }

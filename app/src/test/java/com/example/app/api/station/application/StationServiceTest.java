@@ -3,13 +3,14 @@ package com.example.app.api.station.application;
 import com.example.app.api.station.api.dto.request.CreateStationRequest;
 import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest;
 import com.example.app.api.station.api.dto.request.UpdateStationStatusRequest;
+import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.station.StationJpaEntity;
 import com.example.app.common.dto.request.enums.ActionType;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
 import com.example.core.common.domain.enums.ActiveType;
-import com.example.core.exception.CustomException;
+import com.example.core.common.exception.CustomException;
 import com.example.db.common.exception.DbErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -85,7 +86,7 @@ class StationServiceTest extends MySqlFlywayTcConfig {
         // 실패는 1개
         assertEquals(1, errors.size());
         CustomException ex = (CustomException) errors.get(0);
-        assertEquals(DbErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
+        assertEquals(DomainErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
 
         pool.shutdown();
     }
@@ -183,7 +184,7 @@ class StationServiceTest extends MySqlFlywayTcConfig {
         // 실패는 1개
         assertEquals(1, errors.size());
         CustomException ex = (CustomException) errors.get(0);
-        assertEquals(DbErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
+        assertEquals(DomainErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
 
         pool.shutdown();
     }
@@ -211,7 +212,7 @@ class StationServiceTest extends MySqlFlywayTcConfig {
         assertThatThrownBy(()-> stationService.updateStationStatus(s1.getId(), req))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(DbErrorCode.ACTIVE_STATION_EXISTS);
+                .isEqualTo(AppErrorCode.ACTIVE_STATION_EXISTS);
     }
 
     @Test
@@ -222,6 +223,6 @@ class StationServiceTest extends MySqlFlywayTcConfig {
         assertThatThrownBy(()-> stationService.updateStationStatus(1, req))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(DbErrorCode.STATION_NOT_FOUND);
+                .isEqualTo(DomainErrorCode.STATION_NOT_FOUND);
     }
 }

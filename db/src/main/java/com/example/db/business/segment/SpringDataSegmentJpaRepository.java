@@ -57,7 +57,9 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
         where s.activeType = :activeType
             and (s.beforeStationJpaEntity.id = :stationId or s.afterStationJpaEntity.id = :stationId)
     """)
-    boolean existsActiveSegmentByStation(Integer stationId, ActiveType activeType);
+    boolean existsActiveSegmentByStation(
+            @Param("stationId") Integer stationId,
+            @Param("activeType") ActiveType activeType);
 
     // check exists station in line
     @Query("""

@@ -1,12 +1,13 @@
 package com.example.db.business.line;
 
+import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.common.exception.DbErrorCode;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineName;
 import com.example.core.business.line.LineRepository;
 import com.example.core.common.domain.enums.ActiveType;
-import com.example.core.exception.CustomException;
-import com.example.core.exception.ErrorCode;
+import com.example.core.common.exception.CustomException;
+import com.example.core.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class LineRepositoryAdapter implements LineRepository {
             lineJpaRepository.flush();
             return lineMapper.toDomain(saved);
         } catch (DataIntegrityViolationException e) {
-            throw CustomException.app(DbErrorCode.LINE_NAME_DUPLICATED)
+            throw CustomException.app(DomainErrorCode.LINE_NAME_DUPLICATED)
                     .addParam("name", line.getName());
         }
     }
@@ -32,24 +33,24 @@ public class LineRepositoryAdapter implements LineRepository {
     @Override
     public void ensureExistsForUpdate(Integer id) {
         lineJpaRepository.findByIdForUpdate(id)
-                .orElseThrow(()->CustomException.app(DbErrorCode.LINE_NOT_FOUND)
+                .orElseThrow(()->CustomException.app(DomainErrorCode.LINE_NOT_FOUND)
                         .addParam("id", id));
     }
 
     @Override
     public void updateAttribute(Integer id, LineName name) {
         LineJpaEntity entity = lineJpaRepository.findById(id)
-                .orElseThrow(()->CustomException.app(DbErrorCode.LINE_NOT_FOUND)
+                .orElseThrow(()->CustomException.app(DomainErrorCode.LINE_NOT_FOUND)
                         .addParam("id", id));
         entity.changeName(name.value());
-        tryCommit(DbErrorCode.LINE_NAME_DUPLICATED, "중복된 이름입니다.");
+        tryCommit(DomainErrorCode.LINE_NAME_DUPLICATED, "중복된 이름입니다.");
     }
 
     @Override
     public void activeLine(Integer id) {
         int updated = lineJpaRepository.setActivateById(id, ActiveType.INACTIVE, ActiveType.ACTIVE);
         if (updated != 1) {
-            throw CustomException.app(DbErrorCode.LINE_NOT_FOUND)
+            throw CustomException.app(DomainErrorCode.LINE_NOT_FOUND)
                     .addParam("line id", id);
         }
     }

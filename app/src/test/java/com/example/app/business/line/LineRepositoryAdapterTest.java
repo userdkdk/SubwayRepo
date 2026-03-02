@@ -5,7 +5,7 @@ import com.example.app.support.DbHelper;
 import com.example.app.support.MySqlFlywayTcConfig;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineName;
-import com.example.core.exception.CustomException;
+import com.example.core.common.exception.CustomException;
 import com.example.db.business.line.LineJpaEntity;
 import com.example.db.business.line.LineMapper;
 import com.example.db.business.line.LineRepositoryAdapter;
