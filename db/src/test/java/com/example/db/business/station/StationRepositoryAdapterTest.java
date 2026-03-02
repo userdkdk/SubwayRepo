@@ -1,14 +1,11 @@
-package com.example.app.business.station;
+package com.example.db.business.station;
 
-import com.example.app.common.exception.AppErrorCode;
-import com.example.app.support.DbHelper;
-import com.example.app.support.MySqlFlywayTcConfig;
 import com.example.core.business.station.Station;
 import com.example.core.business.station.StationName;
 import com.example.core.exception.CustomException;
-import com.example.db.business.station.StationJpaEntity;
-import com.example.db.business.station.StationMapper;
-import com.example.db.business.station.StationRepositoryAdapter;
+import com.example.db.common.exception.DbErrorCode;
+import com.example.db.support.DbHelper;
+import com.example.db.support.MySqlFlywayTcConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,16 +16,17 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({StationRepositoryAdapter.class, StationMapper.class, DbHelper.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import({StationRepositoryAdapter.class, StationMapper.class, DbHelper.class})
 class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
-
-    @Autowired StationRepositoryAdapter stationAdapter;
-    @Autowired TestEntityManager em;
+    @Autowired
+    StationRepositoryAdapter stationAdapter;
+    @Autowired
+    TestEntityManager em;
     @Autowired DbHelper dbHelper;
 
     @BeforeEach
@@ -69,7 +67,7 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
         assertThatThrownBy(() -> stationAdapter.save(station))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(AppErrorCode.STATION_NAME_DUPLICATED);
+                .isEqualTo(DbErrorCode.STATION_NAME_DUPLICATED);
     }
 
     @Test
@@ -81,6 +79,6 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
         assertThatThrownBy(() -> stationAdapter.update(s2.getId(), st -> st.changeName(new StationName("station 1"))))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(AppErrorCode.STATION_NAME_DUPLICATED);
+                .isEqualTo(DbErrorCode.STATION_NAME_DUPLICATED);
     }
 }

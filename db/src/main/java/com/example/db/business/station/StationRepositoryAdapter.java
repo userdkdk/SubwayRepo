@@ -31,7 +31,9 @@ public class StationRepositoryAdapter implements StationRepository {
     @Override
     public void update(Integer id, Consumer<Station> updater) {
         // get station
-        StationJpaEntity entity = findById(id);
+        StationJpaEntity entity = stationJpaRepository.findById(id)
+                .orElseThrow(()->CustomException.app(DbErrorCode.STATION_NOT_FOUND)
+                        .addParam("id", id));
         Station domain = stationMapper.toDomain(entity);
         updater.accept(domain);
 
@@ -51,11 +53,5 @@ public class StationRepositoryAdapter implements StationRepository {
     @Override
     public boolean existsActiveById(Integer id) {
         return stationJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
-    }
-
-    private StationJpaEntity findById(Integer id) {
-        return stationJpaRepository.findById(id)
-                .orElseThrow(()->CustomException.app(DbErrorCode.STATION_NOT_FOUND)
-                        .addParam("id", id));
     }
 }

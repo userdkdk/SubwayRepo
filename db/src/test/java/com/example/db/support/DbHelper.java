@@ -1,12 +1,14 @@
-package com.example.app.support;
+package com.example.db.support;
 
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.db.business.line.LineJpaEntity;
 import com.example.db.business.line.SpringDataLineJpaRepository;
 import com.example.db.business.segment.SegmentJpaEntity;
 import com.example.db.business.segment.SpringDataSegmentJpaRepository;
 import com.example.db.business.station.SpringDataStationJpaRepository;
 import com.example.db.business.station.StationJpaEntity;
-import com.example.core.common.domain.enums.ActiveType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DbHelper {
 
+    @PersistenceContext
+    private final EntityManager em;
     private final JdbcTemplate jdbcTemplate;
     private final SpringDataStationJpaRepository stationRepository;
     private final SpringDataLineJpaRepository lineRepository;

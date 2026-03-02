@@ -1,7 +1,7 @@
 create table `line_snapshots` (
     id bigint primary key auto_increment,
     line_id bigint not null,
-    operation_id char(32) not null,
+    operation_id varchar(32) not null,
     payload_json json not null,
     created_at datetime(6) not null,
 
