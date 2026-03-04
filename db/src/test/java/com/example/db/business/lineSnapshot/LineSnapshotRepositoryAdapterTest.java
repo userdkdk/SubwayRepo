@@ -48,7 +48,7 @@ class LineSnapshotRepositoryAdapterTest extends MySqlFlywayTcConfig {
         SegmentJpaEntity sg2 = dbHelper.insertSegment(l,s3,s4,2.1,3, ActiveType.INACTIVE);
         SegmentJpaEntity sg3 = dbHelper.insertSegment(l,s4,s5,2.1,3, ActiveType.INACTIVE);
         LineSnapshotJpaEntity snapshot = dbHelper.insertSnapshot(l.getId());
-        l.setActiveType(ActiveType.INACTIVE);
+        l.changeActiveType(ActiveType.INACTIVE);
         dbHelper.insertSnapshotSegment(snapshot.getId(), sg1.getId());
         dbHelper.insertSnapshotSegment(snapshot.getId(), sg2.getId());
         dbHelper.insertSnapshotSegment(snapshot.getId(), sg3.getId());
