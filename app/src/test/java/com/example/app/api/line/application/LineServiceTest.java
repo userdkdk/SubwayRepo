@@ -15,6 +15,7 @@ import com.example.db.support.ConcurrentRunner;
 import com.example.db.support.DbHelper;
 import com.example.db.support.MySqlFlywayTcConfig;
 import com.example.core.common.exception.CustomException;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -131,7 +132,7 @@ class LineServiceTest extends MySqlFlywayTcConfig {
 
     @Test
     @DisplayName("라인_비활성화_정상_수행_테스트")
-    void lineDeactivate() {
+    void lineDeactivateTest() {
         StationJpaEntity s1 =  dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
         StationJpaEntity s3 = dbHelper.insertStation("station 3");
@@ -144,7 +145,29 @@ class LineServiceTest extends MySqlFlywayTcConfig {
         UpdateLineStatusRequest req = new UpdateLineStatusRequest(ActionType.INACTIVE);
         lineService.updateLineStatus(l.getId(),req);
         assertEquals(4,dbHelper.countSnapshotSegmentsBySnapshotId(1));
+    }
 
+    @Test
+    @DisplayName("라인_재활성화_정상_수행_테스트")
+    void lineActivateTest() {
+        StationJpaEntity s1 =  dbHelper.insertStation("station 1");
+        StationJpaEntity s2 = dbHelper.insertStation("station 2");
+        StationJpaEntity s3 = dbHelper.insertStation("station 3");
+        StationJpaEntity s4 = dbHelper.insertStation("station 4");
+        StationJpaEntity s5 = dbHelper.insertStation("station 5");
+        LineJpaEntity l = dbHelper.insertLine("line 1", s1,s2,2.1, 3);
+        SegmentJpaEntity sg0 = dbHelper.getSegmentById(1);
+        SegmentJpaEntity sg1 = dbHelper.insertSegment(l,s2,s3,2.1,3, ActiveType.ACTIVE);
+        SegmentJpaEntity sg2 = dbHelper.insertSegment(l,s3,s4,2.1,3, ActiveType.ACTIVE);
+        SegmentJpaEntity sg3 = dbHelper.insertSegment(l,s4,s5,2.1,3, ActiveType.ACTIVE);
+        // 비활성화
+        UpdateLineStatusRequest req = new UpdateLineStatusRequest(ActionType.INACTIVE);
+        lineService.updateLineStatus(l.getId(),req);
+        // 재활성화
+        req = new UpdateLineStatusRequest(ActionType.ACTIVE);
+        lineService.updateLineStatus(l.getId(),req);
+        assertEquals(4,dbHelper.countActiveSegmentByLineId(l.getId()));
+        assertEquals(ActiveType.ACTIVE, dbHelper.getLineById(l.getId()).getActiveType());
     }
 
     static Stream<Arguments> NotFoundStationId() {

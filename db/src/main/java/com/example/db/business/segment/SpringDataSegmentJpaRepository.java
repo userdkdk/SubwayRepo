@@ -120,4 +120,13 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             where s.status = 'ACTIVE'
             """, nativeQuery = true)
     int deactivateAllBySnapshotId(@Param("snapshotId") Integer snapshotId);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query(value = """
+            update segments
+            set status = 'ACTIVE'
+            where id in (:segIds)
+                and status = 'INACTIVE'
+            """, nativeQuery = true)
+    int activateByIdAndLineId(@Param("segIds")List<Integer> segIds);
 }

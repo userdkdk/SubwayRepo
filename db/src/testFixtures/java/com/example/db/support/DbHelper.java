@@ -95,6 +95,10 @@ public class DbHelper {
         return snapshotSegmentJpaRepository.countByIdSnapshotId(snapshotId);
     }
 
+    public int countActiveSegmentByLineId(Integer lineId) {
+        return segmentRepository.findByLineJpaEntity_Id(lineId).size();
+    }
+
     public void truncateAll() {
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
         jdbcTemplate.execute("TRUNCATE TABLE `segment_histories`");

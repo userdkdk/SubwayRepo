@@ -79,7 +79,7 @@ public class LineService {
             List<Integer> segIds = lineSnapshotRepository.findSegsIdByLine(id);
 
             // snapshot에있는요소들전부활성화
-            int segUpdated = segmentRepository.activateByIdAndLineId(id,segIds);
+            int segUpdated = segmentRepository.activateByIds(segIds);
             if (segUpdated!=segIds.size()) {
                 throw CustomException.app(AppErrorCode.SNAPSHOT_COUNT_CONFLICT)
                         .addParam("line id", id)

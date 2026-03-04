@@ -21,11 +21,9 @@ public class LineJpaEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
@@ -41,6 +39,10 @@ public class LineJpaEntity extends BaseEntity {
 
     public static LineJpaEntity create(String name, ActiveType activeType) {
         return new LineJpaEntity(name, activeType);
+    }
+
+    public void changeActiveType(ActiveType activeType) {
+        this.activeType = activeType;
     }
 
     public void changeName(String name) {

@@ -102,14 +102,9 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     }
 
     @Override
-    public int inactivateByLineId(Integer id) {
-        return segmentJpaRepository.inactivateByLine(id, ActiveType.INACTIVE);
-    }
+    public int activateByIds(List<Integer> segIds) {
 
-    @Override
-    public int activateByIdAndLineId(Integer id, List<Integer> segIds) {
-
-        return 0;
+        return segmentJpaRepository.activateByIdAndLineId(segIds);
     }
 
     @Override
