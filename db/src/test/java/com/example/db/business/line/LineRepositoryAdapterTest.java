@@ -2,6 +2,7 @@ package com.example.db.business.line;
 
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineName;
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.support.DbHelper;
@@ -26,10 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Import({LineRepositoryAdapter.class, LineMapper.class, DbHelper.class})
 class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
 
-    @Autowired
-    LineRepositoryAdapter lineRepo;
-    @Autowired
-    TestEntityManager em;
+    @Autowired LineRepositoryAdapter lineRepo;
     @Autowired DbHelper dbHelper;
 
     @BeforeEach
@@ -83,4 +81,15 @@ class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
                 .isEqualTo(DomainErrorCode.LINE_NAME_DUPLICATED);
     }
 
+    @Test
+    @DisplayName("라인이 없으면 에러 반환, 해당 상태가 아니면 0 반환")
+    void UpdateLineNotExist() {
+        LineJpaEntity l1 = dbHelper.insertLineNoSegment("line 1");
+
+        assertThatThrownBy(()->lineRepo.updateStatus(2, ActiveType.ACTIVE,ActiveType.INACTIVE))
+                .isInstanceOf(CustomException.class)
+                .extracting("errorCode")
+                .isEqualTo(DomainErrorCode.LINE_NOT_FOUND);
+        assertEquals(0,lineRepo.updateStatus(1, ActiveType.INACTIVE,ActiveType.ACTIVE));
+    }
 }

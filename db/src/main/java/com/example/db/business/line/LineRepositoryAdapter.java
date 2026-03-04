@@ -1,7 +1,6 @@
 package com.example.db.business.line;
 
 import com.example.core.common.exception.DomainErrorCode;
-import com.example.db.common.exception.DbErrorCode;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineName;
 import com.example.core.business.line.LineRepository;
@@ -51,7 +50,7 @@ public class LineRepositoryAdapter implements LineRepository {
         int updated = lineJpaRepository.setActivateById(id, from, target);
         if (updated != 1) {
             lineJpaRepository.findById(id)
-                    .orElseThrow(()->CustomException.domain(DomainErrorCode.STATION_NOT_FOUND));
+                    .orElseThrow(()->CustomException.domain(DomainErrorCode.LINE_NOT_FOUND));
         }
         return updated;
     }
