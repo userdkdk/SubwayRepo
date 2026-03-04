@@ -1,7 +1,7 @@
 package com.example.app.api.line.api;
 
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
-import com.example.app.api.line.api.dto.request.line.ActivateLineRequest;
+import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.application.LineService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,11 +58,11 @@ class LineControllerTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidActivateLineRequest")
-    @DisplayName("line_activate_실패하면_400")
-    void line_activate_실패하면_400(String displayName, ActivateLineRequest req) throws Exception {
-        mvc.perform(post("/api/lines/1/activate")
+    @DisplayName("line_status_update_valid_error")
+    void line_status_update_valid_error(String displayName, String req) throws Exception {
+        mvc.perform(patch("/api/lines/1/activation")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(req)))
+                        .content(req))
                 .andExpect(status().isBadRequest());
     }
 
@@ -83,10 +83,10 @@ class LineControllerTest {
         SegmentAttributeRequest validSeg = new SegmentAttributeRequest(1.2, 3);
 
         return Stream.of(
-                Arguments.of("beforeId null", new ActivateLineRequest(null,1,validSeg)),
-                Arguments.of("afterId null", new ActivateLineRequest(1,null,validSeg)),
-                Arguments.of("seg distance negative", new ActivateLineRequest(1,2,new SegmentAttributeRequest(-1.2, 3))),
-                Arguments.of("seg time negative", new ActivateLineRequest(1,2,new SegmentAttributeRequest(1.2, -1)))
+                Arguments.of("activeType null", "{\"activeType\":null}"),
+                Arguments.of("activeType 빈값", "{\"activeType\":\"\"}"),
+                Arguments.of("activeType 잘못된 값", "{\"activeType\":\"WRONG\"}"),
+                Arguments.of("activeType 없음", "{}")
         );
     }
 }

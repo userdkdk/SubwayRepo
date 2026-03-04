@@ -33,7 +33,10 @@ public enum AppErrorCode implements ErrorCode {
     STATION_NOT_EXISTS_IN_LINE("ASG-004", "Station not exists in line", HttpStatus.BAD_REQUEST),
 
     // history
-    HISTORY_CONDITION_INValid("AH-001", "History input condition invalid", HttpStatus.BAD_REQUEST);
+    HISTORY_CONDITION_INValid("AH-001", "History input condition invalid", HttpStatus.BAD_REQUEST),
+
+    // snapshot
+    SNAPSHOT_COUNT_CONFLICT("ASS-001", "Snapshot count conflict", HttpStatus.CONFLICT);
 
 
     private final String code;

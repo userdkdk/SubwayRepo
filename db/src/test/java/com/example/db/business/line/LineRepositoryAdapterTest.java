@@ -1,14 +1,11 @@
-package com.example.app.business.line;
+package com.example.db.business.line;
 
-import com.example.app.common.exception.AppErrorCode;
-import com.example.app.support.DbHelper;
-import com.example.app.support.MySqlFlywayTcConfig;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineName;
 import com.example.core.common.exception.CustomException;
-import com.example.db.business.line.LineJpaEntity;
-import com.example.db.business.line.LineMapper;
-import com.example.db.business.line.LineRepositoryAdapter;
+import com.example.core.common.exception.DomainErrorCode;
+import com.example.db.support.DbHelper;
+import com.example.db.support.MySqlFlywayTcConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,11 +22,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({LineRepositoryAdapter.class, LineMapper.class, DbHelper.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import({LineRepositoryAdapter.class, LineMapper.class, DbHelper.class})
 class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
 
-    @Autowired LineRepositoryAdapter lineRepo;
+    @Autowired
+    LineRepositoryAdapter lineRepo;
     @Autowired
     TestEntityManager em;
     @Autowired DbHelper dbHelper;
@@ -59,7 +57,7 @@ class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
         assertThatThrownBy(() -> lineRepo.save(line))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(AppErrorCode.LINE_NAME_DUPLICATED);
+                .isEqualTo(DomainErrorCode.LINE_NAME_DUPLICATED);
     }
 
     @Test
@@ -82,7 +80,7 @@ class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
         assertThatThrownBy(()->lineRepo.updateAttribute(l1.getId(),new LineName("line 2")))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
-                .isEqualTo(AppErrorCode.LINE_NAME_DUPLICATED);
+                .isEqualTo(DomainErrorCode.LINE_NAME_DUPLICATED);
     }
 
 }

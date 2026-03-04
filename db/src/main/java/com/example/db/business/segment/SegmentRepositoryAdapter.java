@@ -2,7 +2,6 @@ package com.example.db.business.segment;
 
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.segment.projection.RoleCount;
-import com.example.db.common.exception.DbErrorCode;
 import com.example.core.business.segment.Segment;
 import com.example.core.business.segment.SegmentRepository;
 import com.example.core.business.station.StationRoleInLine;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -104,6 +104,17 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     @Override
     public int inactivateByLineId(Integer id) {
         return segmentJpaRepository.inactivateByLine(id, ActiveType.INACTIVE);
+    }
+
+    @Override
+    public int activateByIdAndLineId(Integer id, List<Integer> segIds) {
+
+        return 0;
+    }
+
+    @Override
+    public void deactivateAllByLineId(Integer id) {
+
     }
 
 }

@@ -47,6 +47,16 @@ public class LineRepositoryAdapter implements LineRepository {
     }
 
     @Override
+    public int updateStatus(Integer id, ActiveType from, ActiveType target) {
+        int updated = lineJpaRepository.setActivateById(id, from, target);
+        if (updated != 1) {
+            lineJpaRepository.findById(id)
+                    .orElseThrow(()->CustomException.domain(DomainErrorCode.STATION_NOT_FOUND));
+        }
+        return updated;
+    }
+
+    @Override
     public void activeLine(Integer id) {
         int updated = lineJpaRepository.setActivateById(id, ActiveType.INACTIVE, ActiveType.ACTIVE);
         if (updated != 1) {

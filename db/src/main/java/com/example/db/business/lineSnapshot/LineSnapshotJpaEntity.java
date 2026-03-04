@@ -19,17 +19,19 @@ public class LineSnapshotJpaEntity {
     @Column(name = "line_id", nullable = false)
     private Integer lineId;
 
-    @Column(name = "operation_id", nullable = false)
-    private String operationId;
-
-    @Column(name = "payload_json", nullable = false)
-    private String payloadJson;
-
     @Column(name="created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
     void onCreate() {
         this.createdAt = LocalDateTime.now();
+    }
+
+    private LineSnapshotJpaEntity(Integer lineId) {
+        this.lineId = lineId;
+    }
+
+    public static LineSnapshotJpaEntity create(Integer lineId) {
+        return new LineSnapshotJpaEntity(lineId);
     }
 }

@@ -1,3 +1,7 @@
+plugins {
+    id 'java-test-fixtures'
+}
+
 dependencies {
     implementation project(':core')
 
@@ -15,10 +19,14 @@ dependencies {
     implementation "org.flywaydb:flyway-core"
     runtimeOnly   "org.flywaydb:flyway-mysql"
 
-    // test
-    testImplementation "org.testcontainers:junit-jupiter"
-    testImplementation "org.testcontainers:mysql"
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    // testFixture
+    testFixturesImplementation project(":core")
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testFixturesImplementation "jakarta.persistence:jakarta.persistence-api"
+    testFixturesImplementation "jakarta.annotation:jakarta.annotation-api"
+    testFixturesApi "org.testcontainers:junit-jupiter"
+    testFixturesApi "org.testcontainers:mysql"
+    testFixturesApi "org.springframework.boot:spring-boot-starter-test"
 }
 
 tasks.named('test') {

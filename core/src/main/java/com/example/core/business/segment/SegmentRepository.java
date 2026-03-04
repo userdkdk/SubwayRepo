@@ -2,6 +2,7 @@ package com.example.core.business.segment;
 
 import com.example.core.business.station.StationRoleInLine;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public interface SegmentRepository{
@@ -17,4 +18,8 @@ public interface SegmentRepository{
     int inactivateActiveSegment(Integer lineId, Integer beforeId, Integer afterId);
 
     int inactivateByLineId(Integer id);
+
+    int activateByIdAndLineId(Integer id, List<Integer> segIds);
+
+    void deactivateAllByLineId(Integer id);
 }

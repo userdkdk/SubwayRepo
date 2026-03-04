@@ -6,8 +6,8 @@ import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.line.LineJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.app.support.DbHelper;
-import com.example.app.support.MySqlFlywayTcConfig;
+import com.example.db.support.DbHelper;
+import com.example.db.support.MySqlFlywayTcConfig;
 import com.example.core.common.exception.CustomException;
 import com.example.db.common.exception.DbErrorCode;
 import org.junit.jupiter.api.BeforeEach;
@@ -203,10 +203,6 @@ class LineServiceTest extends MySqlFlywayTcConfig {
 
         pool.shutdown();
     }
-
-
-
-
 
     static Stream<Arguments> NotFoundStationId() {
         return Stream.of(
