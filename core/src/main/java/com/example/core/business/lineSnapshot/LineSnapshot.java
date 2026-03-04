@@ -10,6 +10,8 @@ public class LineSnapshot {
 
     private final Integer id;
     private final Integer lineId;
-    private final String operationId;
-    private final String payloadJson;
+
+    public static LineSnapshot create(Integer lineId) {
+        return new LineSnapshot(null, lineId);
+    }
 }

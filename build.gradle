@@ -45,11 +45,6 @@ subprojects {
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-        configurations.matching { it.name in [
-                "testFixturesCompileOnly",
-                "testFixturesAnnotationProcessor"
-        ] }.all { /* 존재하게 되면 deps 추가 */ }
-
         afterEvaluate {
             if (plugins.hasPlugin("java-test-fixtures")) {
                 dependencies {

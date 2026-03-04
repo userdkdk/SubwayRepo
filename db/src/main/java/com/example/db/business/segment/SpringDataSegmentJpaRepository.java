@@ -109,4 +109,15 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             where s.lineJpaEntity.id = :id
             """)
     int inactivateByLine(Integer id, ActiveType activeType);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query(value = """
+            update segments s
+            join line_snapshots_segments lss
+                on lss.segment_id = s.id
+                and lss.snapshot_id = :snapshotId
+            set s.status = 'INACTIVE'
+            where s.status = 'ACTIVE'
+            """, nativeQuery = true)
+    int deactivateAllBySnapshotId(@Param("snapshotId") Integer snapshotId);
 }

@@ -8,6 +8,7 @@ import com.example.app.common.exception.AppErrorCode;
 import com.example.core.business.line.Line;
 import com.example.core.business.line.LineName;
 import com.example.core.business.line.LineRepository;
+import com.example.core.business.lineSnapshot.LineSnapshot;
 import com.example.core.business.lineSnapshot.LineSnapshotRepository;
 import com.example.core.business.lineSnapshot.LineSnapshotSegment;
 import com.example.core.business.lineSnapshot.LineSnapshotSegmentRepository;
@@ -88,9 +89,14 @@ public class LineService {
             return;
         }
         // deactivate
-        Integer snapshotId = lineSnapshotRepository.save(id);
-        lineSnapshotSegmentRepository.insertAllByLineId(snapshotId, id);
-        segmentRepository.deactivateAllByLineId(id);
+        Integer snapshotId = lineSnapshotRepository.save(LineSnapshot.create(id));
+        int snapshotCounts = lineSnapshotSegmentRepository.insertAllByLineId(snapshotId, id);
+        int segmentCounts = segmentRepository.deactivateAllBySnapshotId(snapshotId);
+        if (snapshotCounts != segmentCounts) {
+            throw CustomException.app(AppErrorCode.SNAPSHOT_COUNT_CONFLICT)
+                    .addParam("snapshot counts", snapshotCounts)
+                    .addParam("segment counts", segmentCounts);
+        }
     }
 
     private void upsertSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {

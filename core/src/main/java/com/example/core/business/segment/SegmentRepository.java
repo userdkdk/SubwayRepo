@@ -21,5 +21,5 @@ public interface SegmentRepository{
 
     int activateByIdAndLineId(Integer id, List<Integer> segIds);
 
-    void deactivateAllByLineId(Integer id);
+    int deactivateAllBySnapshotId(Integer snapshotId);
 }

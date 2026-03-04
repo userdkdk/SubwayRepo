@@ -91,12 +91,18 @@ public class DbHelper {
         return segmentRepository.count();
     }
 
+    public int countSnapshotSegmentsBySnapshotId(Integer snapshotId) {
+        return snapshotSegmentJpaRepository.countByIdSnapshotId(snapshotId);
+    }
+
     public void truncateAll() {
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0");
         jdbcTemplate.execute("TRUNCATE TABLE `segment_histories`");
         jdbcTemplate.execute("TRUNCATE TABLE `segments`");
         jdbcTemplate.execute("TRUNCATE TABLE `lines`");
         jdbcTemplate.execute("TRUNCATE TABLE `stations`");
+        jdbcTemplate.execute("TRUNCATE TABLE `line_snapshots`");
+        jdbcTemplate.execute("TRUNCATE TABLE `line_snapshots_segments`");
         jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1");
 
     }

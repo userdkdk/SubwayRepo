@@ -113,8 +113,8 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     }
 
     @Override
-    public void deactivateAllByLineId(Integer id) {
-
+    public int deactivateAllBySnapshotId(Integer snapshotId) {
+        return segmentJpaRepository.deactivateAllBySnapshotId(snapshotId);
     }
 
 }

@@ -3,13 +3,18 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
+import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
+import com.example.app.common.dto.request.enums.ActionType;
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.line.LineJpaEntity;
 import com.example.app.common.exception.AppErrorCode;
+import com.example.db.business.segment.SegmentJpaEntity;
+import com.example.db.business.station.StationJpaEntity;
+import com.example.db.support.ConcurrentRunner;
 import com.example.db.support.DbHelper;
 import com.example.db.support.MySqlFlywayTcConfig;
 import com.example.core.common.exception.CustomException;
-import com.example.db.common.exception.DbErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,13 +24,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,44 +65,23 @@ class LineServiceTest extends MySqlFlywayTcConfig {
         dbHelper.insertStation("station 2");
 
         int threads = 3;
-        ExecutorService pool = Executors.newFixedThreadPool(threads);
-
-        CountDownLatch ready = new CountDownLatch(threads);
-        CountDownLatch start = new CountDownLatch(1);
-        CountDownLatch done = new CountDownLatch(threads);
-
-        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
-
-        for (int i = 0; i < threads; i++) {
-            pool.submit(() -> {
-                try {
-                    ready.countDown();
-                    start.await();
-
-                    SegmentAttributeRequest seg = new SegmentAttributeRequest(1.0,2);
-                    CreateLineRequest req = new CreateLineRequest("line", 1, 2,seg);
-                    lineService.createLine(req);
-                } catch (Throwable t) {
-                    errors.add(t);
-                } finally {
-                    done.countDown();
-                }
-            });
-        }
-
-        ready.await();
-        start.countDown();
-        done.await();
+        ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
+            SegmentAttributeRequest seg = new SegmentAttributeRequest(1.0,2);
+            CreateLineRequest req = new CreateLineRequest("line", 1, 2,seg);
+            lineService.createLine(req);
+        });
 
         // 성공 시
         assertEquals(1, dbHelper.countLineByName("line"));
 
         // 실패는 1개
-        assertEquals(2, errors.size());
-        CustomException ex = (CustomException) errors.get(0);
-        assertEquals(DomainErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode());
+        assertEquals(2, result.errorCount());
 
-        pool.shutdown();
+        List<CustomException> domainErrors = result.errorsOf(CustomException.class);
+        assertEquals(2, domainErrors.size());
+        domainErrors.forEach(ex ->
+                assertEquals(DomainErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode())
+        );
     }
 
     @Test
@@ -111,48 +91,16 @@ class LineServiceTest extends MySqlFlywayTcConfig {
         Integer id = l.getId();
 
         int threads = 2;
-        ExecutorService pool = Executors.newFixedThreadPool(threads);
-
-        CountDownLatch ready = new CountDownLatch(threads);
-        CountDownLatch start = new CountDownLatch(1);
-        CountDownLatch done = new CountDownLatch(threads);
-
-        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
-
-        for (int i = 0; i < threads; i++) {
+        ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
             final String newName = (i == 0) ? "line A" : "line B";
-            pool.submit(() -> {
-                try {
-                    ready.countDown();
-                    start.await();
-
-                    UpdateLineAttributeRequest req = new UpdateLineAttributeRequest(newName);
-                    lineService.updateLineAttribute(id,req);
-                } catch (Throwable t) {
-                    errors.add(t);
-                } finally {
-                    done.countDown();
-                }
-            });
-        }
-
-        ready.await();
-        start.countDown();
-        done.await();
+            UpdateLineAttributeRequest req = new UpdateLineAttributeRequest(newName);
+            lineService.updateLineAttribute(id,req);
+        });
 
         // 하나는 실패해야 한다
-        assertEquals(1, errors.size());
-
-        Throwable t = errors.get(0);
-        System.out.println("ERROR TYPE "+ t.getClass());
-        System.out.println(t.getMessage());
-        assertTrue(
-                t instanceof org.springframework.orm.ObjectOptimisticLockingFailureException
-                        || t instanceof jakarta.persistence.OptimisticLockException
-                        || (t.getCause() != null && t.getCause() instanceof jakarta.persistence.OptimisticLockException)
-        );
-
-        pool.shutdown();
+        assertEquals(1, result.errorCount());
+        List<ObjectOptimisticLockingFailureException> domainErrors = result.errorsOf(ObjectOptimisticLockingFailureException.class);
+        assertEquals(1, domainErrors.size());
     }
 
     @Test
@@ -163,45 +111,40 @@ class LineServiceTest extends MySqlFlywayTcConfig {
         Integer[] idArr = {l1.getId(), l2.getId()};
 
         int threads = 2;
-        ExecutorService pool = Executors.newFixedThreadPool(threads);
-
-        CountDownLatch ready = new CountDownLatch(threads);
-        CountDownLatch start = new CountDownLatch(1);
-        CountDownLatch done = new CountDownLatch(threads);
-
-        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
-
-        String newName = "line A";
-        for (int i = 0; i < threads; i++) {
-            final int idx = i;
-            pool.submit(() -> {
-                try {
-                    ready.countDown();
-                    start.await();
-                    lineService.updateLineAttribute(idArr[idx],
-                            new UpdateLineAttributeRequest(newName));
-
-                } catch (Throwable t) {
-                    errors.add(t);
-                } finally {
-                    done.countDown();
-                }
-            });
-        }
-
-        ready.await();
-        start.countDown();
-        done.await();
+        ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
+            String newName = "line A";
+            lineService.updateLineAttribute(idArr[i],
+                    new UpdateLineAttributeRequest(newName));
+        });
 
         // 성공 시
         assertEquals(1, dbHelper.countLineByName("line A"));
 
         // 실패는 1개
-        assertEquals(1, errors.size());
-        CustomException ex = (CustomException) errors.get(0);
-        assertEquals(DomainErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode());
+        assertEquals(1, result.errorCount());
+        List<CustomException> domainErrors = result.errorsOf(CustomException.class);
+        assertEquals(1, domainErrors.size());
+        domainErrors.forEach(ex ->
+                assertEquals(DomainErrorCode.LINE_NAME_DUPLICATED, ex.getErrorCode())
+        );
+    }
 
-        pool.shutdown();
+    @Test
+    @DisplayName("라인_비활성화_정상_수행_테스트")
+    void lineDeactivate() {
+        StationJpaEntity s1 =  dbHelper.insertStation("station 1");
+        StationJpaEntity s2 = dbHelper.insertStation("station 2");
+        StationJpaEntity s3 = dbHelper.insertStation("station 3");
+        StationJpaEntity s4 = dbHelper.insertStation("station 4");
+        StationJpaEntity s5 = dbHelper.insertStation("station 5");
+        LineJpaEntity l = dbHelper.insertLine("line 1", s1,s2,2.1, 3);
+        SegmentJpaEntity sg1 = dbHelper.insertSegment(l,s2,s3,2.1,3, ActiveType.ACTIVE);
+        SegmentJpaEntity sg2 = dbHelper.insertSegment(l,s3,s4,2.1,3, ActiveType.ACTIVE);
+        SegmentJpaEntity sg3 = dbHelper.insertSegment(l,s4,s5,2.1,3, ActiveType.ACTIVE);
+        UpdateLineStatusRequest req = new UpdateLineStatusRequest(ActionType.INACTIVE);
+        lineService.updateLineStatus(l.getId(),req);
+        assertEquals(4,dbHelper.countSnapshotSegmentsBySnapshotId(1));
+
     }
 
     static Stream<Arguments> NotFoundStationId() {

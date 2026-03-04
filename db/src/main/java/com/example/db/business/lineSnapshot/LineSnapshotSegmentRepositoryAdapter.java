@@ -12,7 +12,8 @@ public class LineSnapshotSegmentRepositoryAdapter implements LineSnapshotSegment
     private final SpringDataLineSnapshotSegmentJpaRepository snapshotSegmentRepository;
 
     @Override
-    public void insertAllByLineId(Integer snapshotId, Integer id) {
+    public int insertAllByLineId(Integer snapshotId, Integer lineId) {
+        return snapshotSegmentRepository.insertAllAcitvateByLineId(snapshotId, lineId);
     }
 
 }

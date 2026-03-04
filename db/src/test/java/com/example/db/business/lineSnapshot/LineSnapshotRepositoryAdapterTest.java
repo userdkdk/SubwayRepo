@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({LineSnapshotRepositoryAdapter.class, DbHelper.class})
+@Import({LineSnapshotRepositoryAdapter.class, DbHelper.class, LineSnapshotMapper.class})
 class LineSnapshotRepositoryAdapterTest extends MySqlFlywayTcConfig {
     @Autowired LineSnapshotRepositoryAdapter snapshotRepo;
     @Autowired EntityManager em;
