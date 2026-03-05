@@ -2,6 +2,7 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
+import com.example.app.support.IntegrationTest;
 import com.example.core.domain.station.StationRoleInLine;
 import com.example.db.business.line.LineJpaEntity;
 import com.example.db.business.segment.SegmentRepositoryAdapter;
@@ -23,9 +24,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class LineSegmentIntegrationTest{
+public class LineSegmentIntegrationTest extends IntegrationTest{
 
     @Autowired
     LineSegmentService lineSegmentService;
