@@ -96,7 +96,7 @@ public class DbHelper {
     }
 
     public int countActiveSegmentByLineId(Integer lineId) {
-        return segmentRepository.findByLineJpaEntity_Id(lineId).size();
+        return segmentRepository.findByLineJpaEntity_IdAndActiveType(lineId, ActiveType.ACTIVE).size();
     }
 
     public void truncateAll() {

@@ -24,7 +24,7 @@ public enum DomainErrorCode implements ErrorCode {
     SEGMENT_INPUT_STATION_SAME("DSG-002", "Input stations are same", 400),
     SEGMENT_ALREADY_EXISTS("DSG-003", "Segment already exists", 409),
     SEGMENT_ATTRIBUTE_VALUE_ERROR("DSG-004", "Input Segment value error", 400),
-    STATION_NOT_EXISTS_IN_LINE("DSG-004", "Station not exists in line", 400);
+    STATION_NOT_EXISTS_IN_LINE("DSG-004", "Station not exists in line", 400),;
 
     private final String code;
     private final String message;

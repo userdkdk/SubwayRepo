@@ -69,7 +69,10 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             and s.activeType = :activeType
             and (s.beforeStationJpaEntity.id = :stationId or s.afterStationJpaEntity.id = :stationId)
     """)
-    boolean existsStationByLineAndActiveType(Integer lineId, Integer stationId, ActiveType activeType);
+    boolean existsStationByLineAndActiveType(
+            @Param("lineId") Integer lineId,
+            @Param("stationId") Integer stationId,
+            @Param("activeType") ActiveType activeType);
 
     @Query("""
         select new com.example.db.business.segment.projection.RoleCount(
@@ -80,7 +83,10 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
         where s.lineJpaEntity.id = :lineId
           and s.activeType = :active
     """)
-    RoleCount countRole(Integer lineId, Integer stationId, ActiveType active);
+    RoleCount countRole(
+            @Param("lineId") Integer lineId,
+            @Param("stationId") Integer stationId,
+            @Param("active") ActiveType active);
 
     // check exists segment by line
     @Query("""
@@ -89,7 +95,9 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
         where s.activeType = :activeType
             and s.lineJpaEntity.id = :lineId
     """)
-    boolean existsActiveSegmentByLine(Integer lineId, ActiveType activeType);
+    boolean existsActiveSegmentByLine(
+            @Param("lineId") Integer lineId,
+            @Param("activeType") ActiveType activeType);
 
     @Modifying
     @Query("""
@@ -100,7 +108,12 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
            and s.afterStationJpaEntity.id = :afterId
            and s.activeType = :active
     """)
-    int inactivateActivateSegment(Integer lineId, Integer beforeId, Integer afterId, ActiveType inactive, ActiveType active);
+    int inactivateActivateSegment(
+            @Param("lineId") Integer lineId,
+            @Param("beforeId") Integer beforeId,
+            @Param("afterId") Integer afterId,
+            @Param("inactive") ActiveType inactive,
+            @Param("active") ActiveType active);
 
     @Modifying
     @Query("""
@@ -108,7 +121,9 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             set s.activeType = :activeType
             where s.lineJpaEntity.id = :id
             """)
-    int inactivateByLine(Integer id, ActiveType activeType);
+    int inactivateByLine(
+            @Param("id") Integer id,
+            @Param("activeType") ActiveType activeType);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """

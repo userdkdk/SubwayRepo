@@ -1,9 +1,8 @@
 package com.example.db.business.station;
 
 import com.example.core.common.exception.DomainErrorCode;
-import com.example.db.common.exception.DbErrorCode;
-import com.example.core.business.station.Station;
-import com.example.core.business.station.StationRepository;
+import com.example.core.domain.station.Station;
+import com.example.core.domain.station.StationRepository;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;

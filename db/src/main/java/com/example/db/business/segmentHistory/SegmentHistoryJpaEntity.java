@@ -1,6 +1,6 @@
 package com.example.db.business.segmentHistory;
 
-import com.example.core.business.segmentHistory.HistoryType;
+import com.example.core.domain.segmentHistory.HistoryType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

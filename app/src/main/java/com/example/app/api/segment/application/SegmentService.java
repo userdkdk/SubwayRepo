@@ -1,8 +1,8 @@
 package com.example.app.api.segment.application;
 
 import com.example.app.api.segment.api.dto.request.UpdateSegmentAttributeRequest;
-import com.example.core.business.segment.SegmentAttribute;
-import com.example.core.business.segment.SegmentRepository;
+import com.example.core.domain.segment.SegmentAttribute;
+import com.example.core.domain.segment.SegmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

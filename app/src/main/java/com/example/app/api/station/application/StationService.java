@@ -5,10 +5,10 @@ import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest
 import com.example.app.api.station.api.dto.request.UpdateStationStatusRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.dto.request.enums.ActionType;
-import com.example.core.business.segment.SegmentRepository;
-import com.example.core.business.station.Station;
-import com.example.core.business.station.StationName;
-import com.example.core.business.station.StationRepository;
+import com.example.core.domain.segment.SegmentRepository;
+import com.example.core.domain.station.Station;
+import com.example.core.domain.station.StationName;
+import com.example.core.domain.station.StationRepository;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

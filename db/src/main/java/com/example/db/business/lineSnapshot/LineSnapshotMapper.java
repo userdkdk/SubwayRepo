@@ -1,6 +1,6 @@
 package com.example.db.business.lineSnapshot;
 
-import com.example.core.business.lineSnapshot.LineSnapshot;
+import com.example.core.domain.lineSnapshot.LineSnapshot;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,7 +1,7 @@
 package com.example.db.business.segmentHistory;
 
-import com.example.core.business.segmentHistory.SegmentHistory;
-import com.example.core.business.segmentHistory.SegmentHistoryRepository;
+import com.example.core.domain.segmentHistory.SegmentHistory;
+import com.example.core.domain.segmentHistory.SegmentHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

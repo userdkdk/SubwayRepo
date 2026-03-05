@@ -2,9 +2,9 @@ package com.example.db.business.segment;
 
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.segment.projection.RoleCount;
-import com.example.core.business.segment.Segment;
-import com.example.core.business.segment.SegmentRepository;
-import com.example.core.business.station.StationRoleInLine;
+import com.example.core.domain.segment.Segment;
+import com.example.core.domain.segment.SegmentRepository;
+import com.example.core.domain.station.StationRoleInLine;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -103,7 +103,6 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
 
     @Override
     public int activateByIds(List<Integer> segIds) {
-
         return segmentJpaRepository.activateByIdAndLineId(segIds);
     }
 

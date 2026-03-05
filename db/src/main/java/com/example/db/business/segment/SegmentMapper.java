@@ -2,8 +2,8 @@ package com.example.db.business.segment;
 
 import com.example.db.business.line.LineJpaEntity;
 import com.example.db.business.station.StationJpaEntity;
-import com.example.core.business.segment.Segment;
-import com.example.core.business.segment.SegmentAttribute;
+import com.example.core.domain.segment.Segment;
+import com.example.core.domain.segment.SegmentAttribute;
 import org.springframework.stereotype.Component;
 
 @Component

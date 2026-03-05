@@ -1,7 +1,7 @@
 package com.example.db.business.lineSnapshot;
 
-import com.example.core.business.lineSnapshot.LineSnapshot;
-import com.example.core.business.lineSnapshot.LineSnapshotRepository;
+import com.example.core.domain.lineSnapshot.LineSnapshot;
+import com.example.core.domain.lineSnapshot.LineSnapshotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

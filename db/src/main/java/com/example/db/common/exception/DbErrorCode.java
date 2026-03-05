@@ -10,12 +10,9 @@ import lombok.RequiredArgsConstructor;
 public enum DbErrorCode implements ErrorCode {
 
     // error
-    DATA_ERROR("D-001","DB ERROR", 500);
+    DATA_ERROR("D-001","DB ERROR", 500),
+    INVALID_TEST_DB("D-002", "trying db is not test db", 409);
 
-    // station
-    // line
-
-    // segment,
 
     private final String code;
     private final String message;

@@ -1,9 +1,9 @@
 package com.example.db.business.line;
 
 import com.example.core.common.exception.DomainErrorCode;
-import com.example.core.business.line.Line;
-import com.example.core.business.line.LineName;
-import com.example.core.business.line.LineRepository;
+import com.example.core.domain.line.Line;
+import com.example.core.domain.line.LineName;
+import com.example.core.domain.line.LineRepository;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.ErrorCode;

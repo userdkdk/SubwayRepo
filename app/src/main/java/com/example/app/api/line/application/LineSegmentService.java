@@ -2,18 +2,18 @@ package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.segment.RemoveStationRequest;
-import com.example.app.api.line.api.dto.request.segment.RestoreStationRequest;
-import com.example.app.api.station.api.dto.request.UpdateStationStatusRequest;
 import com.example.app.common.exception.AppErrorCode;
+import com.example.core.common.exception.DomainErrorCode;
+import com.example.core.domain.segment.Position;
 import com.example.db.common.redis.service.LineSegmentChangedEvent;
-import com.example.core.business.line.LineRepository;
-import com.example.core.business.segment.Segment;
-import com.example.core.business.segment.SegmentAttribute;
-import com.example.core.business.segment.SegmentRepository;
-import com.example.core.business.segmentHistory.SegmentHistory;
-import com.example.core.business.segmentHistory.SegmentHistoryRepository;
-import com.example.core.business.station.StationRepository;
-import com.example.core.business.station.StationRoleInLine;
+import com.example.core.domain.line.LineRepository;
+import com.example.core.domain.segment.Segment;
+import com.example.core.domain.segment.SegmentAttribute;
+import com.example.core.domain.segment.SegmentRepository;
+import com.example.core.domain.segmentHistory.SegmentHistory;
+import com.example.core.domain.segmentHistory.SegmentHistoryRepository;
+import com.example.core.domain.station.StationRepository;
+import com.example.core.domain.station.StationRoleInLine;
 import com.example.core.common.exception.CustomException;
 import com.example.core.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +35,7 @@ public class LineSegmentService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void addStation(Integer lineId, CreateSegmentRequest request) {
-        Integer stationId = request.stationId();
+    public void addStation(Integer lineId, Integer stationId, CreateSegmentRequest request) {
         Integer beforeId = request.beforeId();
         Integer afterId = request.afterId();
         Double beforeDistance = request.before().distance();
@@ -51,12 +50,12 @@ public class LineSegmentService {
 
         // check station exists in line -> duplicated
         if (segmentRepository.existsActiveStationInLine(lineId, stationId)) {
-            throw CustomException.app(AppErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
+            throw CustomException.app(DomainErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
                     .addParam("line id", lineId)
                     .addParam("station id", stationId);
         }
 
-        Position pos = requiredRole(beforeId, afterId);
+        Position pos = resolveRole(beforeId, afterId);
 
         switch (pos) {
             case HEAD -> {
@@ -90,10 +89,6 @@ public class LineSegmentService {
         eventPublisher.publishEvent(new LineSegmentChangedEvent(lineId));
     }
 
-    public void updateStationStatusInLine(Integer lineId, Integer stationId, UpdateStationStatusRequest request) {
-
-    }
-
     @Transactional
     public void removeStationInLine(Integer lineId, Integer stationId, RemoveStationRequest request) {
         Integer beforeId = request.beforeId();
@@ -108,12 +103,12 @@ public class LineSegmentService {
 
         // check station exists
         if (!segmentRepository.existsActiveStationInLine(lineId, stationId)) {
-            throw CustomException.app(AppErrorCode.STATION_NOT_EXISTS_IN_LINE)
+            throw CustomException.app(DomainErrorCode.STATION_NOT_EXISTS_IN_LINE)
                     .addParam("line id", lineId)
                     .addParam("station id", stationId);
         }
 
-        Position pos = requiredRole(beforeId, afterId);
+        Position pos = resolveRole(beforeId, afterId);
         StationRoleInLine actual = actualRole(lineId, stationId);
         ensureRole(lineId, stationId, pos, actual);
 
@@ -145,64 +140,6 @@ public class LineSegmentService {
         eventPublisher.publishEvent(new LineSegmentChangedEvent(lineId));
     }
 
-    @Transactional
-    public void restoreStationInLine(Integer lineId, Integer stationId, RestoreStationRequest request) {
-        Integer beforeId = request.beforeId();
-        Integer afterId = request.afterId();
-        Double beforeDistance = request.before().distance();
-        Integer beforeSpendTime = request.before().spendTime();
-        Double afterDistance = request.after().distance();
-        Integer afterSpendTime = request.after().spendTime();
-
-        // force increment line
-        lineRepository.ensureExistsForUpdate(lineId);
-        // check line and station exists
-        checkStationExists(stationId);
-
-        // check inactive station exists in line
-        if (!segmentRepository.existsInactiveStationInLine(lineId, stationId)) {
-            throw CustomException.app(AppErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
-                    .addParam("line id", lineId)
-                    .addParam("station id", stationId);
-        }
-
-        Position pos = requiredRole(beforeId, afterId);
-
-        switch (pos) {
-            case HEAD -> {
-                // check after is head
-                StationRoleInLine actual = actualRole(lineId, afterId);
-                ensureRole(lineId, afterId, pos, actual);
-                // save
-                upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
-                break;
-            }
-            case TAIL -> {
-                // check before is tail
-                StationRoleInLine actual = actualRole(lineId, beforeId);
-                ensureRole(lineId, beforeId, pos, actual);
-                // save
-                upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
-                break;
-            }
-            case INTERNAL -> {
-                // inactivate segment
-                ensureInactivateSegment(lineId, beforeId, afterId);
-
-                // save
-                upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
-                upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
-                break;
-            }
-            default -> {
-                throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
-                        "startId, endId input이 올바르지 않습니다.");
-            }
-        }
-        // delete cache
-        eventPublisher.publishEvent(new LineSegmentChangedEvent(lineId));
-    }
-
     private void ensureInactivateSegment(Integer lineId, Integer beforeId, Integer afterId) {
         int updated = segmentRepository
                 .inactivateActiveSegment(lineId, beforeId, afterId);
@@ -214,7 +151,7 @@ public class LineSegmentService {
         }
     }
 
-    private Position requiredRole(Integer beforeId, Integer afterId) {
+    private Position resolveRole(Integer beforeId, Integer afterId) {
         if (beforeId == null && afterId != null) return Position.HEAD;
         if (beforeId != null && afterId ==null) return Position.TAIL;
         if (beforeId != null && afterId != null) return Position.INTERNAL;
@@ -251,7 +188,7 @@ public class LineSegmentService {
 
     private void checkStationExists(Integer id) {
         if (!stationRepository.existsActiveById(id)) {
-            throw CustomException.domain(AppErrorCode.STATION_NOT_FOUND)
+            throw CustomException.domain(DomainErrorCode.STATION_NOT_FOUND)
                     .addParam("id", id);
         }
     }
@@ -262,5 +199,4 @@ public class LineSegmentService {
                 .addParam("station id", stationId);
     }
 
-    private enum Position { HEAD, TAIL, INTERNAL};
 }

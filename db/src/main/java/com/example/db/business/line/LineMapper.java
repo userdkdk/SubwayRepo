@@ -1,7 +1,7 @@
 package com.example.db.business.line;
 
-import com.example.core.business.line.Line;
-import com.example.core.business.line.LineName;
+import com.example.core.domain.line.Line;
+import com.example.core.domain.line.LineName;
 import org.springframework.stereotype.Component;
 
 @Component

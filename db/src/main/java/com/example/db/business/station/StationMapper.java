@@ -1,7 +1,7 @@
 package com.example.db.business.station;
 
-import com.example.core.business.station.Station;
-import com.example.core.business.station.StationName;
+import com.example.core.domain.station.Station;
+import com.example.core.domain.station.StationName;
 import org.springframework.stereotype.Component;
 
 @Component

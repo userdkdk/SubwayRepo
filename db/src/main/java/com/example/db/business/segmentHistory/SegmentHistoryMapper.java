@@ -1,6 +1,6 @@
 package com.example.db.business.segmentHistory;
 
-import com.example.core.business.segmentHistory.SegmentHistory;
+import com.example.core.domain.segmentHistory.SegmentHistory;
 import org.springframework.stereotype.Component;
 
 @Component

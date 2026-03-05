@@ -1,6 +1,6 @@
 package com.example.db.business.segmentHistory;
 
-import com.example.core.business.segmentHistory.HistoryType;
+import com.example.core.domain.segmentHistory.HistoryType;
 import com.querydsl.core.annotations.QueryProjection;
 
 import java.time.LocalDateTime;
