@@ -1,5 +1,6 @@
 package com.example.core.domain.segment;
 
+import com.example.core.domain.station.StationConnectionInfo;
 import com.example.core.domain.station.StationRoleInLine;
 
 import java.util.List;
@@ -20,4 +21,8 @@ public interface SegmentRepository{
     int activateByIds(List<Integer> segIds);
 
     int deactivateAllBySnapshotId(Integer snapshotId);
+
+    StationConnectionInfo findRemovableInfo(Integer lineId, Integer stationId);
+
+    int countActiveByLine(Integer lineId);
 }

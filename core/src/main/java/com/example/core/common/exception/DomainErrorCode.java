@@ -19,6 +19,7 @@ public enum DomainErrorCode implements ErrorCode {
     LINE_NAME_DUPLICATED("DL-002", "Line name duplicated", 409),
     LINE_INPUT_STATION_SAME("DL-003","Input stations are same", 400),
     LINE_STATUS_CONFLICT("DL-004", "Line status is not expected", 409),
+    LINE_MINIMUM_STATION_VIOLATION("DL-005", "Line has at least 2 stations", 400),
 
     // segment
     SEGMENT_NOT_FOUND("DSG-001", "Segment not found", 404),

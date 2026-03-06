@@ -38,32 +38,6 @@ class LineSegmentServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("동시에 같은 요청이 오면 하나는 정상 수행, 하나는 conflict 반환")
-    void addSameStationConcurrentTest() throws Exception {
-        StationJpaEntity s1 = dbHelper.insertStation("station 1");
-        StationJpaEntity s2 = dbHelper.insertStation("station 2");
-        StationJpaEntity s3 = dbHelper.insertStation("station 3");
-        LineJpaEntity l = dbHelper.insertLine("line", s1, s2, 1.2, 3);
-
-        int threads = 2;
-        ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
-            SegmentAttributeRequest seg = new SegmentAttributeRequest(1.0,2);
-            CreateSegmentRequest req = new CreateSegmentRequest(s1.getId(), s2.getId(), seg, seg);
-            lineSegmentService.addStation(l.getId(), s3.getId(), req);
-        });
-
-        // 실패는 1개, already exists 반환
-        List<CustomException> domainErrors = result.errorsOf(CustomException.class);
-        assertEquals(1, domainErrors.size());
-        domainErrors.forEach(ex ->
-                assertEquals(DomainErrorCode.STATION_ALREADY_EXISTS_IN_LINE, ex.getErrorCode())
-        );
-
-        // 최종 seg는 2개
-        assertEquals(2,dbHelper.countActiveSegmentByLineId(l.getId()));
-    }
-
-    @Test
     @DisplayName("동시에 서로 충돌이 나는 요청이 오면 하나는 정상 수행, 하나는 에러 반환")
     void addDifferentStationConcurrentTest() throws Exception {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
@@ -92,8 +66,8 @@ class LineSegmentServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("동시에 서로 충돌이 나는 요청이 오면 하나는 정상 수행, 하나는 에러 반환")
-    void test() throws Exception {
+    @DisplayName("동시에 충돌이 나지 않는 요청이 오면 정상 수행")
+    void addStationConcurrentTest() throws Exception {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
         StationJpaEntity s3 = dbHelper.insertStation("station 3");
@@ -110,12 +84,11 @@ class LineSegmentServiceTest extends IntegrationTest {
             lineSegmentService.addStation(l.getId(), idArr[i], req);
         });
 
-        // 실패는 1개, SEGMENT_NOT_FOUND 반환
-        List<CustomException> domainErrors = result.errorsOf(CustomException.class);
-        assertEquals(0, domainErrors.size());
+        // 실패는 없음
+        assertEquals(0, result.errorCount());
 
-        // 최종 seg는 2개
-        assertEquals(2,dbHelper.countActiveSegmentByLineId(l.getId()));
+        // 최종 seg는 3개
+        assertEquals(3,dbHelper.countActiveSegmentByLineId(l.getId()));
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.db.business.segment;
 
+import com.example.core.domain.station.StationConnectionInfo;
 import com.example.db.business.segment.projection.RoleCount;
 import com.example.core.common.domain.enums.ActiveType;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -88,16 +89,24 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             @Param("stationId") Integer stationId,
             @Param("active") ActiveType active);
 
-    // check exists segment by line
     @Query("""
-        select count(s) > 0
-        from SegmentJpaEntity s
-        where s.activeType = :activeType
-            and s.lineJpaEntity.id = :lineId
-    """)
-    boolean existsActiveSegmentByLine(
+            select com.example.core.domain.station.StationConnectionInfo(
+                max(case when s.afterStationJpaEntity.id = :stationId then s.beforeStationJpaEntity.id else null end),
+                max(case when s.beforeStationJpaEntity.id = :stationId then s.afterStationJpaEntity.id else null end),
+                max(case when s.afterStationJpaEntity.id = :stationId then s.distance else null end),
+                max(case when s.afterStationJpaEntity.id = :stationId then s.spendTime else null end),
+                max(case when s.beforeStationJpaEntity.id = :stationId then s.distance else null end),
+                max(case when s.beforeStationJpaEntity.id = :stationId then s.spendTime else null end)
+            )
+            from SegmentJpaEntity s
+            where s.activeType = com.example.core.common.domain.enums.ActiveType
+                and s.lineJpaEntity.id = :lineId
+                and (s.beforeStationJpaEntity.id = :stationId
+                    or s.afterStationJpaEntity.id = :stationId)
+            """)
+    Optional<StationConnectionInfo> findStationConnection(
             @Param("lineId") Integer lineId,
-            @Param("activeType") ActiveType activeType);
+            @Param("stationId") Integer stationId);
 
     @Modifying
     @Query("""
@@ -144,4 +153,8 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
                 and status = 'INACTIVE'
             """, nativeQuery = true)
     int activateByIdAndLineId(@Param("segIds")List<Integer> segIds);
+
+    int countByLineJpaEntity_Id(Integer lineId);
+
+    boolean existsByLineJpaEntity_IdAndActiveType(Integer lineId, ActiveType activeType);
 }

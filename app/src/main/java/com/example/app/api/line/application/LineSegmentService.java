@@ -1,12 +1,12 @@
 package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
-import com.example.app.api.line.api.dto.request.segment.RemoveStationRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.core.domain.line.Line;
 import com.example.core.domain.segment.Position;
+import com.example.core.domain.station.StationConnectionInfo;
 import com.example.db.common.redis.service.LineSegmentChangedEvent;
 import com.example.core.domain.line.LineRepository;
 import com.example.core.domain.segment.Segment;
@@ -53,7 +53,7 @@ public class LineSegmentService {
         // check line and station exists
         checkStationExists(stationId);
 
-        // check station exists in line -> duplicated
+        // check station does not exist in line
         if (segmentRepository.existsActiveStationInLine(lineId, stationId)) {
             throw CustomException.app(DomainErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
                     .addParam("line id", lineId)
@@ -95,49 +95,39 @@ public class LineSegmentService {
     }
 
     @Transactional
-    public void removeStationInLine(Integer lineId, Integer stationId, RemoveStationRequest request) {
-        Integer beforeId = request.beforeId();
-        Integer afterId = request.afterId();
-        Double distance = request.merged().distance();
-        Integer spendTime = request.merged().spendTime();
-
+    public void removeStationInLine(Integer lineId, Integer stationId) {
         // force increment line
         Line line = lineRepository.ensureExistsForUpdate(lineId);
         if (line.getActiveType()!=ActiveType.ACTIVE) {
             throw CustomException.app(DomainErrorCode.LINE_STATUS_CONFLICT);
         }
-        // check line and station exists
-        checkStationExists(stationId);
 
-        // check station exists
-        if (!segmentRepository.existsActiveStationInLine(lineId, stationId)) {
-            throw CustomException.app(DomainErrorCode.STATION_NOT_EXISTS_IN_LINE)
-                    .addParam("line id", lineId)
-                    .addParam("station id", stationId);
+        int activeSegmentCount = segmentRepository.countActiveByLine(lineId);
+        if (activeSegmentCount<=1) {
+            throw CustomException.domain(DomainErrorCode.LINE_MINIMUM_STATION_VIOLATION);
         }
 
-        Position pos = resolveRole(beforeId, afterId);
-        StationRoleInLine actual = actualRole(lineId, stationId);
-        ensureRole(lineId, stationId, pos, actual);
+        StationConnectionInfo info = segmentRepository.findRemovableInfo(lineId, stationId);
 
-        switch (pos) {
+        switch (info.role()) {
             case HEAD -> {
                 // inactive head
-                ensureInactivateSegment(lineId,stationId,afterId);
-                break;
+                ensureInactivateSegment(lineId,stationId,info.afterStationId());
             }
             case TAIL -> {
                 // inactive tail
-                ensureInactivateSegment(lineId, beforeId, stationId);
-                break;
+                ensureInactivateSegment(lineId, info.beforeStationId(), stationId);
             }
             case INTERNAL -> {
                 // inactivate before and after
-                ensureInactivateSegment(lineId, beforeId, stationId);
-                ensureInactivateSegment(lineId, stationId, afterId);
+                ensureInactivateSegment(lineId, info.beforeStationId(), stationId);
+                ensureInactivateSegment(lineId, stationId, info.afterStationId());
 
                 // update or save
-                upsertSegment(lineId, beforeId, afterId, distance, spendTime);
+                double mergeDistance = info.beforeDistance() + info.afterDistance();
+                int mergeSpendTime = info.beforeSpendTime() + info.afterSpendTime();
+                upsertSegment(lineId, info.beforeStationId(), info.afterStationId(),
+                        mergeDistance, mergeSpendTime);
             }
             default -> {
                 throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,

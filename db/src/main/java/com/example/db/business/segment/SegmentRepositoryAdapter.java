@@ -1,6 +1,7 @@
 package com.example.db.business.segment;
 
 import com.example.core.common.exception.DomainErrorCode;
+import com.example.core.domain.station.StationConnectionInfo;
 import com.example.db.business.segment.projection.RoleCount;
 import com.example.core.domain.segment.Segment;
 import com.example.core.domain.segment.SegmentRepository;
@@ -73,7 +74,7 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
 
     @Override
     public boolean existsActiveSegmentByLine(Integer lineId) {
-        return segmentJpaRepository.existsActiveSegmentByLine(lineId, ActiveType.ACTIVE);
+        return segmentJpaRepository.existsByLineJpaEntity_IdAndActiveType(lineId, ActiveType.ACTIVE);
     }
 
     @Override
@@ -84,16 +85,7 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
         boolean asAfter  = c.afterCount()  > 0;
         log.info("before: {}, after: {}", asBefore, asAfter);
 
-        if (asBefore && asAfter) {
-            return StationRoleInLine.INTERNAL;
-        }
-        if (asBefore) {
-            return StationRoleInLine.HEAD;
-        }
-        if (asAfter) {
-            return StationRoleInLine.TAIL;
-        }
-        return StationRoleInLine.NOT_IN_LINE;
+        return StationRoleInLine.from(asBefore, asAfter);
     }
 
     @Override
@@ -109,6 +101,17 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     @Override
     public int deactivateAllBySnapshotId(Integer snapshotId) {
         return segmentJpaRepository.deactivateAllBySnapshotId(snapshotId);
+    }
+
+    @Override
+    public StationConnectionInfo findRemovableInfo(Integer lineId, Integer stationId) {
+        return segmentJpaRepository.findStationConnection(lineId, stationId)
+                .orElseThrow(()->CustomException.domain(DomainErrorCode.STATION_NOT_FOUND));
+    }
+
+    @Override
+    public int countActiveByLine(Integer lineId) {
+        return segmentJpaRepository.countByLineJpaEntity_Id(lineId);
     }
 
 }

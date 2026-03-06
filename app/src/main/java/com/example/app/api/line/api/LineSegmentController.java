@@ -30,10 +30,9 @@ public class LineSegmentController {
     @DeleteMapping("/{lineId}/stations/{stationId}")
     public ResponseEntity<CustomResponse<Void>> removeStationInLine(
             @PathVariable Integer lineId,
-            @PathVariable Integer stationId,
-            @Valid @RequestBody RemoveStationRequest request
+            @PathVariable Integer stationId
     ) {
-        lineSegmentService.removeStationInLine(lineId, stationId, request);
+        lineSegmentService.removeStationInLine(lineId, stationId);
         return CustomResponse.ok();
     }
 }
