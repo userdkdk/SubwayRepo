@@ -4,6 +4,7 @@ import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
 import com.example.app.common.exception.AppErrorCode;
+import com.example.core.common.exception.DomainErrorCode;
 import com.example.core.domain.line.Line;
 import com.example.core.domain.line.LineName;
 import com.example.core.domain.line.LineRepository;
@@ -52,7 +53,7 @@ public class LineService {
         LineName name = new LineName(request.name());
         Line savedLine = lineRepository.save(Line.create(name));
 
-        // upsert segment
+        // insert segment
         upsertSegment(savedLine.getId(), startId, endId, distance, spendTime);
     }
 
@@ -66,12 +67,17 @@ public class LineService {
     @Transactional
     public void updateLineStatus(Integer id, UpdateLineStatusRequest request) {
         ActiveType target = request.actionType().toActiveType();
-
         ActiveType from = (target == ActiveType.ACTIVE) ? ActiveType.INACTIVE : ActiveType.ACTIVE;
-        int updated = lineRepository.updateStatus(id,from, target);
-        if (updated==0) {
-            return;
+
+        // 라인 비관락 걸기
+        Line line = lineRepository.ensureExistsForUpdate(id);
+        if (line.getActiveType() != from) {
+            throw CustomException.domain(DomainErrorCode.LINE_STATUS_CONFLICT);
         }
+
+        // 라인 업데이트
+        lineRepository.updateStatus(id, from, target);
+
         if (target == ActiveType.ACTIVE) {
             // snapshot 조회
             List<Integer> segIds = lineSnapshotRepository.findSegsIdByLine(id);
@@ -97,9 +103,9 @@ public class LineService {
         }
     }
 
-    private void upsertSegment(Integer id, Integer startId, Integer endId, Double distance, Integer spendTime) {
+    private void upsertSegment(Integer lineId, Integer startId, Integer endId, Double distance, Integer spendTime) {
         SegmentAttribute segmentAttribute = new SegmentAttribute(distance, spendTime);
-        Segment segment = Segment.create(id, startId, endId, segmentAttribute);
+        Segment segment = Segment.create(lineId, startId, endId, segmentAttribute);
         segmentRepository.upsert(segment);
         Integer segmentId = segmentRepository.findIdByUniqueKey(segment);
         segmentHistoryRepository.save(SegmentHistory.create(segmentId));

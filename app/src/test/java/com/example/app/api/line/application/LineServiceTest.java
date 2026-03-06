@@ -5,6 +5,7 @@ import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
 import com.example.app.common.dto.request.enums.ActionType;
+import com.example.app.support.IntegrationTest;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.line.LineJpaEntity;
@@ -13,7 +14,6 @@ import com.example.db.business.segment.SegmentJpaEntity;
 import com.example.db.business.station.StationJpaEntity;
 import com.example.db.support.ConcurrentRunner;
 import com.example.db.support.DbHelper;
-import com.example.db.support.MySqlFlywayTcConfig;
 import com.example.core.common.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,8 +22,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.List;
@@ -32,9 +30,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class LineServiceTest extends MySqlFlywayTcConfig {
+class LineServiceTest extends IntegrationTest {
 
     @Autowired LineService lineService;
     @Autowired DbHelper dbHelper;

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
-public class LineSegmentIntegrationTest extends IntegrationTest{
+public class LineSegmentIntegrationTest extends IntegrationTest {
 
     @Autowired
     LineSegmentService lineSegmentService;

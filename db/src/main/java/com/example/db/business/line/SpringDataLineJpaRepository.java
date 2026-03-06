@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SpringDataLineJpaRepository extends JpaRepository<LineJpaEntity, Integer> {
-    List<LineJpaEntity> findByActiveType(ActiveType activeType);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select l from LineJpaEntity l where l.id = :id")
+    Optional<LineJpaEntity> findByIdForUpdate(@Param("id") Integer id);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update LineJpaEntity l " +
@@ -28,10 +30,10 @@ public interface SpringDataLineJpaRepository extends JpaRepository<LineJpaEntity
             @Param("id") Integer id,
             @Param("activeType") ActiveType activeType);
 
+    List<LineJpaEntity> findByActiveType(ActiveType activeType);
+
+
+
     // test
     int countByName(String name);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select l from LineJpaEntity l where l.id = :id")
-    Optional<LineJpaEntity> findByIdForUpdate(@Param("id") Integer id);
 }

@@ -3,7 +3,9 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.api.line.api.dto.request.segment.RemoveStationRequest;
 import com.example.app.common.exception.AppErrorCode;
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.DomainErrorCode;
+import com.example.core.domain.line.Line;
 import com.example.core.domain.segment.Position;
 import com.example.db.common.redis.service.LineSegmentChangedEvent;
 import com.example.core.domain.line.LineRepository;
@@ -44,7 +46,10 @@ public class LineSegmentService {
         Integer afterSpendTime = request.after().spendTime();
 
         // force increment line
-        lineRepository.ensureExistsForUpdate(lineId);
+        Line line = lineRepository.ensureExistsForUpdate(lineId);
+        if (line.getActiveType()!= ActiveType.ACTIVE) {
+            throw CustomException.app(DomainErrorCode.LINE_STATUS_CONFLICT);
+        }
         // check line and station exists
         checkStationExists(stationId);
 
@@ -97,7 +102,10 @@ public class LineSegmentService {
         Integer spendTime = request.merged().spendTime();
 
         // force increment line
-        lineRepository.ensureExistsForUpdate(lineId);
+        Line line = lineRepository.ensureExistsForUpdate(lineId);
+        if (line.getActiveType()!=ActiveType.ACTIVE) {
+            throw CustomException.app(DomainErrorCode.LINE_STATUS_CONFLICT);
+        }
         // check line and station exists
         checkStationExists(stationId);
 

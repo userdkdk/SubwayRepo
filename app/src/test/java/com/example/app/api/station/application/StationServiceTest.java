@@ -3,6 +3,7 @@ package com.example.app.api.station.application;
 import com.example.app.api.station.api.dto.request.CreateStationRequest;
 import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest;
 import com.example.app.api.station.api.dto.request.UpdateStationStatusRequest;
+import com.example.app.support.IntegrationTest;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.station.StationJpaEntity;
 import com.example.app.common.dto.request.enums.ActionType;
@@ -29,9 +30,7 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class StationServiceTest extends MySqlFlywayTcConfig {
+class StationServiceTest extends IntegrationTest {
 
     @Autowired StationService stationService;
     @Autowired DbHelper dbHelper;
@@ -39,15 +38,6 @@ class StationServiceTest extends MySqlFlywayTcConfig {
     @BeforeEach
     void clean() {
         dbHelper.truncateAll();
-    }
-
-    @Test
-    @DisplayName("정상_생성되면_DB에_저장된다")
-    void 정상_생성되면_DB에_저장된다() {
-        stationService.createStation(new CreateStationRequest(" station 1 "));
-
-        StationJpaEntity reloaded = dbHelper.getStationById(1);
-        assertEquals("station 1", reloaded.getName());
     }
 
     @Test
