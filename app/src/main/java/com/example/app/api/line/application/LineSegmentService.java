@@ -5,7 +5,6 @@ import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.core.domain.line.Line;
-import com.example.core.domain.segment.Position;
 import com.example.core.domain.station.StationConnectionInfo;
 import com.example.db.common.redis.service.LineSegmentChangedEvent;
 import com.example.core.domain.line.LineRepository;
@@ -60,20 +59,20 @@ public class LineSegmentService {
                     .addParam("station id", stationId);
         }
 
-        Position pos = resolveRole(beforeId, afterId);
+        StationRoleInLine inputRole = resolveRole(beforeId, afterId);
 
-        switch (pos) {
+        switch (inputRole) {
             case HEAD -> {
                 // check after is head
-                StationRoleInLine actual = actualRole(lineId, afterId);
-                ensureRole(lineId, afterId, pos, actual);
+                StationRoleInLine headSegment = actualRole(lineId, afterId);
+                ensureRole(lineId, afterId, inputRole, headSegment);
                 // save
                 upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
             }
             case TAIL -> {
                 // check before is tail
-                StationRoleInLine actual = actualRole(lineId, beforeId);
-                ensureRole(lineId, beforeId, pos, actual);
+                StationRoleInLine tailSegment = actualRole(lineId, beforeId);
+                ensureRole(lineId, beforeId, inputRole, tailSegment);
                 // save
                 upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
             }
@@ -124,6 +123,8 @@ public class LineSegmentService {
                 ensureInactivateSegment(lineId, stationId, info.afterStationId());
 
                 // update or save
+                log.info("BEFORE:: "+info.beforeStationId()+", "+info.beforeDistance()+", "+info.beforeSpendTime());
+                log.info("AFTER:: "+info.afterStationId()+", "+info.afterDistance()+", "+info.afterSpendTime());
                 double mergeDistance = info.beforeDistance() + info.afterDistance();
                 int mergeSpendTime = info.beforeSpendTime() + info.afterSpendTime();
                 upsertSegment(lineId, info.beforeStationId(), info.afterStationId(),
@@ -149,10 +150,10 @@ public class LineSegmentService {
         }
     }
 
-    private Position resolveRole(Integer beforeId, Integer afterId) {
-        if (beforeId == null && afterId != null) return Position.HEAD;
-        if (beforeId != null && afterId ==null) return Position.TAIL;
-        if (beforeId != null && afterId != null) return Position.INTERNAL;
+    private StationRoleInLine resolveRole(Integer beforeId, Integer afterId) {
+        if (beforeId == null && afterId != null) return StationRoleInLine.HEAD;
+        if (beforeId != null && afterId ==null) return StationRoleInLine.TAIL;
+        if (beforeId != null && afterId != null) return StationRoleInLine.INTERNAL;
         throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
                 "beforeId/afterId 조합이 올바르지 않습니다.");
     }
@@ -161,15 +162,13 @@ public class LineSegmentService {
         return segmentRepository.findActiveRole(lineId, stationId);
     }
 
-    private void ensureRole(Integer lineId, Integer stationId, Position required,
-                            StationRoleInLine actual) {
-        if (actual == StationRoleInLine.NOT_IN_LINE) {
-            throwExceptionByLineIdAndStationId(AppErrorCode.STATION_NOT_EXISTS_IN_LINE, lineId, stationId);
-        }
-        boolean ok = switch (required) {
-            case HEAD -> actual == StationRoleInLine.HEAD;
-            case TAIL -> actual == StationRoleInLine.TAIL;
-            case INTERNAL -> actual == StationRoleInLine.INTERNAL;
+    private void ensureRole(Integer lineId, Integer stationId, StationRoleInLine inputRole,
+                            StationRoleInLine segmentRole) {
+        boolean ok = switch (inputRole) {
+            case HEAD -> segmentRole == StationRoleInLine.TAIL;
+            case TAIL -> segmentRole == StationRoleInLine.HEAD;
+            case INTERNAL -> segmentRole == StationRoleInLine.INTERNAL;
+            case NOT_IN_LINE -> throw CustomException.app(AppErrorCode.STATION_NOT_EXISTS_IN_LINE);
         };
         if (!ok) {
             throwExceptionByLineIdAndStationId(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR, lineId, stationId);

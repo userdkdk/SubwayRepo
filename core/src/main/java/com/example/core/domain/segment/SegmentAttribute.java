@@ -10,11 +10,11 @@ public record SegmentAttribute(Double distance, Integer spendTimeSeconds) {
             throw CustomException.domain(DomainErrorCode.SEGMENT_ATTRIBUTE_VALUE_ERROR,
                     "distance or spendTime is null");
         }
-        if (distance <= 0) {
+        if (distance <= 0 || distance >= 1000000) {
             throw CustomException.domain(DomainErrorCode.SEGMENT_ATTRIBUTE_VALUE_ERROR)
                     .addParam("distance", distance);
         }
-        if (spendTimeSeconds <= 0) {
+        if (spendTimeSeconds <= 0 || spendTimeSeconds >= 1000000) {
             throw CustomException.domain(DomainErrorCode.SEGMENT_ATTRIBUTE_VALUE_ERROR)
                     .addParam("spend time", spendTimeSeconds);
         }

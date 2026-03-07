@@ -90,7 +90,8 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             @Param("active") ActiveType active);
 
     @Query("""
-            select com.example.core.domain.station.StationConnectionInfo(
+            select new com.example.core.domain.station.StationConnectionInfo(
+                :stationId,
                 max(case when s.afterStationJpaEntity.id = :stationId then s.beforeStationJpaEntity.id else null end),
                 max(case when s.beforeStationJpaEntity.id = :stationId then s.afterStationJpaEntity.id else null end),
                 max(case when s.afterStationJpaEntity.id = :stationId then s.distance else null end),
@@ -99,7 +100,7 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
                 max(case when s.beforeStationJpaEntity.id = :stationId then s.spendTime else null end)
             )
             from SegmentJpaEntity s
-            where s.activeType = com.example.core.common.domain.enums.ActiveType
+            where s.activeType = com.example.core.common.domain.enums.ActiveType.ACTIVE
                 and s.lineJpaEntity.id = :lineId
                 and (s.beforeStationJpaEntity.id = :stationId
                     or s.afterStationJpaEntity.id = :stationId)
