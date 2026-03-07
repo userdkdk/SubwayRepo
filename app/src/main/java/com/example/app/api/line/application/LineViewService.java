@@ -5,13 +5,13 @@ import com.example.app.api.line.api.dto.response.LineDetailResponse;
 import com.example.app.api.line.api.dto.response.LineResponse;
 import com.example.app.api.station.adapter.StationApiMapper;
 import com.example.app.api.station.api.dto.response.StationSegmentResponse;
-import com.example.app.business.line.LineQueryRepository;
-import com.example.app.business.segment.SegmentJpaEntity;
-import com.example.app.business.segment.SegmentQueryRepository;
+import com.example.db.business.line.LineQueryRepository;
+import com.example.db.business.segment.SegmentJpaEntity;
+import com.example.db.business.segment.SegmentQueryRepository;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.app.common.redis.service.RedisLineService;
-import com.example.app.common.dto.request.enums.StatusFilter;
-import com.example.core.exception.CustomException;
+import com.example.db.common.redis.service.RedisLineService;
+import com.example.db.common.domain.enums.StatusFilter;
+import com.example.core.common.exception.CustomException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -61,8 +61,8 @@ public class LineViewService {
 
         return null;
     }
-    // return line by activeType
 
+    // return line by activeType
     public List<LineResponse> getLines(StatusFilter status) {
         return lineQueryRepository.findByActiveType(status).stream()
                 .map(lineApiMapper::entityToDto)

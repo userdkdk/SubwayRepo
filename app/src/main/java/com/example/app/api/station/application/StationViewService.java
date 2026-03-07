@@ -1,16 +1,17 @@
 package com.example.app.api.station.application;
 
 import com.example.app.api.station.api.dto.response.StationDetailResponse;
-import com.example.app.api.station.api.dto.response.StationSummaryResponse;
-import com.example.app.business.segment.SegmentQueryRepository;
-import com.example.app.business.segment.projection.StationSegmentLineIdProjection;
-import com.example.app.business.station.StationQueryRepository;
-import com.example.app.business.station.projection.StationProjection;
-import com.example.app.common.dto.request.enums.SortType;
-import com.example.app.common.dto.request.enums.StatusFilter;
-import com.example.app.common.dto.response.CustomPage;
+import com.example.app.api.station.api.dto.response.StationResponse;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.core.exception.CustomException;
+import com.example.core.common.exception.CustomException;
+import com.example.db.business.segment.SegmentQueryRepository;
+import com.example.db.business.segment.projection.StationSegmentLineIdProjection;
+import com.example.db.business.station.StationQueryRepository;
+import com.example.app.common.dto.request.enums.SortType;
+import com.example.db.business.station.projection.StationProjection;
+import com.example.db.common.domain.PageResult;
+import com.example.db.common.domain.enums.StatusFilter;
+import com.example.app.common.dto.response.CustomPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -29,9 +30,12 @@ public class StationViewService {
     private final StationQueryRepository stationQueryRepository;
     private final SegmentQueryRepository segmentQueryRepository;
 
-    public CustomPage<StationSummaryResponse> getStations(StatusFilter status, Pageable pageable, SortType sortType, Sort.Direction direction) {
-        CustomPage<StationProjection> rows = stationQueryRepository.findByActiveType(status, pageable, sortType, direction);
-        return rows.map(StationSummaryResponse::from);
+    public CustomPage<StationResponse> getStations(StatusFilter status, Pageable pageable, SortType sortType, Sort.Direction direction) {
+        PageResult<StationProjection> result = stationQueryRepository.findByActiveType(status, pageable, sortType.toType(), direction);
+        List<StationResponse> content = result.content().stream()
+                .map(StationResponse::from)
+                .toList();
+        return CustomPage.of(content, pageable.getPageNumber(), pageable.getPageSize(), result.totalElements());
     }
 
     public StationDetailResponse getStationById(Integer stationId) {
@@ -57,5 +61,4 @@ public class StationViewService {
                         ))
                         .toList());
     }
-
 }

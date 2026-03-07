@@ -37,13 +37,12 @@ public class LineController {
     }
 
     // update line status
-    @PostMapping("/{lineId}/activation")
-    public ResponseEntity<CustomResponse<Void>> updateLine(
+    @PatchMapping("/{lineId}/activation")
+    public ResponseEntity<CustomResponse<Void>> activateLine(
             @PathVariable Integer lineId,
             @Valid @RequestBody UpdateLineStatusRequest request
     ) {
         lineService.updateLineStatus(lineId, request);
         return CustomResponse.ok();
     }
-
 }

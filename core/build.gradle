@@ -1,8 +1,7 @@
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testImplementation 'org.assertj:assertj-core:3.27.7'
+
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
 }

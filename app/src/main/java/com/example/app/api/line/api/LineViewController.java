@@ -4,7 +4,7 @@ import com.example.app.api.line.api.dto.response.LineDetailResponse;
 import com.example.app.api.line.api.dto.response.LineResponse;
 import com.example.app.api.line.application.LineViewService;
 import com.example.app.common.dto.response.CustomResponse;
-import com.example.app.common.dto.request.enums.StatusFilter;
+import com.example.db.common.domain.enums.StatusFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

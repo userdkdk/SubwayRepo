@@ -1,8 +1,9 @@
 package com.example.app.business.path;
 
-import com.example.app.business.path.model.Path;
-import com.example.app.business.path.model.PathEdge;
-import com.example.app.business.path.model.PathResult;
+import com.example.core.domain.path.Path;
+import com.example.core.domain.path.PathCalculator;
+import com.example.core.domain.path.PathEdge;
+import com.example.core.domain.path.PathResult;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

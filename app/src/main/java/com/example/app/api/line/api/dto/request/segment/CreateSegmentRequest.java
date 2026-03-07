@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record CreateSegmentRequest (
-        @NotNull @Positive Integer stationId,
         @Positive Integer beforeId,
         @Positive Integer afterId,
         @Valid SegmentAttributeRequest before,

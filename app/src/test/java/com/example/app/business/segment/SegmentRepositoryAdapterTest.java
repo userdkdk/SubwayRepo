@@ -1,11 +1,13 @@
 package com.example.app.business.segment;
 
-import com.example.app.business.line.LineJpaEntity;
-import com.example.app.business.station.StationJpaEntity;
-import com.example.app.support.DbHelper;
-import com.example.app.support.MySqlFlywayTcConfig;
-import com.example.core.business.segment.Segment;
-import com.example.core.business.segment.SegmentAttribute;
+import com.example.db.business.line.LineJpaEntity;
+import com.example.db.business.segment.SegmentJpaEntity;
+import com.example.db.business.segment.SegmentRepositoryAdapter;
+import com.example.db.business.station.StationJpaEntity;
+import com.example.db.support.DbHelper;
+import com.example.db.support.MySqlFlywayTcConfig;
+import com.example.core.domain.segment.Segment;
+import com.example.core.domain.segment.SegmentAttribute;
 import com.example.core.common.domain.enums.ActiveType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,6 +1,6 @@
 package com.example.app.logging.event;
 
-import com.example.core.exception.ErrorCode;
+import com.example.core.common.exception.ErrorCode;
 
 import java.util.Map;
 

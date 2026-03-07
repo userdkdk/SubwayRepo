@@ -1,7 +1,7 @@
 package com.example.app.common.exception;
 
-import com.example.core.exception.ErrorCode;
-import com.example.core.exception.ErrorType;
+import com.example.core.common.exception.ErrorCode;
+import com.example.core.common.exception.ErrorType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,6 @@ public enum AppErrorCode implements ErrorCode {
 
     // station
     STATION_NOT_FOUND("AS-001", "Station not found", HttpStatus.NOT_FOUND),
-    STATION_NAME_DUPLICATED("AS-002", "Station name duplicated", HttpStatus.CONFLICT),
     STATION_ALREADY_EXISTS_IN_LINE("AS-003", "Station already exists in line", HttpStatus.BAD_REQUEST),
     ACTIVE_STATION_EXISTS("AS-004", "Active segments exists in station", HttpStatus.CONFLICT),
 
@@ -34,7 +33,10 @@ public enum AppErrorCode implements ErrorCode {
     STATION_NOT_EXISTS_IN_LINE("ASG-004", "Station not exists in line", HttpStatus.BAD_REQUEST),
 
     // history
-    HISTORY_CONDITION_INValid("AH-001", "History input condition invalid", HttpStatus.BAD_REQUEST);
+    HISTORY_CONDITION_INValid("AH-001", "History input condition invalid", HttpStatus.BAD_REQUEST),
+
+    // snapshot
+    SNAPSHOT_COUNT_CONFLICT("ASS-001", "Snapshot count conflict", HttpStatus.CONFLICT);
 
 
     private final String code;

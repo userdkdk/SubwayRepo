@@ -39,7 +39,7 @@ public class CustomPage<T> {
         this.pageSize = pageSize;
         this.totalElements = totalElements;
         this.totalPages = (int) Math.ceil((double) totalElements / pageSize);
-        this.last = pageNumber >= totalPages;
+        this.last = totalPages==0 || pageNumber >= totalPages-1;
     }
 
     private CustomPage(List<T> content, int pageNumber, int pageSize,
