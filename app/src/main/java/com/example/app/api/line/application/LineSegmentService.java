@@ -53,7 +53,7 @@ public class LineSegmentService {
         checkStationExists(stationId);
 
         // check station does not exist in line
-        if (segmentRepository.existsActiveStationInLine(lineId, stationId)) {
+        if (segmentRepository.existsActiveSegmentByStationAndLine(lineId, stationId)) {
             throw CustomException.app(DomainErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
                     .addParam("line id", lineId)
                     .addParam("station id", stationId);
@@ -64,14 +64,14 @@ public class LineSegmentService {
         switch (inputRole) {
             case HEAD -> {
                 // check after is head
-                StationRoleInLine headSegment = actualRole(lineId, afterId);
+                StationRoleInLine headSegment = segmentRole(lineId, afterId);
                 ensureRole(lineId, afterId, inputRole, headSegment);
                 // save
                 upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
             }
             case TAIL -> {
                 // check before is tail
-                StationRoleInLine tailSegment = actualRole(lineId, beforeId);
+                StationRoleInLine tailSegment = segmentRole(lineId, beforeId);
                 ensureRole(lineId, beforeId, inputRole, tailSegment);
                 // save
                 upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
@@ -123,12 +123,14 @@ public class LineSegmentService {
                 ensureInactivateSegment(lineId, stationId, info.afterStationId());
 
                 // update or save
-                log.info("BEFORE:: "+info.beforeStationId()+", "+info.beforeDistance()+", "+info.beforeSpendTime());
-                log.info("AFTER:: "+info.afterStationId()+", "+info.afterDistance()+", "+info.afterSpendTime());
                 double mergeDistance = info.beforeDistance() + info.afterDistance();
                 int mergeSpendTime = info.beforeSpendTime() + info.afterSpendTime();
                 upsertSegment(lineId, info.beforeStationId(), info.afterStationId(),
                         mergeDistance, mergeSpendTime);
+            }
+            case NOT_IN_LINE -> {
+                throw CustomException.app(AppErrorCode.STATION_NOT_EXISTS_IN_LINE,
+                        "해당 역은 이 노선에 존재하지 않습니다.");
             }
             default -> {
                 throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR,
@@ -158,7 +160,7 @@ public class LineSegmentService {
                 "beforeId/afterId 조합이 올바르지 않습니다.");
     }
 
-    private StationRoleInLine actualRole(Integer lineId, Integer stationId) {
+    private StationRoleInLine segmentRole(Integer lineId, Integer stationId) {
         return segmentRepository.findActiveRole(lineId, stationId);
     }
 

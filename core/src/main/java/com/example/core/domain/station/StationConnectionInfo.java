@@ -1,7 +1,6 @@
 package com.example.core.domain.station;
 
 public record StationConnectionInfo (
-        Integer stationId,
         Integer beforeStationId,
         Integer afterStationId,
         Double beforeDistance,

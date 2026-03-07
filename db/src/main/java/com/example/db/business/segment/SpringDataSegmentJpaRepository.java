@@ -91,7 +91,6 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
 
     @Query("""
             select new com.example.core.domain.station.StationConnectionInfo(
-                :stationId,
                 max(case when s.afterStationJpaEntity.id = :stationId then s.beforeStationJpaEntity.id else null end),
                 max(case when s.beforeStationJpaEntity.id = :stationId then s.afterStationJpaEntity.id else null end),
                 max(case when s.afterStationJpaEntity.id = :stationId then s.distance else null end),
@@ -125,16 +124,6 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             @Param("inactive") ActiveType inactive,
             @Param("active") ActiveType active);
 
-    @Modifying
-    @Query("""
-            update SegmentJpaEntity s
-            set s.activeType = :activeType
-            where s.lineJpaEntity.id = :id
-            """)
-    int inactivateByLine(
-            @Param("id") Integer id,
-            @Param("activeType") ActiveType activeType);
-
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """
             update segments s
@@ -156,6 +145,4 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
     int activateByIdAndLineId(@Param("segIds")List<Integer> segIds);
 
     int countByLineJpaEntity_Id(Integer lineId);
-
-    boolean existsByLineJpaEntity_IdAndActiveType(Integer lineId, ActiveType activeType);
 }

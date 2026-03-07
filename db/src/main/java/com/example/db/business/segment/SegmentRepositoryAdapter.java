@@ -8,6 +8,7 @@ import com.example.core.domain.segment.SegmentRepository;
 import com.example.core.domain.station.StationRoleInLine;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
+import com.example.db.common.exception.DbErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,19 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     }
 
     @Override
+    public void update(Integer id, Consumer<Segment> updater) {
+        SegmentJpaEntity entity = segmentJpaRepository.findById(id)
+                .orElseThrow(()->CustomException.app(DomainErrorCode.SEGMENT_NOT_FOUND)
+                        .addParam("id", id));
+        Segment domain = segmentMapper.toDomain(entity);
+        updater.accept(domain);
+
+        entity.changeAttribute(domain.getSegmentAttribute().distance(),
+                domain.getSegmentAttribute().spendTimeSeconds());
+        entity.changeActiveType(domain.getActiveType());
+    }
+
+    @Override
     public Integer findIdByUniqueKey(Segment segment) {
         return segmentJpaRepository.findByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndAfterStationJpaEntity_Id(
                 segment.getLineId(), segment.getBeforeStationId(), segment.getAfterStationId()
@@ -45,26 +59,8 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     }
 
     @Override
-    public void update(Integer id, Consumer<Segment> updater) {
-        SegmentJpaEntity entity = segmentJpaRepository.findById(id)
-                .orElseThrow(()->CustomException.app(DomainErrorCode.SEGMENT_NOT_FOUND)
-                .addParam("id", id));
-        Segment domain = segmentMapper.toDomain(entity);
-        updater.accept(domain);
-
-        entity.changeAttribute(domain.getSegmentAttribute().distance(),
-                domain.getSegmentAttribute().spendTimeSeconds());
-        entity.changeActiveType(domain.getActiveType());
-    }
-
-    @Override
-    public boolean existsActiveStationInLine(Integer lineId, Integer stationId) {
+    public boolean existsActiveSegmentByStationAndLine(Integer lineId, Integer stationId) {
         return segmentJpaRepository.existsStationByLineAndActiveType(lineId, stationId, ActiveType.ACTIVE);
-    }
-
-    @Override
-    public boolean existsInactiveStationInLine(Integer lineId, Integer stationId) {
-        return segmentJpaRepository.existsStationByLineAndActiveType(lineId, stationId, ActiveType.INACTIVE);
     }
 
     @Override
@@ -73,17 +69,10 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     }
 
     @Override
-    public boolean existsActiveSegmentByLine(Integer lineId) {
-        return segmentJpaRepository.existsByLineJpaEntity_IdAndActiveType(lineId, ActiveType.ACTIVE);
-    }
-
-    @Override
     public StationRoleInLine findActiveRole(Integer lineId, Integer stationId) {
-        log.info("----check----");
         RoleCount c = segmentJpaRepository.countRole(lineId, stationId, ActiveType.ACTIVE);
         boolean asBefore = c.beforeCount() > 0;
         boolean asAfter  = c.afterCount()  > 0;
-        log.info("before: {}, after: {}", asBefore, asAfter);
 
         return StationRoleInLine.from(asBefore, asAfter);
     }
@@ -106,7 +95,7 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     @Override
     public StationConnectionInfo findRemovableInfo(Integer lineId, Integer stationId) {
         return segmentJpaRepository.findStationConnection(lineId, stationId)
-                .orElseThrow(()->CustomException.domain(DomainErrorCode.STATION_NOT_FOUND));
+                .orElseThrow(()->CustomException.domain(DbErrorCode.DATA_ERROR));
     }
 
     @Override
