@@ -1,4 +1,4 @@
-package com.example.db.business.lineSnapshot;
+package com.example.db.business.lineSnapshot.snapthotSegment;
 
 import com.example.core.domain.lineSnapshot.LineSnapshotSegmentRepository;
 import lombok.RequiredArgsConstructor;

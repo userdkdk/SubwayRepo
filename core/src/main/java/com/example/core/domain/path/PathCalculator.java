@@ -1,8 +1,5 @@
-package com.example.app.business.path;
+package com.example.core.domain.path;
 
-import com.example.app.business.path.model.Path;
-import com.example.app.business.path.model.PathEdge;
-import com.example.app.business.path.model.PathResult;
 import lombok.RequiredArgsConstructor;
 
 import java.util.*;

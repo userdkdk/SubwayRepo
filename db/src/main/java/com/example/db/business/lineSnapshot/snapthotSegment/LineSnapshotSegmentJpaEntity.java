@@ -1,6 +1,5 @@
-package com.example.db.business.lineSnapshot;
+package com.example.db.business.lineSnapshot.snapthotSegment;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

@@ -1,6 +1,6 @@
 package com.example.app.api.path.api.dto.response;
 
-import com.example.app.business.path.model.PathResult;
+import com.example.core.domain.path.PathResult;
 import lombok.Builder;
 import lombok.Getter;
 

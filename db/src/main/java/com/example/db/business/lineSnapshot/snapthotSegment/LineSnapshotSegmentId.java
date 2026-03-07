@@ -1,4 +1,4 @@
-package com.example.db.business.lineSnapshot;
+package com.example.db.business.lineSnapshot.snapthotSegment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

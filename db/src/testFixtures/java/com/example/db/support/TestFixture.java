@@ -3,7 +3,7 @@ package com.example.db.support;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.db.business.line.LineJpaEntity;
 import com.example.db.business.lineSnapshot.LineSnapshotJpaEntity;
-import com.example.db.business.lineSnapshot.LineSnapshotSegmentJpaEntity;
+import com.example.db.business.lineSnapshot.snapthotSegment.LineSnapshotSegmentJpaEntity;
 import com.example.db.business.segment.SegmentJpaEntity;
 import com.example.db.business.station.StationJpaEntity;
 

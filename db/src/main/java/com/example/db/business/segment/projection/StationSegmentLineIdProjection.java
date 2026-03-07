@@ -1,4 +1,4 @@
-package com.example.db.business.segment;
+package com.example.db.business.segment.projection;
 
 import com.example.core.common.domain.enums.ActiveType;
 import com.querydsl.core.annotations.QueryProjection;

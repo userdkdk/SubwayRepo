@@ -1,4 +1,4 @@
-package com.example.app.business.path.model;
+package com.example.core.domain.path;
 
 import java.util.List;
 import java.util.Map;

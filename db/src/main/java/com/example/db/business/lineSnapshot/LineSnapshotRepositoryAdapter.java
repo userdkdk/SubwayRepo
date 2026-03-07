@@ -2,6 +2,7 @@ package com.example.db.business.lineSnapshot;
 
 import com.example.core.domain.lineSnapshot.LineSnapshot;
 import com.example.core.domain.lineSnapshot.LineSnapshotRepository;
+import com.example.db.business.lineSnapshot.snapthotSegment.SpringDataLineSnapshotSegmentJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
