@@ -2,19 +2,17 @@ package com.example.app.api.station.application;
 
 import com.example.app.api.station.api.dto.response.StationDetailResponse;
 import com.example.app.api.station.api.dto.response.StationResponse;
+import com.example.app.common.dto.request.ViewRequestFilter;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.exception.CustomException;
+import com.example.core.domain.station.StationName;
 import com.example.db.business.segment.SegmentQueryRepository;
 import com.example.db.business.segment.projection.StationSegmentLineIdProjection;
 import com.example.db.business.station.StationQueryRepository;
-import com.example.app.common.dto.request.enums.SortType;
 import com.example.db.business.station.projection.StationProjection;
 import com.example.db.common.domain.PageResult;
-import com.example.db.common.domain.enums.StatusFilter;
 import com.example.app.common.dto.response.CustomPage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,21 +28,39 @@ public class StationViewService {
     private final StationQueryRepository stationQueryRepository;
     private final SegmentQueryRepository segmentQueryRepository;
 
-    public CustomPage<StationResponse> getStations(StatusFilter status, Pageable pageable, SortType sortType, Sort.Direction direction) {
-        PageResult<StationProjection> result = stationQueryRepository.findByActiveType(status, pageable, sortType.toType(), direction);
+    public CustomPage<StationResponse> getStations(ViewRequestFilter request) {
+        PageResult<StationProjection> result = stationQueryRepository.findByActiveType(
+                request.status(), request.toPageable(), request.sortType().toDomain(), request.direction());
         List<StationResponse> content = result.content().stream()
                 .map(StationResponse::from)
                 .toList();
-        return CustomPage.of(content, pageable.getPageNumber(), pageable.getPageSize(), result.totalElements());
+        return CustomPage.of(content, request.toPageable().getPageNumber(), request.toPageable().getPageSize(), result.totalElements());
     }
 
     public StationDetailResponse getStationById(Integer stationId) {
-        StationProjection station = stationQueryRepository.findById(stationId);
-        if (station == null) {
+        StationProjection stationProjection = stationQueryRepository.findById(stationId);
+        if (stationProjection == null) {
             throw CustomException.app(AppErrorCode.STATION_NOT_FOUND)
                     .addParam("id", stationId);
         }
-        List<StationSegmentLineIdProjection> lineItem = segmentQueryRepository.findByStationId(stationId);
+        List<StationSegmentLineIdProjection> lineItem = segmentQueryRepository.findByStationId(stationProjection.id());
+
+        return lineItemToDetailResponse(lineItem, stationProjection);
+    }
+
+    public StationDetailResponse getStationByName(String name) {
+        StationName stationName = new StationName(name);
+        StationProjection stationProjection = stationQueryRepository.findByName(stationName);
+        if (stationProjection == null) {
+            throw CustomException.app(AppErrorCode.STATION_NOT_FOUND)
+                    .addParam("name", name);
+        }
+        List<StationSegmentLineIdProjection> lineItem = segmentQueryRepository.findByStationId(stationProjection.id());
+
+        return lineItemToDetailResponse(lineItem, stationProjection);
+    }
+
+    private StationDetailResponse lineItemToDetailResponse(List<StationSegmentLineIdProjection> lineItem, StationProjection station) {
         Map<Integer, List<StationDetailResponse.SegmentItem>> map = lineItem.stream()
                 .collect(Collectors.groupingBy(
                         StationSegmentLineIdProjection::lineId,

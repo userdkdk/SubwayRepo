@@ -1,5 +1,6 @@
 package com.example.db.business.station;
 
+import com.example.core.domain.station.StationName;
 import com.example.core.query.StationSortType;
 import com.example.db.business.station.projection.QStationProjection;
 import com.example.db.common.domain.PageResult;
@@ -62,6 +63,18 @@ public class StationQueryRepository {
                 ))
                 .from(s)
                 .where(s.id.eq(stationId))
+                .fetchOne();
+    }
+
+    public StationProjection findByName(StationName stationName) {
+        QStationJpaEntity s = QStationJpaEntity.stationJpaEntity;
+
+        return queryFactory
+                .select(new QStationProjection(
+                        s.id, s.name, s.activeType
+                ))
+                .from(s)
+                .where(s.name.eq(stationName.value()))
                 .fetchOne();
     }
 
