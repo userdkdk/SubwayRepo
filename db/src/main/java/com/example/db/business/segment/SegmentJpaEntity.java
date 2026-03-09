@@ -44,6 +44,10 @@ public class SegmentJpaEntity extends BaseEntity {
     @Column(name = "status", nullable = false)
     private ActiveType activeType;
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
     private SegmentJpaEntity(LineJpaEntity lineRef, StationJpaEntity beforeRef, StationJpaEntity afterRef,
                              double distance, int spendTime, ActiveType activeType) {
         this.lineJpaEntity = lineRef;

@@ -8,24 +8,16 @@ import com.example.core.common.exception.DomainErrorCode;
 import com.example.db.business.station.StationJpaEntity;
 import com.example.app.common.dto.request.enums.ActionType;
 import com.example.app.common.exception.AppErrorCode;
+import com.example.db.support.ConcurrentRunner;
 import com.example.db.support.DbHelper;
-import com.example.db.support.MySqlFlywayTcConfig;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
-import com.example.db.common.exception.DbErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,41 +36,19 @@ class StationServiceTest extends IntegrationTest {
     @DisplayName("같은_이름_동시_생성시_하나는_저장_하나는_에러_반환")
     void 같은_이름_동시_생성시_하나는_저장_하나는_에러_반환() throws Exception {
         int threads = 2;
-        ExecutorService pool = Executors.newFixedThreadPool(threads);
-
-        CountDownLatch ready = new CountDownLatch(threads);
-        CountDownLatch start = new CountDownLatch(1);
-        CountDownLatch done = new CountDownLatch(threads);
-
-        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
-
-        for (int i = 0; i < threads; i++) {
-            pool.submit(() -> {
-                try {
-                    ready.countDown();
-                    start.await();
-                    stationService.createStation(new CreateStationRequest("station A"));
-                } catch (Throwable t) {
-                    errors.add(t);
-                } finally {
-                    done.countDown();
-                }
-            });
-        }
-
-        ready.await();
-        start.countDown();
-        done.await();
+        ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
+            stationService.createStation(new CreateStationRequest("station A"));
+        });
 
         // 성공 시
         assertEquals(1, dbHelper.countStationByName("station A"));
 
         // 실패는 1개
-        assertEquals(1, errors.size());
-        CustomException ex = (CustomException) errors.get(0);
-        assertEquals(DomainErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
-
-        pool.shutdown();
+        assertEquals(1, result.errorCount());
+        List<CustomException> domainErrors = result.errorsOf(CustomException.class);
+        domainErrors.forEach(ex ->
+                assertEquals(DomainErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode())
+        );
     }
 
     @Test
@@ -88,46 +58,15 @@ class StationServiceTest extends IntegrationTest {
         Integer id = s.getId();
 
         int threads = 2;
-        ExecutorService pool = Executors.newFixedThreadPool(threads);
-
-        CountDownLatch ready = new CountDownLatch(threads);
-        CountDownLatch start = new CountDownLatch(1);
-        CountDownLatch done = new CountDownLatch(threads);
-
-        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
-
-        for (int i = 0; i < threads; i++) {
+        ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
             final String newName = (i == 0) ? "station A" : "station B";
-            pool.submit(() -> {
-                try {
-                    ready.countDown();
-                    start.await();
-                    stationService.updateStationAttribute(id,
-                            new UpdateStationAttributeRequest(newName));
+            stationService.updateStationAttribute(id,
+                    new UpdateStationAttributeRequest(newName));
+        });
 
-                } catch (Throwable t) {
-                    errors.add(t);
-                } finally {
-                    done.countDown();
-                }
-            });
-        }
-
-        ready.await();
-        start.countDown();
-        done.await();
-
-        // 하나는 실패해야 한다
-        assertEquals(1, errors.size());
-
-        Throwable t = errors.get(0);
-        assertTrue(
-                t instanceof org.springframework.orm.ObjectOptimisticLockingFailureException
-                        || t instanceof jakarta.persistence.OptimisticLockException
-                        || (t.getCause() != null && t.getCause() instanceof jakarta.persistence.OptimisticLockException)
-        );
-
-        pool.shutdown();
+        // 하나는 실패
+        assertEquals(1, result.errorCount());
+        List<Exception> domainErrors = result.errorsOf(Exception.class);
     }
 
     @Test
@@ -136,47 +75,23 @@ class StationServiceTest extends IntegrationTest {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
         Integer[] idArr = {s1.getId(), s2.getId()};
+        String newName = "station A";
 
         int threads = 2;
-        ExecutorService pool = Executors.newFixedThreadPool(threads);
-
-        CountDownLatch ready = new CountDownLatch(threads);
-        CountDownLatch start = new CountDownLatch(1);
-        CountDownLatch done = new CountDownLatch(threads);
-
-        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
-
-        String newName = "station A";
-        for (int i = 0; i < threads; i++) {
-            final int idx = i;
-            pool.submit(() -> {
-                try {
-                    ready.countDown();
-                    start.await();
-                    stationService.updateStationAttribute(idArr[idx],
-                            new UpdateStationAttributeRequest(newName));
-
-                } catch (Throwable t) {
-                    errors.add(t);
-                } finally {
-                    done.countDown();
-                }
-            });
-        }
-
-        ready.await();
-        start.countDown();
-        done.await();
+        ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
+            stationService.updateStationAttribute(idArr[i],
+                    new UpdateStationAttributeRequest(newName));
+        });
 
         // 성공 시
         assertEquals(1, dbHelper.countStationByName("station A"));
 
         // 실패는 1개
-        assertEquals(1, errors.size());
-        CustomException ex = (CustomException) errors.get(0);
-        assertEquals(DomainErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode());
-
-        pool.shutdown();
+        assertEquals(1, result.errorCount());
+        List<CustomException> domainErrors = result.errorsOf(CustomException.class);
+        domainErrors.forEach(ex ->
+                assertEquals(DomainErrorCode.STATION_NAME_DUPLICATED, ex.getErrorCode())
+        );
     }
 
     @Test

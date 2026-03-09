@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public interface SegmentRepository{
     int upsert(Segment segment);
-    void update(Integer id, Consumer<Segment> updater);
+    void updateAttribute(Integer id, SegmentAttribute attribute);
     Integer findIdByUniqueKey(Segment segment);
     boolean existsActiveSegmentByStationAndLine(Integer lineId, Integer stationId);
     boolean existsActiveSegmentByStation(Integer stationId);

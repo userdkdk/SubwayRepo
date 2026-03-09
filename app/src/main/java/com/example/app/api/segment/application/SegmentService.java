@@ -16,8 +16,9 @@ public class SegmentService {
 
     @Transactional
     public void updateSegmentAttribute(Integer id, UpdateSegmentAttributeRequest request) {
-        SegmentAttribute attribute = request.attribute();
-        segmentRepository.update(id, segment -> segment.changeSegmentAttribute(attribute));
+        SegmentAttribute attribute = new SegmentAttribute(
+                request.attribute().distance(), request.attribute().spendTime());
+        segmentRepository.updateAttribute(id, attribute);
     }
 
 }

@@ -80,8 +80,6 @@ class LineControllerTest {
     }
 
     static Stream<Arguments> invalidActivateLineRequest() {
-        SegmentAttributeRequest validSeg = new SegmentAttributeRequest(1.2, 3);
-
         return Stream.of(
                 Arguments.of("activeType null", "{\"activeType\":null}"),
                 Arguments.of("activeType 빈값", "{\"activeType\":\"\"}"),

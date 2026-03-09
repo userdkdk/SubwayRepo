@@ -1,6 +1,7 @@
 package com.example.db.business.segment;
 
 import com.example.core.common.exception.DomainErrorCode;
+import com.example.core.domain.segment.SegmentAttribute;
 import com.example.core.domain.station.StationConnectionInfo;
 import com.example.db.business.segment.projection.RoleCount;
 import com.example.core.domain.segment.Segment;
@@ -36,16 +37,11 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     }
 
     @Override
-    public void update(Integer id, Consumer<Segment> updater) {
+    public void updateAttribute(Integer id, SegmentAttribute attribute) {
         SegmentJpaEntity entity = segmentJpaRepository.findById(id)
                 .orElseThrow(()->CustomException.app(DomainErrorCode.SEGMENT_NOT_FOUND)
                         .addParam("id", id));
-        Segment domain = segmentMapper.toDomain(entity);
-        updater.accept(domain);
-
-        entity.changeAttribute(domain.getSegmentAttribute().distance(),
-                domain.getSegmentAttribute().spendTimeSeconds());
-        entity.changeActiveType(domain.getActiveType());
+        entity.changeAttribute(attribute.distance(), attribute.spendTimeSeconds());
     }
 
     @Override

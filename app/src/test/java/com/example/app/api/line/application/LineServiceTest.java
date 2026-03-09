@@ -51,7 +51,6 @@ class LineServiceTest extends IntegrationTest {
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
                 .isEqualTo(AppErrorCode.STATION_NOT_FOUND);
-
     }
 
     @Test
