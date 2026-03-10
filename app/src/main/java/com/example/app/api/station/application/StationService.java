@@ -24,6 +24,7 @@ public class StationService {
 
     @Transactional
     public void createStation(CreateStationRequest request) {
+        // station create
         StationName name = new StationName(request.name());
         stationRepository.save(Station.create(name));
     }
