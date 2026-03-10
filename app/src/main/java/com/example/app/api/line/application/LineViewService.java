@@ -4,11 +4,18 @@ import com.example.app.api.line.adapter.LineApiMapper;
 import com.example.app.api.line.api.dto.response.LineDetailResponse;
 import com.example.app.api.line.api.dto.response.LineResponse;
 import com.example.app.api.station.adapter.StationApiMapper;
+import com.example.app.api.station.api.dto.response.StationResponse;
 import com.example.app.api.station.api.dto.response.StationSegmentResponse;
+import com.example.app.common.dto.request.ViewRequestFilter;
+import com.example.app.common.dto.response.CustomPage;
+import com.example.db.business.line.LineJpaEntity;
 import com.example.db.business.line.LineQueryRepository;
+import com.example.db.business.line.projection.LineProjection;
 import com.example.db.business.segment.SegmentJpaEntity;
 import com.example.db.business.segment.SegmentQueryRepository;
 import com.example.app.common.exception.AppErrorCode;
+import com.example.db.business.station.projection.StationProjection;
+import com.example.db.common.domain.PageResult;
 import com.example.db.common.redis.service.RedisLineService;
 import com.example.db.common.domain.enums.StatusFilter;
 import com.example.core.common.exception.CustomException;
@@ -35,6 +42,16 @@ public class LineViewService {
     private final RedisLineService redisLineService;
     private final ObjectMapper redisObjectMapper;
 
+    // return line by activeType
+    public CustomPage<LineResponse> getLines(ViewRequestFilter request) {
+        PageResult<LineProjection> result = lineQueryRepository.findByFilter(
+                request.status(), request.toPageable(), request.sortType().toDomain(), request.direction());
+        List<LineResponse> content = result.content().stream()
+                .map(LineResponse::from)
+                .toList();
+        return CustomPage.of(content, request.toPageable().getPageNumber(), request.toPageable().getPageSize(), result.totalElements());
+    }
+
     public LineDetailResponse getStationsById(Integer lineId, StatusFilter status) {
         String cachedJson = redisLineService.getSegments(lineId, status);
         if (cachedJson != null && !cachedJson.isBlank()) {
@@ -60,13 +77,6 @@ public class LineViewService {
         redisLineService.setSegments(lineId, status, json);
 
         return null;
-    }
-
-    // return line by activeType
-    public List<LineResponse> getLines(StatusFilter status) {
-        return lineQueryRepository.findByActiveType(status).stream()
-                .map(lineApiMapper::entityToDto)
-                .toList();
     }
 
     private List<StationSegmentResponse> tryReadList(String json, Integer lineId, StatusFilter status) {

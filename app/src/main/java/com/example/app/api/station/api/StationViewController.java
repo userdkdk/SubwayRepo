@@ -18,7 +18,7 @@ public class StationViewController {
 
     private final StationViewService stationViewService;
 
-    // get stations by activeType
+    // get stations by filter
     @GetMapping("")
     public ResponseEntity<CustomResponse<CustomPage<StationResponse>>> getStations(
             @ModelAttribute @Valid ViewRequestFilter request

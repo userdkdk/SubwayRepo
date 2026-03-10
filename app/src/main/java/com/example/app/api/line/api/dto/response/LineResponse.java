@@ -1,13 +1,18 @@
 package com.example.app.api.line.api.dto.response;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-import lombok.Getter;
+import com.example.core.common.domain.enums.ActiveType;
+import com.example.db.business.line.projection.LineProjection;
 
-@Getter
-@Builder
-public class LineResponse {
-    private final Integer id;
-    @Schema(example = "tmptmp")
-    private final String name;
+public record LineResponse (
+        Integer id,
+        String name,
+        ActiveType activeType
+){
+    public static LineResponse from(LineProjection projection) {
+        return new LineResponse(
+                projection.id(),
+                projection.name(),
+                projection.activeType()
+        );
+    }
 }

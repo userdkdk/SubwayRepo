@@ -1,7 +1,8 @@
 package com.example.db.business.segment;
 
-import com.example.db.business.segment.projection.QStationSegmentLineIdProjection;
-import com.example.db.business.segment.projection.StationSegmentLineIdProjection;
+import com.example.db.business.segment.projection.QStationSegmentLineProjection;
+import com.example.db.business.segment.projection.StationSegmentLineProjection;
+import com.example.db.business.station.QStationJpaEntity;
 import com.example.db.common.domain.enums.StatusFilter;
 import com.example.core.common.domain.enums.ActiveType;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -30,17 +31,23 @@ public class SegmentQueryRepository {
         return segmentJpaRepository.findByActiveType(ActiveType.ACTIVE);
     }
 
-    public List<StationSegmentLineIdProjection> findByStationId(Integer stationId) {
+    public List<StationSegmentLineProjection> findByStationId(Integer stationId) {
         QSegmentJpaEntity s = QSegmentJpaEntity.segmentJpaEntity;
+        QStationJpaEntity beforeStation = new QStationJpaEntity("beforeStation");
+        QStationJpaEntity afterStation = new QStationJpaEntity("afterStation");
 
         BooleanExpression stationMatch =
                 s.beforeStationJpaEntity.id.eq(stationId)
                         .or(s.afterStationJpaEntity.id.eq(stationId));
         return queryFactory
-                .select(new QStationSegmentLineIdProjection(
-                        s.lineJpaEntity.id,s.id,s.activeType
+                .select(new QStationSegmentLineProjection(
+                        s.lineJpaEntity.id,s.id,s.activeType,
+                        beforeStation.id, beforeStation.name,
+                        afterStation.id, afterStation.name
                 ))
                 .from(s)
+                .join(s.beforeStationJpaEntity, beforeStation)
+                .join(s.afterStationJpaEntity, afterStation)
                 .where(stationMatch)
                 .orderBy(s.lineJpaEntity.id.asc(), s.id.asc())
                 .fetch();

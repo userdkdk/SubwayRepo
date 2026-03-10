@@ -1,7 +1,7 @@
 package com.example.db.business.station;
 
 import com.example.core.domain.station.StationName;
-import com.example.core.query.StationSortType;
+import com.example.core.query.CoreSortType;
 import com.example.db.business.station.projection.QStationProjection;
 import com.example.db.common.domain.PageResult;
 import com.example.db.common.domain.enums.StatusFilter;
@@ -24,7 +24,7 @@ import java.util.List;
 public class StationQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public PageResult<StationProjection> findByActiveType(StatusFilter status, Pageable pageable, StationSortType sortType, Sort.Direction direction) {
+    public PageResult<StationProjection> findByFilter(StatusFilter status, Pageable pageable, CoreSortType sortType, Sort.Direction direction) {
         QStationJpaEntity s = QStationJpaEntity.stationJpaEntity;
 
         BooleanExpression statusMatch =
@@ -78,12 +78,12 @@ public class StationQueryRepository {
                 .fetchOne();
     }
 
-    private OrderSpecifier<?> orderBy(QStationJpaEntity s, StationSortType sortType, Sort.Direction direction) {
+    private OrderSpecifier<?> orderBy(QStationJpaEntity s, CoreSortType sortType, Sort.Direction direction) {
         Order order = direction.isAscending() ? Order.ASC : Order.DESC;
 
         return switch (sortType) {
-            case StationSortType.NAME -> new OrderSpecifier<>(order, s.name);
-            case StationSortType.ID -> new OrderSpecifier<>(order, s.id);
+            case CoreSortType.NAME -> new OrderSpecifier<>(order, s.name);
+            case CoreSortType.ID -> new OrderSpecifier<>(order, s.id);
         };
     }
 }

@@ -1,11 +1,11 @@
 package com.example.app.common.dto.request.enums;
 
-import com.example.core.query.StationSortType;
+import com.example.core.query.CoreSortType;
 
 public enum SortType {
     ID, NAME;
 
-    public StationSortType toDomain() {
-        return StationSortType.valueOf(this.name());
+    public CoreSortType toDomain() {
+        return CoreSortType.valueOf(this.name());
     }
 }

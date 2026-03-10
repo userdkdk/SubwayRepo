@@ -12,6 +12,16 @@ public record StationDetailResponse(
 ) {
     public record LineItem(
             Integer lineId,
-            List<SegmentItem> segments) {}
-    public record SegmentItem(Integer segmentId, ActiveType activeType) {}
+            List<SegmentItem> segments
+    ) {}
+    public record SegmentItem(
+            Integer segmentId,
+            ActiveType activeType,
+            Integer connectedStationId,
+            String connectedStationName,
+            SegmentPosition position
+    ) {}
+    public enum SegmentPosition {
+        PREV, NEXT
+    }
 }

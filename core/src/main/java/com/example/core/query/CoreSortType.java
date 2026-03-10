@@ -1,5 +1,5 @@
 package com.example.core.query;
 
-public enum StationSortType {
+public enum CoreSortType {
     ID, NAME;
 }
