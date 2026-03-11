@@ -1,6 +1,6 @@
 package com.example.app.api.history.api.dto.response;
 
-import com.example.db.business.segmentHistory.SegmentHistoryProjection;
+import com.example.app.api.history.port.row.SegmentHistoryProjection;
 import com.example.core.domain.segmentHistory.HistoryType;
 
 import java.time.LocalDateTime;

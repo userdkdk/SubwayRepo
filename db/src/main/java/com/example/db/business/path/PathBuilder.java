@@ -1,8 +1,8 @@
 package com.example.db.business.path;
 
+import com.example.core.domain.path.port.data.PathSegmentData;
 import com.example.core.domain.path.Path;
 import com.example.core.domain.path.PathEdge;
-import com.example.db.business.segment.SegmentJpaEntity;
 import com.example.db.business.segment.SegmentQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,25 +19,25 @@ public class PathBuilder {
     private final SegmentQueryRepository segmentQueryRepository;
 
     public Path build() {
-        List<SegmentJpaEntity> segments = segmentQueryRepository.findAllActive();
+        List<PathSegmentData> segments = segmentQueryRepository.findAllActive();
         Map<Integer, List<PathEdge>> adj = new HashMap<>();
 
-        for (SegmentJpaEntity s : segments) {
-            int from = s.getBeforeStationJpaEntity().getId();
-            int to = s.getAfterStationJpaEntity().getId();
+        for (PathSegmentData s : segments) {
+            int from = s.beforeStationId();
+            int to = s.afterStationId();
 
             adj.computeIfAbsent(from, k->new ArrayList<>())
                     .add(new PathEdge(
                             to,
-                            s.getDistance(),
-                            s.getSpendTime()
+                            s.distance(),
+                            s.spendTime()
                     ));
 
             adj.computeIfAbsent(to,k->new ArrayList<>())
                     .add(new PathEdge(
                             from,
-                            s.getDistance(),
-                            s.getSpendTime()
+                            s.distance(),
+                            s.spendTime()
                     ));
         }
         return new Path(adj);

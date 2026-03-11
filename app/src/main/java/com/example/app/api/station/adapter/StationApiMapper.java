@@ -1,20 +1,8 @@
 package com.example.app.api.station.adapter;
 
 import com.example.app.api.station.api.dto.response.StationSegmentResponse;
-import com.example.db.business.segment.SegmentJpaEntity;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StationApiMapper {
-
-    public StationSegmentResponse segmentEntityToDto(SegmentJpaEntity entity) {
-        return new StationSegmentResponse(
-                entity.getId(),
-                entity.getBeforeStationJpaEntity().getId(),
-                entity.getBeforeStationJpaEntity().getName(),
-                entity.getAfterStationJpaEntity().getId(),
-                entity.getAfterStationJpaEntity().getName(),
-                entity.getDistance(),
-                entity.getSpendTime());
-    }
 }

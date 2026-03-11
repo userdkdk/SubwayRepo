@@ -1,7 +1,7 @@
 package com.example.app.api.line.api.dto.response;
 
+import com.example.app.api.line.port.row.LineProjection;
 import com.example.core.common.domain.enums.ActiveType;
-import com.example.db.business.line.projection.LineProjection;
 
 public record LineResponse (
         Integer id,

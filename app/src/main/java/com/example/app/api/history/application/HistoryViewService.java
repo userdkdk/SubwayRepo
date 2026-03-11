@@ -4,7 +4,7 @@
 //import com.example.app.api.history.api.dto.response.SegmentHistoryResponse;
 //import com.example.db.business.segmentHistory.SegmentHistoryQueryRepository;
 //import com.example.db.business.segmentHistory.SegmentHistoryProjection;
-//import com.example.app.common.dto.response.CustomPage;
+//import com.example.app.common.dto.page.CustomPage;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.data.domain.Pageable;
 //import org.springframework.stereotype.Service;

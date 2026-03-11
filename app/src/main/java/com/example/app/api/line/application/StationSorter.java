@@ -1,6 +1,6 @@
 package com.example.app.api.line.application;
 
-import com.example.db.business.segment.SegmentJpaEntity;
+import com.example.app.api.line.port.row.LineSegmentRow;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -13,16 +13,15 @@ import java.util.*;
 public class StationSorter {
 
     // active type도 같이 입력받게해서 경우따라 에러 반환하게하기
-    public List<SegmentJpaEntity> sortSegments(List<SegmentJpaEntity> segs) {
+    public List<LineSegmentRow> sortSegments(List<LineSegmentRow> segs, Integer lineId) {
         if (segs.isEmpty()) return List.of();
-        Map<Integer, SegmentJpaEntity> nextByBefore = new HashMap<>(segs.size() * 2);
+        Map<Integer, LineSegmentRow> nextByBefore = new HashMap<>(segs.size() * 2);
         Map<Integer, Integer> inDegree = new HashMap<>(segs.size() * 2);
-        Integer lineId = segs.get(0).getLineJpaEntity().getId();
 
         // get degree
-        for (SegmentJpaEntity s : segs) {
-            Integer beforeId = s.getBeforeStationJpaEntity().getId();
-            Integer afterId = s.getAfterStationJpaEntity().getId();
+        for (LineSegmentRow s : segs) {
+            Integer beforeId = s.beforeStationId();
+            Integer afterId = s.afterStationId();
             if (nextByBefore.put(beforeId, s) != null) {
                 throw CustomException.app(AppErrorCode.INTERNAL_SERVER_ERROR,
                                 "[SORT STATION] Before station duplicated. Check DB")
@@ -50,18 +49,18 @@ public class StationSorter {
                     "[SORT STATION] Start Station not found")
                     .addParam("Line id", lineId);
         }
-        List<SegmentJpaEntity> ordered = new ArrayList<>();
+        List<LineSegmentRow> ordered = new ArrayList<>();
         Integer cur = startStationId;
 
         for (int i=0;i<segs.size();i++) {
-            SegmentJpaEntity seg = nextByBefore.get(cur);
+            LineSegmentRow seg = nextByBefore.get(cur);
             if (seg==null) {
                 throw CustomException.app(AppErrorCode.INTERNAL_SERVER_ERROR,
                         "[SORT STATION] Chain broken")
                         .addParam("Line id", lineId);
             }
             ordered.add(seg);
-            cur = seg.getAfterStationJpaEntity().getId();
+            cur = seg.afterStationId();
         }
 
         return ordered;

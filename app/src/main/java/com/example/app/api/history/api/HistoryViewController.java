@@ -3,7 +3,7 @@
 //import com.example.app.api.history.api.dto.item.SegmentHistorySearchCondition;
 //import com.example.app.api.history.api.dto.response.SegmentHistoryResponse;
 //import com.example.app.api.history.application.HistoryViewService;
-//import com.example.app.common.dto.response.CustomPage;
+//import com.example.app.common.dto.page.CustomPage;
 //import com.example.app.common.dto.response.CustomResponse;
 //import jakarta.validation.Valid;
 //import lombok.RequiredArgsConstructor;

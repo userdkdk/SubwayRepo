@@ -1,6 +1,7 @@
 package com.example.db.common.redis.service;
 
-import com.example.db.common.domain.enums.StatusFilter;
+import com.example.app.common.dto.request.enums.StatusFilter;
+import com.example.app.common.redis.port.RedisLinePort;
 import com.example.db.common.redis.constans.RedisConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RedisLineService {
+public class RedisLineService implements RedisLinePort {
 
     private final StringRedisTemplate redis;
 

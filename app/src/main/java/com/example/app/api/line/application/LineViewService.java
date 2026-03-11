@@ -1,23 +1,18 @@
 package com.example.app.api.line.application;
 
-import com.example.app.api.line.adapter.LineApiMapper;
 import com.example.app.api.line.api.dto.response.LineDetailResponse;
 import com.example.app.api.line.api.dto.response.LineResponse;
-import com.example.app.api.station.adapter.StationApiMapper;
-import com.example.app.api.station.api.dto.response.StationResponse;
+import com.example.app.api.line.port.LineQueryPort;
+import com.example.app.api.line.port.row.LineProjection;
+import com.example.app.api.line.port.row.LineSegmentRow;
+import com.example.app.api.segment.port.SegmentQueryPort;
 import com.example.app.api.station.api.dto.response.StationSegmentResponse;
+import com.example.app.common.dto.page.PageResult;
 import com.example.app.common.dto.request.ViewRequestFilter;
-import com.example.app.common.dto.response.CustomPage;
-import com.example.db.business.line.LineJpaEntity;
-import com.example.db.business.line.LineQueryRepository;
-import com.example.db.business.line.projection.LineProjection;
-import com.example.db.business.segment.SegmentJpaEntity;
-import com.example.db.business.segment.SegmentQueryRepository;
+import com.example.app.common.dto.page.CustomPage;
+import com.example.app.common.dto.request.enums.StatusFilter;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.db.business.station.projection.StationProjection;
-import com.example.db.common.domain.PageResult;
-import com.example.db.common.redis.service.RedisLineService;
-import com.example.db.common.domain.enums.StatusFilter;
+import com.example.app.common.redis.port.RedisLinePort;
 import com.example.core.common.exception.CustomException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,17 +29,15 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class LineViewService {
 
-    private final LineQueryRepository lineQueryRepository;
-    private final SegmentQueryRepository segmentQueryRepository;
+    private final LineQueryPort lineQueryPort;
+    private final SegmentQueryPort segmentQueryPort;
     private final StationSorter stationSorter;
-    private final StationApiMapper stationApiMapper;
-    private final LineApiMapper lineApiMapper;
-    private final RedisLineService redisLineService;
+    private final RedisLinePort redisLinePort;
     private final ObjectMapper redisObjectMapper;
 
     // return line by activeType
     public CustomPage<LineResponse> getLines(ViewRequestFilter request) {
-        PageResult<LineProjection> result = lineQueryRepository.findByFilter(
+        PageResult<LineProjection> result = lineQueryPort.findByFilter(
                 request.status(), request.toPageable(), request.sortType().toDomain(), request.direction());
         List<LineResponse> content = result.content().stream()
                 .map(LineResponse::from)
@@ -53,7 +46,7 @@ public class LineViewService {
     }
 
     public LineDetailResponse getStationsById(Integer lineId, StatusFilter status) {
-        String cachedJson = redisLineService.getSegments(lineId, status);
+        String cachedJson = redisLinePort.getSegments(lineId, status);
         if (cachedJson != null && !cachedJson.isBlank()) {
             List<StationSegmentResponse> cached = tryReadList(cachedJson, lineId, status);
             if (cached != null) {
@@ -62,19 +55,19 @@ public class LineViewService {
         }
 
         //
-        if (!lineQueryRepository.existsActiveById(lineId)) {
+        if (!lineQueryPort.existsActiveById(lineId)) {
             throw CustomException.domain(AppErrorCode.LINE_NOT_FOUND)
                     .addParam("line id", lineId);
         }
-        List<SegmentJpaEntity> segments =
-                segmentQueryRepository.findByLineAndActiveType(lineId, status);
+        List<LineSegmentRow> segments =
+                segmentQueryPort.findByLineAndActiveType(lineId, status);
 
-        List<StationSegmentResponse> result = stationSorter.sortSegments(segments).stream()
-                .map(stationApiMapper::segmentEntityToDto)
+        List<StationSegmentResponse> result = stationSorter.sortSegments(segments, lineId).stream()
+                .map(StationSegmentResponse::from)
                 .toList(); // 불변 OK (캐시값은 수정되면 안 됨)
 
         String json = writeJson(result);
-        redisLineService.setSegments(lineId, status, json);
+        redisLinePort.setSegments(lineId, status, json);
 
         return null;
     }
@@ -83,7 +76,7 @@ public class LineViewService {
         try {
             return redisObjectMapper.readValue(json, new TypeReference<>() {});
         } catch (Exception e) {
-            redisLineService.evictSegments(lineId);
+            redisLinePort.evictSegments(lineId);
             // 캐시 깨졌으면 로그 남기고 null 반환
             log.warn("redis cache parse fail. evict. lineId={}, status={}", lineId, status, e);
             return null;

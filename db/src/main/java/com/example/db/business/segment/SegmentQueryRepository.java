@@ -1,10 +1,12 @@
 package com.example.db.business.segment;
 
-import com.example.db.business.segment.projection.QStationSegmentLineProjection;
-import com.example.db.business.segment.projection.StationSegmentLineProjection;
+import com.example.app.api.line.port.row.LineSegmentRow;
+import com.example.core.domain.path.port.data.PathSegmentData;
+import com.example.app.api.segment.port.SegmentQueryPort;
+import com.example.app.api.station.port.row.StationSegmentRow;
 import com.example.db.business.station.QStationJpaEntity;
-import com.example.db.common.domain.enums.StatusFilter;
-import com.example.core.common.domain.enums.ActiveType;
+import com.example.app.common.dto.request.enums.StatusFilter;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,24 +16,39 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class SegmentQueryRepository {
+public class SegmentQueryRepository implements SegmentQueryPort {
     private final JPAQueryFactory queryFactory;
-    private final SpringDataSegmentJpaRepository segmentJpaRepository;
 
-    public List<SegmentJpaEntity> findByLineAndActiveType(Integer lineId, StatusFilter status) {
-        if (status != StatusFilter.ALL) {
-            return segmentJpaRepository.findByLineJpaEntity_IdAndActiveType(
-                    lineId, status.toActiveType()
-            );
-        }
-        return segmentJpaRepository.findByLineJpaEntity_Id(lineId);
+    @Override
+    public List<LineSegmentRow> findByLineAndActiveType(Integer lineId, StatusFilter status) {
+        QSegmentJpaEntity s = QSegmentJpaEntity.segmentJpaEntity;
+        QStationJpaEntity beforeStation = new QStationJpaEntity("beforeStation");
+        QStationJpaEntity afterStation = new QStationJpaEntity("afterStation");
+        BooleanExpression stationMatch =
+                s.lineJpaEntity.id.eq(lineId)
+                        .and(s.activeType.eq(status.toActiveType()));
+        return queryFactory
+                .select(Projections.constructor(
+                        LineSegmentRow.class,
+                        s.id,
+                        beforeStation.id, beforeStation.name,
+                        afterStation.id, afterStation.name,
+                        s.distance, s.spendTime
+                ))
+                .from(s)
+                .join(s.beforeStationJpaEntity, beforeStation)
+                .join(s.afterStationJpaEntity, afterStation)
+                .where(stationMatch)
+                .fetch();
     }
 
-    public List<SegmentJpaEntity> findAllActive() {
-        return segmentJpaRepository.findByActiveType(ActiveType.ACTIVE);
+    @Override
+    public List<PathSegmentData> findAllActive() {
+        return null;
     }
 
-    public List<StationSegmentLineProjection> findByStationId(Integer stationId) {
+    @Override
+    public List<StationSegmentRow> findByStationId(Integer stationId) {
         QSegmentJpaEntity s = QSegmentJpaEntity.segmentJpaEntity;
         QStationJpaEntity beforeStation = new QStationJpaEntity("beforeStation");
         QStationJpaEntity afterStation = new QStationJpaEntity("afterStation");
@@ -40,7 +57,8 @@ public class SegmentQueryRepository {
                 s.beforeStationJpaEntity.id.eq(stationId)
                         .or(s.afterStationJpaEntity.id.eq(stationId));
         return queryFactory
-                .select(new QStationSegmentLineProjection(
+                .select(Projections.constructor(
+                        StationSegmentRow.class,
                         s.lineJpaEntity.id,s.id,s.activeType,
                         beforeStation.id, beforeStation.name,
                         afterStation.id, afterStation.name
