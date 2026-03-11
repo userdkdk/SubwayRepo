@@ -4,7 +4,7 @@ import com.example.app.api.station.api.dto.response.StationDetailResponse;
 import com.example.app.api.station.api.dto.response.StationResponse;
 import com.example.app.api.station.application.StationViewService;
 import com.example.app.common.dto.request.ViewRequestFilter;
-import com.example.app.common.dto.response.CustomPage;
+import com.example.app.common.dto.page.CustomPage;
 import com.example.app.common.dto.response.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

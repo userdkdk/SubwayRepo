@@ -55,6 +55,10 @@ subprojects {
         }
     }
 
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs += "-parameters"
+    }
+
     tasks.withType(Test).configureEach {
         useJUnitPlatform()
     }

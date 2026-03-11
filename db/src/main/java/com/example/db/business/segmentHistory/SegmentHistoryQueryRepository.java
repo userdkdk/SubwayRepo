@@ -1,6 +1,6 @@
 //package com.example.db.business.segmentHistory;
 //
-//import com.example.app.common.dto.response.CustomPage;
+//import com.example.app.common.dto.page.CustomPage;
 //import com.example.core.business.segmentHistory.HistoryType;
 //import com.querydsl.core.BooleanBuilder;
 //import com.querydsl.jpa.impl.JPAQueryFactory;

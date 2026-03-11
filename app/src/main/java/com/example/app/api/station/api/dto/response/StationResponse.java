@@ -1,6 +1,6 @@
 package com.example.app.api.station.api.dto.response;
 
-import com.example.db.business.station.projection.StationProjection;
+import com.example.app.api.station.port.row.StationRow;
 import com.example.core.common.domain.enums.ActiveType;
 
 public record StationResponse(
@@ -8,7 +8,7 @@ public record StationResponse(
     String name,
     ActiveType activeType
 ) {
-    public static StationResponse from(StationProjection projection) {
+    public static StationResponse from(StationRow projection) {
         return new StationResponse(
                 projection.id(),
                 projection.name(),

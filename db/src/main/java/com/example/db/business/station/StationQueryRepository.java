@@ -1,13 +1,14 @@
 package com.example.db.business.station;
 
+import com.example.app.api.station.port.StationQueryPort;
 import com.example.core.domain.station.StationName;
 import com.example.core.query.CoreSortType;
-import com.example.db.business.station.projection.QStationProjection;
-import com.example.db.common.domain.PageResult;
-import com.example.db.common.domain.enums.StatusFilter;
-import com.example.db.business.station.projection.StationProjection;
+import com.example.app.common.dto.page.PageResult;
+import com.example.app.common.dto.request.enums.StatusFilter;
+import com.example.app.api.station.port.row.StationRow;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,11 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class StationQueryRepository {
+public class StationQueryRepository implements StationQueryPort {
     private final JPAQueryFactory queryFactory;
 
-    public PageResult<StationProjection> findByFilter(StatusFilter status, Pageable pageable, CoreSortType sortType, Sort.Direction direction) {
+    @Override
+    public PageResult<StationRow> findByFilter(StatusFilter status, Pageable pageable, CoreSortType sortType, Sort.Direction direction) {
         QStationJpaEntity s = QStationJpaEntity.stationJpaEntity;
 
         BooleanExpression statusMatch =
@@ -33,8 +35,9 @@ public class StationQueryRepository {
 
         OrderSpecifier<?> orderSpecifier = orderBy(s, sortType, direction);
 
-        List<StationProjection> content = queryFactory
-                .select(new QStationProjection(
+        List<StationRow> content = queryFactory
+                .select(Projections.constructor(
+                        StationRow.class,
                         s.id, s.name, s.activeType
                 ))
                 .from(s)
@@ -54,11 +57,13 @@ public class StationQueryRepository {
         return new PageResult<>(content, totalCount);
     }
 
-    public StationProjection findById(Integer stationId) {
+    @Override
+    public StationRow findById(Integer stationId) {
         QStationJpaEntity s = QStationJpaEntity.stationJpaEntity;
 
         return queryFactory
-                .select(new QStationProjection(
+                .select(Projections.constructor(
+                        StationRow.class,
                         s.id, s.name, s.activeType
                 ))
                 .from(s)
@@ -66,11 +71,13 @@ public class StationQueryRepository {
                 .fetchOne();
     }
 
-    public StationProjection findByName(StationName stationName) {
+    @Override
+    public StationRow findByName(StationName stationName) {
         QStationJpaEntity s = QStationJpaEntity.stationJpaEntity;
 
         return queryFactory
-                .select(new QStationProjection(
+                .select(Projections.constructor(
+                        StationRow.class,
                         s.id, s.name, s.activeType
                 ))
                 .from(s)

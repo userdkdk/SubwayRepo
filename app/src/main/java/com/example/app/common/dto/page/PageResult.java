@@ -1,4 +1,4 @@
-package com.example.db.common.domain;
+package com.example.app.common.dto.page;
 
 import java.util.List;
 

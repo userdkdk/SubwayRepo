@@ -1,4 +1,4 @@
-package com.example.db.common.domain.enums;
+package com.example.app.common.dto.request.enums;
 
 import com.example.core.common.domain.enums.ActiveType;
 

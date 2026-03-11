@@ -3,7 +3,7 @@ package com.example.app.api.station.api;
 import com.example.app.api.station.application.StationViewService;
 import com.example.app.common.dto.request.ViewRequestFilter;
 import com.example.app.common.dto.request.enums.SortType;
-import com.example.db.common.domain.enums.StatusFilter;
+import com.example.app.common.dto.request.enums.StatusFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

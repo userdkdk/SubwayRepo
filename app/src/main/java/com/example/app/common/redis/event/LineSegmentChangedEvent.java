@@ -1,3 +1,3 @@
-package com.example.db.common.redis.service;
+package com.example.app.common.redis.event;
 
 public record LineSegmentChangedEvent(Integer lineId) {}

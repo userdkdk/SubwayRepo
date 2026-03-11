@@ -1,4 +1,4 @@
-package com.example.app.common.dto.response;
+package com.example.app.common.dto.page;
 
 import lombok.Getter;
 import java.util.List;

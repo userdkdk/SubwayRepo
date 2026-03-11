@@ -1,17 +1,17 @@
 package com.example.app.api.station.application;
 
+import com.example.app.api.segment.port.SegmentQueryPort;
 import com.example.app.api.station.api.dto.response.StationDetailResponse;
 import com.example.app.api.station.api.dto.response.StationResponse;
+import com.example.app.api.station.port.StationQueryPort;
+import com.example.app.api.station.port.row.StationRow;
+import com.example.app.api.station.port.row.StationSegmentRow;
+import com.example.app.common.dto.page.PageResult;
 import com.example.app.common.dto.request.ViewRequestFilter;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.exception.CustomException;
 import com.example.core.domain.station.StationName;
-import com.example.db.business.segment.SegmentQueryRepository;
-import com.example.db.business.segment.projection.StationSegmentLineProjection;
-import com.example.db.business.station.StationQueryRepository;
-import com.example.db.business.station.projection.StationProjection;
-import com.example.db.common.domain.PageResult;
-import com.example.app.common.dto.response.CustomPage;
+import com.example.app.common.dto.page.CustomPage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +25,11 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class StationViewService {
 
-    private final StationQueryRepository stationQueryRepository;
-    private final SegmentQueryRepository segmentQueryRepository;
+    private final StationQueryPort stationQueryPort;
+    private final SegmentQueryPort segmentQueryPort;
 
     public CustomPage<StationResponse> getStations(ViewRequestFilter request) {
-        PageResult<StationProjection> result = stationQueryRepository.findByFilter(
+        PageResult<StationRow> result = stationQueryPort.findByFilter(
                 request.status(), request.toPageable(), request.sortType().toDomain(), request.direction());
         List<StationResponse> content = result.content().stream()
                 .map(StationResponse::from)
@@ -38,32 +38,32 @@ public class StationViewService {
     }
 
     public StationDetailResponse getStationById(Integer stationId) {
-        StationProjection stationProjection = stationQueryRepository.findById(stationId);
+        StationRow stationProjection = stationQueryPort.findById(stationId);
         if (stationProjection == null) {
             throw CustomException.app(AppErrorCode.STATION_NOT_FOUND)
                     .addParam("id", stationId);
         }
-        List<StationSegmentLineProjection> lineItem = segmentQueryRepository.findByStationId(stationProjection.id());
+        List<StationSegmentRow> lineItem = segmentQueryPort.findByStationId(stationProjection.id());
 
         return lineItemToDetailResponse(stationId, lineItem, stationProjection);
     }
 
     public StationDetailResponse getStationByName(String name) {
         StationName stationName = new StationName(name);
-        StationProjection stationProjection = stationQueryRepository.findByName(stationName);
-        if (stationProjection == null) {
+        StationRow stationRow = stationQueryPort.findByName(stationName);
+        if (stationRow == null) {
             throw CustomException.app(AppErrorCode.STATION_NOT_FOUND)
                     .addParam("name", name);
         }
-        List<StationSegmentLineProjection> lineItem = segmentQueryRepository.findByStationId(stationProjection.id());
+        List<StationSegmentRow> lineItem = segmentQueryPort.findByStationId(stationRow.id());
 
-        return lineItemToDetailResponse(stationProjection.id(), lineItem, stationProjection);
+        return lineItemToDetailResponse(stationRow.id(), lineItem, stationRow);
     }
 
-    private StationDetailResponse lineItemToDetailResponse(Integer stationId, List<StationSegmentLineProjection> lineItem, StationProjection station) {
+    private StationDetailResponse lineItemToDetailResponse(Integer stationId, List<StationSegmentRow> lineItem, StationRow station) {
         Map<Integer, List<StationDetailResponse.SegmentItem>> map = lineItem.stream()
                 .collect(Collectors.groupingBy(
-                        StationSegmentLineProjection::lineId,
+                        StationSegmentRow::lineId,
                         Collectors.mapping(
                                 r-> {
                                     boolean currentIsBefore = r.beforeStationId().equals(stationId);

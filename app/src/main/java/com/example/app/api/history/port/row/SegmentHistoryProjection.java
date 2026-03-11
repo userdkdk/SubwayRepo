@@ -1,7 +1,6 @@
-package com.example.db.business.segmentHistory;
+package com.example.app.api.history.port.row;
 
 import com.example.core.domain.segmentHistory.HistoryType;
-import com.querydsl.core.annotations.QueryProjection;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +9,4 @@ public record SegmentHistoryProjection(
         Integer segmentId,
         HistoryType historyType,
         LocalDateTime changedAt
-) {
-    @QueryProjection
-    public SegmentHistoryProjection {}
-}
+) {}

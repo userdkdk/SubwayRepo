@@ -1,15 +1,13 @@
 package com.example.db.business.line;
 
-import com.example.core.common.domain.enums.ActiveType;
+import com.example.app.api.line.port.LineQueryPort;
 import com.example.core.query.CoreSortType;
-import com.example.db.business.line.projection.LineProjection;
-import com.example.db.business.line.projection.QLineProjection;
-import com.example.db.business.station.projection.QStationProjection;
-import com.example.db.business.station.projection.StationProjection;
-import com.example.db.common.domain.PageResult;
-import com.example.db.common.domain.enums.StatusFilter;
+import com.example.app.api.line.port.row.LineProjection;
+import com.example.app.common.dto.page.PageResult;
+import com.example.app.common.dto.request.enums.StatusFilter;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +21,10 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class LineQueryRepository {
+public class LineQueryRepository implements LineQueryPort {
     private final JPAQueryFactory queryFactory;
 
+    @Override
     public PageResult<LineProjection> findByFilter(StatusFilter status, Pageable pageable, CoreSortType sortType, Sort.Direction direction) {
         QLineJpaEntity l = QLineJpaEntity.lineJpaEntity;
 
@@ -36,7 +35,8 @@ public class LineQueryRepository {
         OrderSpecifier<?> orderSpecifier = orderBy(l, sortType, direction);
 
         List<LineProjection> content = queryFactory
-                .select(new QLineProjection(
+                .select(Projections.constructor(
+                        LineProjection.class,
                         l.id, l.name, l.activeType
                 ))
                 .from(l)
@@ -56,6 +56,7 @@ public class LineQueryRepository {
         return new PageResult<>(content, totalCount);
     }
 
+    @Override
     public boolean existsActiveById(Integer id) {
         return false;
 //        return lineJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);

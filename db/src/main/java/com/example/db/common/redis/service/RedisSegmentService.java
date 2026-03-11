@@ -1,5 +1,6 @@
 package com.example.db.common.redis.service;
 
+import com.example.app.common.redis.port.RedisSegmentPort;
 import com.example.db.common.redis.constans.RedisConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RedisSegmentService {
+public class RedisSegmentService implements RedisSegmentPort {
 
     private final StringRedisTemplate redis;
     private static final String PATH_KEY = "path";

@@ -1,9 +1,8 @@
-package com.example.db.business.segment.projection;
+package com.example.app.api.station.port.row;
 
 import com.example.core.common.domain.enums.ActiveType;
-import com.querydsl.core.annotations.QueryProjection;
 
-public record StationSegmentLineProjection(
+public record StationSegmentRow(
         Integer lineId,
         Integer segmentId,
         ActiveType activeType,
@@ -11,7 +10,4 @@ public record StationSegmentLineProjection(
         String beforeStationName,
         Integer afterStationId,
         String afterStationName
-) {
-    @QueryProjection
-    public StationSegmentLineProjection {}
-}
+) {}

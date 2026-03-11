@@ -1,5 +1,6 @@
 package com.example.db.common.redis.service;
 
+import com.example.app.common.redis.event.LineSegmentChangedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;

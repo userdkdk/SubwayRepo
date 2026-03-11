@@ -1,7 +1,7 @@
 package com.example.app.common.dto.request;
 
 import com.example.app.common.dto.request.enums.SortType;
-import com.example.db.common.domain.enums.StatusFilter;
+import com.example.app.common.dto.request.enums.StatusFilter;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.PageRequest;
