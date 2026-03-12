@@ -62,7 +62,7 @@ class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
     void 정상적인_경우_이름을_업데이트_할_수_있다() {
         LineJpaEntity l = dbHelper.insertLineNoSegment("line 1");
 
-        lineRepo.updateAttribute(l.getId(),new LineName("line 2"));
+        lineRepo.updateName(l.getId(),new LineName("line 2"));
 
         LineJpaEntity reloaded = dbHelper.getLineById(l.getId());
         assertEquals("line 2", reloaded.getName());
@@ -74,21 +74,9 @@ class LineRepositoryAdapterTest extends MySqlFlywayTcConfig {
         LineJpaEntity l1 = dbHelper.insertLineNoSegment("line 1");
         LineJpaEntity l2 = dbHelper.insertLineNoSegment("line 2");
 
-        assertThatThrownBy(()->lineRepo.updateAttribute(l1.getId(),new LineName("line 2")))
+        assertThatThrownBy(()->lineRepo.updateName(l1.getId(),new LineName("line 2")))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
                 .isEqualTo(DomainErrorCode.LINE_NAME_DUPLICATED);
-    }
-
-    @Test
-    @DisplayName("라인이 없으면 에러 반환, 해당 상태가 아니면 0 반환")
-    void UpdateLineNotExist() {
-        LineJpaEntity l1 = dbHelper.insertLineNoSegment("line 1");
-
-        assertThatThrownBy(()->lineRepo.updateStatus(2, ActiveType.ACTIVE,ActiveType.INACTIVE))
-                .isInstanceOf(CustomException.class)
-                .extracting("errorCode")
-                .isEqualTo(DomainErrorCode.LINE_NOT_FOUND);
-        assertEquals(0,lineRepo.updateStatus(1, ActiveType.INACTIVE,ActiveType.ACTIVE));
     }
 }

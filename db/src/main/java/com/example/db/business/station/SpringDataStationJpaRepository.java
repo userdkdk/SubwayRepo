@@ -18,7 +18,9 @@ public interface SpringDataStationJpaRepository extends JpaRepository<StationJpa
     @Query("select s from StationJpaEntity s where s.id = :id")
     Optional<StationJpaEntity> findByIdForUpdate(@Param("id") Integer id);
 
-//    List<StationJpaEntity> findByActiveType(ActiveType activeType);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select s from StationJpaEntity s where s.id in (:ids)")
+    List<StationJpaEntity> findAllByIdsForUpdate(List<Integer> ids);
 
     boolean existsByIdAndActiveType(Integer id, ActiveType activeType);
 

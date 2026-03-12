@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface SpringDataLineSnapshotSegmentJpaRepository extends JpaRepository<LineSnapshotSegmentJpaEntity, Integer> {
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
@@ -12,13 +14,10 @@ public interface SpringDataLineSnapshotSegmentJpaRepository extends JpaRepositor
             insert into line_snapshots_segments (snapshot_id, segment_id)
             select :snapshotId, s.id
             from segments s
-            where s.line_id = :lineId
-             and s.status = 'ACTIVE'
+            where s.id in (:segmentIds)
             """, nativeQuery = true)
-    int insertAllAcitvateByLineId(
-            @Param("snapshotId") Integer snapshotId,
-            @Param("lineId") Integer lineId);
-
+    int insertAll(@Param("snapshotId") Integer snapshotId,
+                  @Param("segmentIds") List<Integer> segmentIds);
 
     // test
     int countByIdSnapshotId(@Param("snapshotId") Integer snapshotId);

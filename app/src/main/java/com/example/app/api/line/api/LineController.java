@@ -32,7 +32,7 @@ public class LineController {
             @PathVariable Integer lineId,
             @Valid @RequestBody UpdateLineAttributeRequest request
     ) {
-        lineService.updateLineAttribute(lineId, request);
+        lineService.updateLineName(lineId, request);
         return CustomResponse.ok();
     }
 

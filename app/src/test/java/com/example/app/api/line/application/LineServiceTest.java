@@ -89,7 +89,7 @@ class LineServiceTest extends IntegrationTest {
         ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
             final String newName = (i == 0) ? "line A" : "line B";
             UpdateLineAttributeRequest req = new UpdateLineAttributeRequest(newName);
-            lineService.updateLineAttribute(id,req);
+            lineService.updateLineName(id,req);
         });
 
         // 하나는 실패해야 한다
@@ -108,7 +108,7 @@ class LineServiceTest extends IntegrationTest {
         int threads = 2;
         ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
             String newName = "line A";
-            lineService.updateLineAttribute(idArr[i],
+            lineService.updateLineName(idArr[i],
                     new UpdateLineAttributeRequest(newName));
         });
 

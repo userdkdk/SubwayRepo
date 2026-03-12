@@ -12,7 +12,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 @Component
 @RequiredArgsConstructor
@@ -40,8 +39,8 @@ public class StationRepositoryAdapter implements StationRepository {
     }
 
     @Override
-    public List<Station> findByIdsForUpdate(List<Integer> ids) {
-        return List.of();
+    public void findAllByIdsForUpdate(List<Integer> ids) {
+        List<StationJpaEntity> entities = stationJpaRepository.findAllByIdsForUpdate(ids);
     }
 
     @Override

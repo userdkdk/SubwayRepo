@@ -1,5 +1,7 @@
 package com.example.core.domain.lineSnapshot;
 
+import java.util.List;
+
 public interface LineSnapshotSegmentRepository {
-    int insertAllByLineId(Integer snapshotId, Integer lineId);
+    int insertAll(Integer snapshotId, List<Integer> segmentIds);
 }

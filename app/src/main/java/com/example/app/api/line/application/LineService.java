@@ -60,48 +60,56 @@ public class LineService {
 
 
     @Transactional
-    public void updateLineAttribute(Integer id, UpdateLineAttributeRequest request) {
+    public void updateLineName(Integer id, UpdateLineAttributeRequest request) {
         LineName name = new LineName(request.name());
-        lineRepository.updateAttribute(id, name);
+        lineRepository.updateName(id, name);
     }
 
     @Transactional
     public void updateLineStatus(Integer id, UpdateLineStatusRequest request) {
         ActiveType target = request.actionType().toActiveType();
-        ActiveType from = (target == ActiveType.ACTIVE) ? ActiveType.INACTIVE : ActiveType.ACTIVE;
 
         // 라인 비관락 걸기
         Line line = lineRepository.ensureExistsForUpdate(id);
-        if (line.getActiveType() != from) {
-            throw CustomException.domain(DomainErrorCode.LINE_STATUS_CONFLICT);
-        }
 
-        // 라인 업데이트
-        lineRepository.updateStatus(id, from, target);
+        // line 상태 검증
+        line.ensureChangeActiveType(target);
 
         if (target == ActiveType.ACTIVE) {
-            // snapshot 조회
-            List<Integer> segIds = lineSnapshotRepository.findSegsIdByLine(id);
+            // find segment ids and lock stations
+            List<Integer> segmentIds = lineSnapshotRepository.findSegsIdByLine(id);
+            List<Integer> stationIds = segmentRepository.findStationIdsBySegments(segmentIds);
+            stationRepository.findAllByIdsForUpdate(stationIds);
 
             // snapshot에있는요소들전부활성화
-            int segUpdated = segmentRepository.activateByIds(segIds);
-            if (segUpdated!=segIds.size()) {
+            int segUpdated = segmentRepository.activateAllByIds(segmentIds);
+            if (segUpdated!=segmentIds.size()) {
                 throw CustomException.app(AppErrorCode.SNAPSHOT_COUNT_CONFLICT)
                         .addParam("line id", id)
-                        .addParam("segments counts", segIds.size())
+                        .addParam("segments counts", segmentIds.size())
                         .addParam("update counts", segUpdated);
             }
+            // 라인 업데이트
+            lineRepository.updateStatus(id, target);
             return;
         }
         // deactivate
+        // find segment ids and lock stations
+        List<Integer> segmentIds = segmentRepository.findActiveSegmentIdsByLine(id);
+        List<Integer> stationIds = segmentRepository.findStationIdsBySegments(segmentIds);
+        stationRepository.findAllByIdsForUpdate(stationIds);
+
         Integer snapshotId = lineSnapshotRepository.save(LineSnapshot.create(id));
-        int snapshotCounts = lineSnapshotSegmentRepository.insertAllByLineId(snapshotId, id);
-        int segmentCounts = segmentRepository.deactivateAllBySnapshotId(snapshotId);
-        if (snapshotCounts != segmentCounts) {
+        int snapshotInserts = lineSnapshotSegmentRepository.insertAll(snapshotId, segmentIds);
+        int segmentCounts = segmentRepository.deactivateAllByIds(segmentIds);
+
+        if (snapshotInserts != segmentCounts) {
             throw CustomException.app(AppErrorCode.SNAPSHOT_COUNT_CONFLICT)
-                    .addParam("snapshot counts", snapshotCounts)
+                    .addParam("snapshot counts", snapshotInserts)
                     .addParam("segment counts", segmentCounts);
         }
+        // 라인 업데이트
+        lineRepository.updateStatus(id, target);
     }
 
     private void upsertSegment(Integer lineId, Integer startId, Integer endId, Double distance, Integer spendTime) {

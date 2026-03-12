@@ -37,21 +37,10 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             @Param("spendTime") Integer spendTime
     );
 
-    List<SegmentJpaEntity> findByLineJpaEntity_Id(Integer lineId);
-
-    List<SegmentJpaEntity> findByActiveType(ActiveType activeType);
-
     Optional<SegmentJpaEntity> findByLineJpaEntity_IdAndBeforeStationJpaEntity_IdAndAfterStationJpaEntity_Id(
             Integer lineId, Integer beforeId, Integer afterId
     );
 
-    @EntityGraph(attributePaths = {
-            "beforeStationJpaEntity",
-            "afterStationJpaEntity"
-    })
-    List<SegmentJpaEntity> findByLineJpaEntity_IdAndActiveType(Integer lineId, ActiveType activeType);
-
-    // check exists segment by station
     @Query("""
         select count(s) > 0
         from SegmentJpaEntity s
@@ -62,7 +51,6 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
             @Param("stationId") Integer stationId,
             @Param("activeType") ActiveType activeType);
 
-    // check exists station in line
     @Query("""
         select count(s) > 0
         from SegmentJpaEntity s
@@ -117,7 +105,7 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
            and s.afterStationJpaEntity.id = :afterId
            and s.activeType = :active
     """)
-    int inactivateActivateSegment(
+    int inactivateActiveSegment(
             @Param("lineId") Integer lineId,
             @Param("beforeId") Integer beforeId,
             @Param("afterId") Integer afterId,
@@ -126,23 +114,49 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """
-            update segments s
-            join line_snapshots_segments lss
-                on lss.segment_id = s.id
-                and lss.snapshot_id = :snapshotId
-            set s.status = 'INACTIVE'
-            where s.status = 'ACTIVE'
-            """, nativeQuery = true)
-    int deactivateAllBySnapshotId(@Param("snapshotId") Integer snapshotId);
-
-    @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(value = """
-            update segments
-            set status = 'ACTIVE'
-            where id in (:segIds)
-                and status = 'INACTIVE'
-            """, nativeQuery = true)
-    int activateByIdAndLineId(@Param("segIds")List<Integer> segIds);
+            update SegmentJpaEntity s
+            set s.activeType = :target
+            where s.id in (:segIds)
+                and s.activeType = :from
+            """)
+    int changeActivateByIdAndLineId(@Param("segIds") List<Integer> segIds,
+                                    @Param("target") ActiveType target,
+                                    @Param("from") ActiveType from);
 
     int countByLineJpaEntity_Id(Integer lineId);
+
+    @Query("""
+        select s.id
+        from SegmentJpaEntity s
+        where s.lineJpaEntity.id = :lineId
+          and s.activeType = :activeType
+    """)
+    List<Integer> findIdsByLineIdAndActiveType(
+            @Param("lineId") Integer lineId,
+            @Param("activeType") ActiveType activeType);
+
+    @Query(value = """
+            select distinct station_id
+            from (
+                select s.before_station_id as station_id
+                from segments s
+                where s.id in (:segmentIds)
+               \s
+                union
+               \s
+                select s.after_station_id as station_id
+                from segments s
+                where s.id in (:segmentIds)
+            ) t
+           order by station_id
+           """, nativeQuery = true)
+    List<Integer> findStationIdsBySegmentsIds(
+            @Param("segmentIds") List<Integer> segmentIds);
+
+    // test
+    @EntityGraph(attributePaths = {
+            "beforeStationJpaEntity",
+            "afterStationJpaEntity"
+    })
+    List<SegmentJpaEntity> findByLineJpaEntity_IdAndActiveType(Integer lineId, ActiveType activeType);
 }

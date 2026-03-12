@@ -18,6 +18,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -105,5 +107,21 @@ class SegmentRepositoryAdapterTest extends MySqlFlywayTcConfig {
 
         StationConnectionInfo not = segmentRepo.findRemovableInfo(l.getId(), s4.getId());
         assertEquals(not.role(),StationRoleInLine.NOT_IN_LINE);
+    }
+
+    @Test
+    @DisplayName("전체 비활성화 테스트")
+    void TestDeactivateAll() {
+        StationJpaEntity s1 = dbHelper.insertStation("station 1");
+        StationJpaEntity s2 = dbHelper.insertStation("station 2");
+        StationJpaEntity s3 = dbHelper.insertStation("station 3");
+        StationJpaEntity s4 = dbHelper.insertStation("station 4");
+        LineJpaEntity l = dbHelper.insertLine("line", s1, s2, 1.2, 3);
+        dbHelper.insertSegment(l,s2,s3,1.0,3,ActiveType.ACTIVE);
+
+        List<Integer> ids = List.of(1,2);
+
+        int counts = segmentRepo.deactivateAllByIds(ids);
+        assertEquals(2, counts);
     }
 }

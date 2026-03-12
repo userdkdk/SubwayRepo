@@ -38,22 +38,16 @@ public class LineRepositoryAdapter implements LineRepository {
     }
 
     @Override
-    public void updateAttribute(Integer id, LineName name) {
-        LineJpaEntity entity = lineJpaRepository.findById(id)
-                .orElseThrow(()->CustomException.app(DomainErrorCode.LINE_NOT_FOUND)
-                        .addParam("id", id));
+    public void updateName(Integer id, LineName name) {
+        LineJpaEntity entity = findById(id);
         entity.changeName(name.value());
-        tryCommit(DomainErrorCode.LINE_NAME_DUPLICATED, "중복된 이름입니다.");
+        tryCommit(DomainErrorCode.LINE_NAME_DUPLICATED, name.value());
     }
 
     @Override
-    public int updateStatus(Integer id, ActiveType from, ActiveType target) {
-        int updated = lineJpaRepository.setActivateById(id, from, target);
-        if (updated != 1) {
-            lineJpaRepository.findById(id)
-                    .orElseThrow(()->CustomException.domain(DomainErrorCode.LINE_NOT_FOUND));
-        }
-        return updated;
+    public void updateStatus(Integer id, ActiveType activeType) {
+        LineJpaEntity entity = findById(id);
+        entity.changeActiveType(activeType);
     }
 
     @Override
@@ -73,6 +67,12 @@ public class LineRepositoryAdapter implements LineRepository {
     @Override
     public boolean existsActiveById(Integer id) {
         return lineJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
+    }
+
+    private LineJpaEntity findById(Integer id) {
+        return lineJpaRepository.findById(id)
+                .orElseThrow(()->CustomException.app(DomainErrorCode.LINE_NOT_FOUND)
+                        .addParam("id", id));
     }
 
     private void tryCommit(ErrorCode code, String message) {

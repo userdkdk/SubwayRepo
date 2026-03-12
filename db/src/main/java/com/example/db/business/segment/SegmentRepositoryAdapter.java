@@ -74,17 +74,17 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
 
     @Override
     public int inactivateActiveSegment(Integer lineId, Integer beforeId, Integer afterId) {
-        return segmentJpaRepository.inactivateActivateSegment(lineId, beforeId, afterId, ActiveType.INACTIVE, ActiveType.ACTIVE);
+        return segmentJpaRepository.inactivateActiveSegment(lineId, beforeId, afterId, ActiveType.INACTIVE, ActiveType.ACTIVE);
     }
 
     @Override
-    public int activateByIds(List<Integer> segIds) {
-        return segmentJpaRepository.activateByIdAndLineId(segIds);
+    public int activateAllByIds(List<Integer> segmentIds) {
+        return segmentJpaRepository.changeActivateByIdAndLineId(segmentIds, ActiveType.ACTIVE, ActiveType.INACTIVE);
     }
 
     @Override
-    public int deactivateAllBySnapshotId(Integer snapshotId) {
-        return segmentJpaRepository.deactivateAllBySnapshotId(snapshotId);
+    public int deactivateAllByIds(List<Integer> segmentIds) {
+        return segmentJpaRepository.changeActivateByIdAndLineId(segmentIds, ActiveType.INACTIVE, ActiveType.ACTIVE);
     }
 
     @Override
@@ -98,4 +98,13 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
         return segmentJpaRepository.countByLineJpaEntity_Id(lineId);
     }
 
+    @Override
+    public List<Integer> findActiveSegmentIdsByLine(Integer lineId) {
+        return segmentJpaRepository.findIdsByLineIdAndActiveType(lineId, ActiveType.ACTIVE);
+    }
+
+    @Override
+    public List<Integer> findStationIdsBySegments(List<Integer> segmentIds) {
+        return segmentJpaRepository.findStationIdsBySegmentsIds(segmentIds);
+    }
 }

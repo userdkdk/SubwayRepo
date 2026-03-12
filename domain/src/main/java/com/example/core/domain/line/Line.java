@@ -1,6 +1,8 @@
 package com.example.core.domain.line;
 
 import com.example.core.common.domain.enums.ActiveType;
+import com.example.core.common.exception.CustomException;
+import com.example.core.common.exception.DomainErrorCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +31,10 @@ public class Line {
         this.name = name;
     }
 
-    public void changeActiveType(ActiveType activeType) {
-        this.activeType = activeType;
+    public void ensureChangeActiveType(ActiveType target) {
+        if (this.activeType == target) {
+            throw CustomException.domain(DomainErrorCode.LINE_STATUS_CONFLICT);
+        }
+        this.activeType = target;
     }
 }

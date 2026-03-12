@@ -4,7 +4,6 @@ import com.example.core.domain.station.StationConnectionInfo;
 import com.example.core.domain.station.StationRoleInLine;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public interface SegmentRepository{
     int upsert(Segment segment);
@@ -16,11 +15,15 @@ public interface SegmentRepository{
     StationRoleInLine findActiveRole(Integer lineId, Integer stationId);
     int inactivateActiveSegment(Integer lineId, Integer beforeId, Integer afterId);
 
-    int activateByIds(List<Integer> segIds);
+    int activateAllByIds(List<Integer> segIds);
 
-    int deactivateAllBySnapshotId(Integer snapshotId);
+    int deactivateAllByIds(List<Integer> segmentIds);
 
     StationConnectionInfo findRemovableInfo(Integer lineId, Integer stationId);
 
     int countActiveByLine(Integer lineId);
+
+    List<Integer> findActiveSegmentIdsByLine(Integer id);
+
+    List<Integer> findStationIdsBySegments(List<Integer> segmentsId);
 }
