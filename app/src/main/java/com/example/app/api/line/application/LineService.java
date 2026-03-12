@@ -70,7 +70,7 @@ public class LineService {
         ActiveType target = request.actionType().toActiveType();
 
         // 라인 비관락 걸기
-        Line line = lineRepository.ensureExistsForUpdate(id);
+        Line line = lineRepository.findByIdForUpdate(id);
 
         // line 상태 검증
         line.ensureChangeActiveType(target);
@@ -81,7 +81,7 @@ public class LineService {
             List<Integer> stationIds = segmentRepository.findStationIdsBySegments(segmentIds);
             stationRepository.findAllByIdsForUpdate(stationIds);
 
-            // snapshot에있는요소들전부활성화
+            // snapshot에 있는 segment 전부 활성화
             int segUpdated = segmentRepository.activateAllByIds(segmentIds);
             if (segUpdated!=segmentIds.size()) {
                 throw CustomException.app(AppErrorCode.SNAPSHOT_COUNT_CONFLICT)

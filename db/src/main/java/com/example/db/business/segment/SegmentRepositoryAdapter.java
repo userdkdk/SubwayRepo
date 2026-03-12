@@ -66,10 +66,10 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     @Override
     public StationRoleInLine findActiveRole(Integer lineId, Integer stationId) {
         RoleCount c = segmentJpaRepository.countRole(lineId, stationId, ActiveType.ACTIVE);
-        boolean asBefore = c.beforeCount() > 0;
-        boolean asAfter  = c.afterCount()  > 0;
+        boolean hasBefore = c.afterCount() > 0;
+        boolean hasAfter  = c.beforeCount()  > 0;
 
-        return StationRoleInLine.from(asBefore, asAfter);
+        return StationRoleInLine.from(hasBefore, hasAfter);
     }
 
     @Override

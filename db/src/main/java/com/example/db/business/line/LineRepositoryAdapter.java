@@ -30,7 +30,7 @@ public class LineRepositoryAdapter implements LineRepository {
     }
 
     @Override
-    public Line ensureExistsForUpdate(Integer id) {
+    public Line findByIdForUpdate(Integer id) {
         LineJpaEntity line = lineJpaRepository.findByIdForUpdate(id)
                 .orElseThrow(()->CustomException.app(DomainErrorCode.LINE_NOT_FOUND)
                         .addParam("id", id));

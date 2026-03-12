@@ -31,6 +31,12 @@ public class Line {
         this.name = name;
     }
 
+    public void isActive() {
+        if (this.activeType != ActiveType.ACTIVE) {
+            throw CustomException.app(DomainErrorCode.LINE_STATUS_CONFLICT);
+        }
+    }
+
     public void ensureChangeActiveType(ActiveType target) {
         if (this.activeType == target) {
             throw CustomException.domain(DomainErrorCode.LINE_STATUS_CONFLICT);

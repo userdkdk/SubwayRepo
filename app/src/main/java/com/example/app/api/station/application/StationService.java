@@ -42,7 +42,7 @@ public class StationService {
         ActiveType target = request.actionType().toActiveType();
         // station lock for update
         Station station = stationRepository.findByIdForUpdate(id);
-        // if already status return;
+        // return if status not change;
         if (station.getActiveType() == target) {
             return;
         }

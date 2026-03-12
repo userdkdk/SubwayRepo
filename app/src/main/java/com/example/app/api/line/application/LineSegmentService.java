@@ -23,6 +23,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -44,13 +47,9 @@ public class LineSegmentService {
         Double afterDistance = request.after().distance();
         Integer afterSpendTime = request.after().spendTime();
 
-        // force increment line
-        Line line = lineRepository.ensureExistsForUpdate(lineId);
-        if (line.getActiveType()!= ActiveType.ACTIVE) {
-            throw CustomException.app(DomainErrorCode.LINE_STATUS_CONFLICT);
-        }
-        // check line and station exists
-        checkStationExists(stationId);
+        // line lock and check active
+        Line line = lineRepository.findByIdForUpdate(lineId);
+        line.isActive();
 
         // check station does not exist in line
         if (segmentRepository.existsActiveSegmentByStationAndLine(lineId, stationId)) {
@@ -59,19 +58,22 @@ public class LineSegmentService {
                     .addParam("station id", stationId);
         }
 
-        StationRoleInLine inputRole = resolveRole(beforeId, afterId);
+        // station lock
+        lockStations(stationId, beforeId, afterId);
 
+        // find station role
+        StationRoleInLine inputRole = resolveRole(beforeId, afterId);
         switch (inputRole) {
             case HEAD -> {
                 // check after is head
-                StationRoleInLine headSegment = segmentRole(lineId, afterId);
+                StationRoleInLine headSegment = segmentRepository.findActiveRole(lineId, afterId);
                 ensureRole(lineId, afterId, inputRole, headSegment);
                 // save
                 upsertSegment(lineId, stationId, afterId, afterDistance, afterSpendTime);
             }
             case TAIL -> {
                 // check before is tail
-                StationRoleInLine tailSegment = segmentRole(lineId, beforeId);
+                StationRoleInLine tailSegment = segmentRepository.findActiveRole(lineId, beforeId);
                 ensureRole(lineId, beforeId, inputRole, tailSegment);
                 // save
                 upsertSegment(lineId, beforeId, stationId, beforeDistance, beforeSpendTime);
@@ -96,7 +98,7 @@ public class LineSegmentService {
     @Transactional
     public void removeStationInLine(Integer lineId, Integer stationId) {
         // force increment line
-        Line line = lineRepository.ensureExistsForUpdate(lineId);
+        Line line = lineRepository.findByIdForUpdate(lineId);
         if (line.getActiveType()!=ActiveType.ACTIVE) {
             throw CustomException.app(DomainErrorCode.LINE_STATUS_CONFLICT);
         }
@@ -160,20 +162,14 @@ public class LineSegmentService {
                 "beforeId/afterId 조합이 올바르지 않습니다.");
     }
 
-    private StationRoleInLine segmentRole(Integer lineId, Integer stationId) {
-        return segmentRepository.findActiveRole(lineId, stationId);
-    }
-
     private void ensureRole(Integer lineId, Integer stationId, StationRoleInLine inputRole,
                             StationRoleInLine segmentRole) {
-        boolean ok = switch (inputRole) {
-            case HEAD -> segmentRole == StationRoleInLine.TAIL;
-            case TAIL -> segmentRole == StationRoleInLine.HEAD;
-            case INTERNAL -> segmentRole == StationRoleInLine.INTERNAL;
-            case NOT_IN_LINE -> throw CustomException.app(AppErrorCode.STATION_NOT_EXISTS_IN_LINE);
-        };
-        if (!ok) {
-            throwExceptionByLineIdAndStationId(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR, lineId, stationId);
+        if (inputRole!=segmentRole || inputRole==StationRoleInLine.NOT_IN_LINE) {
+            throw CustomException.app(AppErrorCode.SEGMENT_INPUT_VALUE_ERROR)
+                    .addParam("line id", lineId)
+                    .addParam("station id", stationId)
+                    .addParam("input role", inputRole)
+                    .addParam("segment role", segmentRole);
         }
     }
 
@@ -185,17 +181,12 @@ public class LineSegmentService {
         segmentHistoryRepository.save(SegmentHistory.create(segmentId));
     }
 
-    private void checkStationExists(Integer id) {
-        if (!stationRepository.existsActiveById(id)) {
-            throw CustomException.domain(DomainErrorCode.STATION_NOT_FOUND)
-                    .addParam("id", id);
-        }
-    }
-
-    private void throwExceptionByLineIdAndStationId(ErrorCode errorCode, Integer lineId, Integer stationId) {
-        throw CustomException.app(errorCode)
-                .addParam("line id", lineId)
-                .addParam("station id", stationId);
+    private void lockStations(Integer... ids) {
+        Stream.of(ids)
+                .filter(Objects::nonNull)
+                .distinct()
+                .sorted()
+                .forEach(stationRepository::findByIdForUpdate);
     }
 
 }
