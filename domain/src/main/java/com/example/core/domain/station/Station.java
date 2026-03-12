@@ -25,7 +25,7 @@ public class Station {
         return this.name.value();
     }
 
-    public void changeName(StationName name) {
-        this.name = name;
+    public boolean isActive() {
+        return this.activeType == ActiveType.ACTIVE;
     }
 }

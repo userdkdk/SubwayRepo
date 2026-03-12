@@ -16,6 +16,7 @@ import com.example.core.domain.segment.SegmentAttribute;
 import com.example.core.domain.segment.SegmentRepository;
 import com.example.core.domain.segmentHistory.SegmentHistory;
 import com.example.core.domain.segmentHistory.SegmentHistoryRepository;
+import com.example.core.domain.station.Station;
 import com.example.core.domain.station.StationRepository;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
@@ -46,9 +47,9 @@ public class LineService {
         Integer endId = request.endId();
         Double distance = request.attribute().distance();
         Integer spendTime = request.attribute().spendTime();
-        // check station exists and isActive
-        checkStationExists(startId);
-        checkStationExists(endId);
+        // station lock and check is active
+        checkStationActive(startId);
+        checkStationActive(endId);
         // create line
         LineName name = new LineName(request.name());
         Line savedLine = lineRepository.save(Line.create(name));
@@ -111,9 +112,10 @@ public class LineService {
         segmentHistoryRepository.save(SegmentHistory.create(segmentId));
     }
 
-    private void checkStationExists(Integer id) {
-        if (!stationRepository.existsActiveById(id)) {
-            throw CustomException.domain(AppErrorCode.STATION_NOT_FOUND)
+    private void checkStationActive(Integer id) {
+        Station station = stationRepository.findByIdForUpdate(id);
+        if (!station.isActive()) {
+            throw CustomException.domain(DomainErrorCode.STATION_NOT_ACTIVE)
                     .addParam("id", id);
         }
     }

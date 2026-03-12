@@ -13,6 +13,7 @@ public enum DomainErrorCode implements ErrorCode {
     STATION_NAME_DUPLICATED("DS-002", "Station name duplicated", 409),
     STATION_ALREADY_EXISTS_IN_LINE("DS-003", "Station already exists in line", 400),
     STATION_DELETE_ERROR("DS-004", "Can not delete station", 400),
+    STATION_NOT_ACTIVE("DS-005", "Station is not active", 400),
 
     // line
     LINE_NOT_FOUND("DL-001", "Line not found", 404),
