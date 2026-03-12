@@ -16,13 +16,13 @@ import com.example.core.domain.segmentHistory.SegmentHistoryRepository;
 import com.example.core.domain.station.StationRepository;
 import com.example.core.domain.station.StationRoleInLine;
 import com.example.core.common.exception.CustomException;
-import com.example.core.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -51,6 +51,9 @@ public class LineSegmentService {
         Line line = lineRepository.findByIdForUpdate(lineId);
         line.isActive();
 
+        // station lock
+        lockStations(stationId, beforeId, afterId);
+
         // check station does not exist in line
         if (segmentRepository.existsActiveSegmentByStationAndLine(lineId, stationId)) {
             throw CustomException.app(DomainErrorCode.STATION_ALREADY_EXISTS_IN_LINE)
@@ -58,8 +61,6 @@ public class LineSegmentService {
                     .addParam("station id", stationId);
         }
 
-        // station lock
-        lockStations(stationId, beforeId, afterId);
 
         // find station role
         StationRoleInLine inputRole = resolveRole(beforeId, afterId);
@@ -97,11 +98,12 @@ public class LineSegmentService {
 
     @Transactional
     public void removeStationInLine(Integer lineId, Integer stationId) {
-        // force increment line
+        // line lock and check is active
         Line line = lineRepository.findByIdForUpdate(lineId);
-        if (line.getActiveType()!=ActiveType.ACTIVE) {
-            throw CustomException.app(DomainErrorCode.LINE_STATUS_CONFLICT);
-        }
+        line.isActive();
+
+        // station lock
+        stationRepository.findByIdForUpdate(stationId);
 
         int activeSegmentCount = segmentRepository.countActiveByLine(lineId);
         if (activeSegmentCount<=1) {
@@ -182,11 +184,12 @@ public class LineSegmentService {
     }
 
     private void lockStations(Integer... ids) {
-        Stream.of(ids)
+        List<Integer> stationIds = Stream.of(ids)
                 .filter(Objects::nonNull)
                 .distinct()
                 .sorted()
-                .forEach(stationRepository::findByIdForUpdate);
+                .toList();
+        stationRepository.findAllByIdsForUpdate(stationIds);
     }
 
 }

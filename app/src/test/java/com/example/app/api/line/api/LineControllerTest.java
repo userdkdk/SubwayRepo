@@ -1,7 +1,6 @@
 package com.example.app.api.line.api;
 
-import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
-import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
+import com.example.app.api.segment.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.application.LineService;
 import com.fasterxml.jackson.databind.ObjectMapper;

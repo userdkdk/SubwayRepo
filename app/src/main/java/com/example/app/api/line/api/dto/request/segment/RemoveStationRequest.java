@@ -1,6 +1,6 @@
 package com.example.app.api.line.api.dto.request.segment;
 
-import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
+import com.example.app.api.segment.api.dto.request.SegmentAttributeRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

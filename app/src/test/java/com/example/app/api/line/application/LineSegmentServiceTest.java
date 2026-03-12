@@ -1,6 +1,6 @@
 package com.example.app.api.line.application;
 
-import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
+import com.example.app.api.segment.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.support.IntegrationTest;

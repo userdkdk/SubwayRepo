@@ -95,7 +95,7 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
 
     @Override
     public int countActiveByLine(Integer lineId) {
-        return segmentJpaRepository.countByLineJpaEntity_Id(lineId);
+        return segmentJpaRepository.countByLineJpaEntity_IdAndActiveType(lineId, ActiveType.ACTIVE);
     }
 
     @Override

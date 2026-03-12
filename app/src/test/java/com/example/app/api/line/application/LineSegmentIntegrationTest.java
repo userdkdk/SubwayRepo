@@ -1,6 +1,6 @@
 package com.example.app.api.line.application;
 
-import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
+import com.example.app.api.segment.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.support.IntegrationTest;
 import com.example.core.domain.station.StationRoleInLine;
@@ -8,21 +8,16 @@ import com.example.db.business.line.LineJpaEntity;
 import com.example.db.business.segment.SegmentRepositoryAdapter;
 import com.example.db.business.station.StationJpaEntity;
 import com.example.db.support.DbHelper;
-import com.example.db.support.MySqlFlywayTcConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
 
 public class LineSegmentIntegrationTest extends IntegrationTest {
 

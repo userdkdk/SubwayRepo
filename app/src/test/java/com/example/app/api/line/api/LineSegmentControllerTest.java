@@ -1,10 +1,8 @@
 package com.example.app.api.line.api;
 
-import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
-import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
+import com.example.app.api.segment.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.api.line.application.LineSegmentService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

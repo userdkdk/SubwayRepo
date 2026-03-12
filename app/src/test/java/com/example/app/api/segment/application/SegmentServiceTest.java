@@ -1,10 +1,8 @@
 package com.example.app.api.segment.application;
 
-import com.example.app.api.line.api.dto.request.SegmentAttributeRequest;
-import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
+import com.example.app.api.segment.api.dto.request.SegmentAttributeRequest;
 import com.example.app.api.segment.api.dto.request.UpdateSegmentAttributeRequest;
 import com.example.app.support.IntegrationTest;
-import com.example.core.domain.segment.SegmentAttribute;
 import com.example.db.business.line.LineJpaEntity;
 import com.example.db.business.segment.SegmentJpaEntity;
 import com.example.db.business.station.StationJpaEntity;

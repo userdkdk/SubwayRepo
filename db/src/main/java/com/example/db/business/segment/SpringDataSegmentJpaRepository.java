@@ -123,7 +123,7 @@ public interface SpringDataSegmentJpaRepository extends JpaRepository<SegmentJpa
                                     @Param("target") ActiveType target,
                                     @Param("from") ActiveType from);
 
-    int countByLineJpaEntity_Id(Integer lineId);
+    int countByLineJpaEntity_IdAndActiveType(Integer lineId, ActiveType activeType);
 
     @Query("""
         select s.id
