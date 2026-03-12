@@ -32,7 +32,7 @@ public class StationController {
             @PathVariable Integer stationId,
             @Valid @RequestBody UpdateStationAttributeRequest request
     ) {
-        stationService.updateStationAttribute(stationId, request);
+        stationService.updateStationName(stationId, request);
         return CustomResponse.ok();
     }
 

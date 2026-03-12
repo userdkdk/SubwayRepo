@@ -18,5 +18,4 @@ class StationViewServiceTest extends IntegrationTest {
         dbHelper.truncateAll();
     }
 
-
 }

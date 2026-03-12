@@ -34,7 +34,7 @@ class StationServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("같은_이름_동시_생성시_하나는_저장_하나는_에러_반환")
-    void 같은_이름_동시_생성시_하나는_저장_하나는_에러_반환() throws Exception {
+    void createStationsConcurrencyBySameName() throws Exception {
         int threads = 2;
         ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
             stationService.createStation(new CreateStationRequest("station A"));
@@ -53,14 +53,14 @@ class StationServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("같은_station_동시_이름변경이면_한쪽은_낙관락_실패")
-    void 같은_station_동시_이름변경이면_한쪽은_낙관락_실패() throws Exception {
+    void updateStationNameConcurrencyBySameName() throws Exception {
         StationJpaEntity s = dbHelper.insertStation("station 1");
         Integer id = s.getId();
 
         int threads = 2;
         ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
             final String newName = (i == 0) ? "station A" : "station B";
-            stationService.updateStationAttribute(id,
+            stationService.updateStationName(id,
                     new UpdateStationAttributeRequest(newName));
         });
 
@@ -71,7 +71,7 @@ class StationServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("동시에_같은_이름으로_수정시_하나는_200_하나는_에러_반환")
-    void 동시에_같은_이름으로_수정시_하나는_200_하나는_에러_반환() throws Exception {
+    void updateStationsConcurrencyToSameName() throws Exception {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
         Integer[] idArr = {s1.getId(), s2.getId()};
@@ -79,7 +79,7 @@ class StationServiceTest extends IntegrationTest {
 
         int threads = 2;
         ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
-            stationService.updateStationAttribute(idArr[i],
+            stationService.updateStationName(idArr[i],
                     new UpdateStationAttributeRequest(newName));
         });
 
@@ -96,7 +96,7 @@ class StationServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("같은_상태로_변경은_정상_동작")
-    void 같은_상태로_변경은_정상_동작() {
+    void updateStationStatusToSameStatus() {
         StationJpaEntity s = dbHelper.insertStation("station 1");
         UpdateStationStatusRequest req = new UpdateStationStatusRequest(ActionType.ACTIVE);
         stationService.updateStationStatus(s.getId(), req);
@@ -107,7 +107,7 @@ class StationServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("비활성화시_활동중인_seg가_있으면_에러")
-    void 비활성화시_활동중인_seg가_있으면_에러() {
+    void DeactivateStationThatHasActiveSegments() {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
         dbHelper.insertLine("line 1", s1, s2,1.0,4);
@@ -121,8 +121,24 @@ class StationServiceTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("동시에 같은 상태로 변경시 둘 다 성공")
+    void updateStationStatusConcurrencyToSameStatus() throws Exception {
+        StationJpaEntity s = dbHelper.insertStation("station 1");
+        Integer id = s.getId();
+        UpdateStationStatusRequest req = new UpdateStationStatusRequest(ActionType.ACTIVE);
+
+        int threads = 2;
+        ConcurrentRunner.Result result = ConcurrentRunner.run(threads, (i)-> {
+            stationService.updateStationStatus(s.getId(), req);
+        });
+
+        // 둘다 성공
+        assertEquals(0, result.errorCount());
+    }
+
+    @Test
     @DisplayName("해당_엔티티가_존재하지_않으면_에러_반환")
-    void 해당_엔티티가_존재하지_않으면_에러_반환() {
+    void stationNotFoundTest() {
         UpdateStationStatusRequest req = new UpdateStationStatusRequest(ActionType.ACTIVE);
 
         assertThatThrownBy(()-> stationService.updateStationStatus(1, req))

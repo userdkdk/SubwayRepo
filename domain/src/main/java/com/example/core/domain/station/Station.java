@@ -28,8 +28,4 @@ public class Station {
     public void changeName(StationName name) {
         this.name = name;
     }
-
-    public void changeActiveType(ActiveType activeType) {
-        this.activeType = activeType;
-    }
 }

@@ -40,10 +40,7 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         dbHelper.insertStation("station 2");
 
-        stationAdapter.update(s1.getId(), station -> {
-            StationName name = new StationName("station 1-new");
-            station.changeName(name);
-        });
+        stationAdapter.updateName(s1.getId(),new StationName("station 1-new"));
 
         StationJpaEntity reloaded = dbHelper.getStationById(s1.getId());
         assertEquals("station 1-new", reloaded.getName());
@@ -76,7 +73,7 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
 
-        assertThatThrownBy(() -> stationAdapter.update(s2.getId(), st -> st.changeName(new StationName("station 1"))))
+        assertThatThrownBy(() -> stationAdapter.updateName(s2.getId(), new StationName("station 1")))
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
                 .isEqualTo(DomainErrorCode.STATION_NAME_DUPLICATED);
@@ -86,7 +83,7 @@ class StationRepositoryAdapterTest extends MySqlFlywayTcConfig {
     @DisplayName("같은 이름으로 변경시 flush 여부 확인")
     void checkVersionUpdateToSameName() {
         StationJpaEntity s1 = dbHelper.insertStation("station 1");
-        stationAdapter.update(s1.getId(), st -> st.changeName(new StationName("station 1")));
+        stationAdapter.updateName(s1.getId(), new StationName("station 1"));
         StationJpaEntity reload = dbHelper.getStationById(1);
         assertEquals(reload.getName(),"station 1");
         assertEquals(reload.getVersion(),0);

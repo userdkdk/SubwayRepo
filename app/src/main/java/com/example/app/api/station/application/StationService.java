@@ -5,6 +5,7 @@ import com.example.app.api.station.api.dto.request.UpdateStationAttributeRequest
 import com.example.app.api.station.api.dto.request.UpdateStationStatusRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.dto.request.enums.ActionType;
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.domain.segment.SegmentRepository;
 import com.example.core.domain.station.Station;
 import com.example.core.domain.station.StationName;
@@ -30,21 +31,26 @@ public class StationService {
     }
 
     @Transactional
-    public void updateStationAttribute(Integer id, UpdateStationAttributeRequest request) {
+    public void updateStationName(Integer id, UpdateStationAttributeRequest request) {
         // update station
         StationName name = new StationName(request.name());
-        stationRepository.update(id, station->station.changeName(name));
+        stationRepository.updateName(id, name);
     }
 
     @Transactional
     public void updateStationStatus(Integer id, UpdateStationStatusRequest request) {
-        // update station
-        ActionType action = request.actionType();
-        if (action== ActionType.INACTIVE &&
+        ActiveType target = request.actionType().toActiveType();
+        // station lock for update
+        Station station = stationRepository.findByIdForUpdate(id);
+        // if already status return;
+        if (station.getActiveType() == target) {
+            return;
+        }
+        if (target== ActiveType.INACTIVE &&
                 segmentRepository.existsActiveSegmentByStation(id)) {
             throw CustomException.app(AppErrorCode.ACTIVE_STATION_EXISTS)
                     .addParam("id", id);
         }
-        stationRepository.update(id, station->station.changeActiveType(action.toActiveType()));
+        stationRepository.updateStatus(id, target);
     }
 }

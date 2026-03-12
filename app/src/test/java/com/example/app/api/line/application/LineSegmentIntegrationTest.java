@@ -46,8 +46,8 @@ public class LineSegmentIntegrationTest extends IntegrationTest {
         StationJpaEntity s2 = dbHelper.insertStation("station 2");
         StationJpaEntity s3 = dbHelper.insertStation("station 3");
         LineJpaEntity l = dbHelper.insertLine("line", s1, s2, 1.2, 3);
-        SegmentAttributeRequest seg = new SegmentAttributeRequest(1.2, 3);
 
+        SegmentAttributeRequest seg = new SegmentAttributeRequest(1.2, 3);
         // internal
         CreateSegmentRequest req = switch (position) {
             case 0 -> new CreateSegmentRequest(null, s1.getId(), seg, seg);
@@ -57,6 +57,7 @@ public class LineSegmentIntegrationTest extends IntegrationTest {
         };
         lineSegmentService.addStation(l.getId(), s3.getId(), req);
         assertEquals(2,dbHelper.countActiveSegmentByLineId(l.getId()));
+
         StationRoleInLine role = segmentRepositoryAdapter.findActiveRole(l.getId(), s3.getId());
         switch (position) {
             case 0 -> assertEquals(StationRoleInLine.HEAD,role);
