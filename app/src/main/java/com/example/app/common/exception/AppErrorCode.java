@@ -36,7 +36,10 @@ public enum AppErrorCode implements ErrorCode {
     HISTORY_CONDITION_INValid("AH-001", "History input condition invalid", HttpStatus.BAD_REQUEST),
 
     // snapshot
-    SNAPSHOT_COUNT_CONFLICT("ASS-001", "Snapshot count conflict", HttpStatus.CONFLICT);
+    SNAPSHOT_COUNT_CONFLICT("ASS-001", "Snapshot count conflict", HttpStatus.CONFLICT),
+
+    // query
+    VIEW_STATUS_ERROR("AQ-001", "Status query has error", HttpStatus.INTERNAL_SERVER_ERROR);
 
 
     private final String code;

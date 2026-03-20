@@ -7,7 +7,9 @@ import com.example.core.query.CoreSortType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.Optional;
+
 public interface LineQueryPort {
     PageResult<LineProjection> findByFilter(StatusFilter status, Pageable pageable, CoreSortType sortType, Sort.Direction direction);
-    boolean existsActiveById(Integer id);
+    Optional<LineProjection> findById(Integer id);
 }

@@ -47,32 +47,37 @@ public class LineViewService {
 
     public LineDetailResponse getStationsById(Integer lineId, StatusFilter status) {
         String cachedJson = redisLinePort.getSegments(lineId, status);
+        LineProjection line = lineQueryPort.findById(lineId)
+                .orElseThrow(()->CustomException.app(AppErrorCode.LINE_NOT_FOUND));
+
         if (cachedJson != null && !cachedJson.isBlank()) {
-            List<StationSegmentResponse> cached = tryReadList(cachedJson, lineId, status);
-            if (cached != null) {
-                return null;
+            List<LineSegmentRow> cached = tryReadList(cachedJson, lineId, status);
+            if (cached!=null) {
+                return LineDetailResponse.of(line.id(), line.name(), line.activeType(),
+                        cached.stream()
+                                .map(StationSegmentResponse::from)
+                                .toList());
             }
         }
 
-        //
-        if (!lineQueryPort.existsActiveById(lineId)) {
-            throw CustomException.domain(AppErrorCode.LINE_NOT_FOUND)
-                    .addParam("line id", lineId);
-        }
         List<LineSegmentRow> segments =
                 segmentQueryPort.findByLineAndActiveType(lineId, status);
 
-        List<StationSegmentResponse> result = stationSorter.sortSegments(segments, lineId).stream()
-                .map(StationSegmentResponse::from)
-                .toList(); // 불변 OK (캐시값은 수정되면 안 됨)
+        if (status==StatusFilter.ACTIVE) {
+            segments = stationSorter.sortSegments(segments, lineId);// 불변 OK (캐시값은 수정되면 안 됨)
+        }
 
-        String json = writeJson(result);
+        String json = writeJson(segments);
         redisLinePort.setSegments(lineId, status, json);
 
-        return null;
+        List<StationSegmentResponse> segmentResponses = segments.stream()
+                .map(StationSegmentResponse::from)
+                .toList();
+
+        return LineDetailResponse.of(line.id(), line.name(), line.activeType(), segmentResponses);
     }
 
-    private List<StationSegmentResponse> tryReadList(String json, Integer lineId, StatusFilter status) {
+    private List<LineSegmentRow> tryReadList(String json, Integer lineId, StatusFilter status) {
         try {
             return redisObjectMapper.readValue(json, new TypeReference<>() {});
         } catch (Exception e) {
@@ -83,7 +88,7 @@ public class LineViewService {
         }
     }
 
-    private String writeJson(List<StationSegmentResponse> value) {
+    private String writeJson(List<LineSegmentRow> value) {
         try {
             return redisObjectMapper.writeValueAsString(value);
         } catch (Exception e) {

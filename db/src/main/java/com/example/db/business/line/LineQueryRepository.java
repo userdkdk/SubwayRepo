@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -57,11 +58,19 @@ public class LineQueryRepository implements LineQueryPort {
     }
 
     @Override
-    public boolean existsActiveById(Integer id) {
-        return false;
-//        return lineJpaRepository.existsByIdAndActiveType(id, ActiveType.ACTIVE);
-    }
+    public Optional<LineProjection> findById(Integer id) {
+        QLineJpaEntity l = QLineJpaEntity.lineJpaEntity;
 
+        return Optional.ofNullable(queryFactory
+                .select(Projections.constructor(
+                        LineProjection.class,
+                        l.id, l.name, l.activeType
+                ))
+                .from(l)
+                .where(l.id.eq(id))
+                .fetchOne()
+        );
+    }
 
     private OrderSpecifier<?> orderBy(QLineJpaEntity l, CoreSortType sortType, Sort.Direction direction) {
         Order order = direction.isAscending() ? Order.ASC : Order.DESC;

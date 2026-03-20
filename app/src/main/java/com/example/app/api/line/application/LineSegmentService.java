@@ -3,7 +3,6 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.redis.event.LineSegmentChangedEvent;
-import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.core.domain.line.Line;
 import com.example.core.domain.station.StationConnectionInfo;

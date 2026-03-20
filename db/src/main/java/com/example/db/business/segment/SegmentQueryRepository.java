@@ -24,9 +24,8 @@ public class SegmentQueryRepository implements SegmentQueryPort {
         QSegmentJpaEntity s = QSegmentJpaEntity.segmentJpaEntity;
         QStationJpaEntity beforeStation = new QStationJpaEntity("beforeStation");
         QStationJpaEntity afterStation = new QStationJpaEntity("afterStation");
-        BooleanExpression stationMatch =
-                s.lineJpaEntity.id.eq(lineId)
-                        .and(s.activeType.eq(status.toActiveType()));
+        BooleanExpression activeTypeEq =
+                status == StatusFilter.ALL ? null : s.activeType.eq(status.toActiveType());
         return queryFactory
                 .select(Projections.constructor(
                         LineSegmentRow.class,
@@ -38,7 +37,8 @@ public class SegmentQueryRepository implements SegmentQueryPort {
                 .from(s)
                 .join(s.beforeStationJpaEntity, beforeStation)
                 .join(s.afterStationJpaEntity, afterStation)
-                .where(stationMatch)
+                .where(s.lineJpaEntity.id.eq(lineId),
+                        activeTypeEq)
                 .fetch();
     }
 
