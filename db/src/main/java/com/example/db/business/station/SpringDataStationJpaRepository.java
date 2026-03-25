@@ -15,12 +15,18 @@ public interface SpringDataStationJpaRepository extends JpaRepository<StationJpa
     boolean existsByName(String name);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select s from StationJpaEntity s where s.id = :id")
-    Optional<StationJpaEntity> findByIdForUpdate(@Param("id") Integer id);
+    @Query("select s from StationJpaEntity s " +
+            "where s.id = :id and s.activeType = :activeType")
+    Optional<StationJpaEntity> findByIdAndActivateForUpdate(
+            @Param("id") Integer id,
+            @Param("activeType") ActiveType activeType);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select s from StationJpaEntity s where s.id in (:ids)")
-    List<StationJpaEntity> findAllByIdsForUpdate(List<Integer> ids);
+    @Query("select s from StationJpaEntity s " +
+            "where s.id in (:ids) and s.activeType = :activeType")
+    List<StationJpaEntity> findAllByIdsAndActiveTypeForUpdate(
+            @Param("ids") List<Integer> ids,
+            @Param("activeType") ActiveType activeType);
 
     boolean existsByIdAndActiveType(Integer id, ActiveType activeType);
 

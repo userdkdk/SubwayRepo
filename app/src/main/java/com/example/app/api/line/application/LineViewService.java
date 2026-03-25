@@ -45,7 +45,7 @@ public class LineViewService {
         return CustomPage.of(content, request.toPageable().getPageNumber(), request.toPageable().getPageSize(), result.totalElements());
     }
 
-    public LineDetailResponse getStationsById(Integer lineId, StatusFilter status) {
+    public LineDetailResponse getLineDetailById(Integer lineId, StatusFilter status) {
         String cachedJson = redisLinePort.getSegments(lineId, status);
         LineProjection line = lineQueryPort.findById(lineId)
                 .orElseThrow(()->CustomException.app(AppErrorCode.LINE_NOT_FOUND));
@@ -75,6 +75,11 @@ public class LineViewService {
                 .toList();
 
         return LineDetailResponse.of(line.id(), line.name(), line.activeType(), segmentResponses);
+    }
+
+    public LineDetailResponse getLineDetailByName(String name, StatusFilter status) {
+
+        return null;
     }
 
     private List<LineSegmentRow> tryReadList(String json, Integer lineId, StatusFilter status) {

@@ -33,16 +33,16 @@ public class LineViewController {
             @PathVariable Integer lineId,
             @RequestParam(defaultValue = "ACTIVE") StatusFilter status
     ) {
-        LineDetailResponse res = lineViewService.getStationsById(lineId, status);
+        LineDetailResponse res = lineViewService.getLineDetailById(lineId, status);
         return CustomResponse.ok(res);
     }
 
     @GetMapping("/name/{name}")
     public ResponseEntity<CustomResponse<LineDetailResponse>> getStationsByName(
-            @PathVariable Integer lineId,
+            @PathVariable String name,
             @RequestParam(defaultValue = "ACTIVE") StatusFilter status
     ) {
-        LineDetailResponse res = lineViewService.getStationsById(lineId, status);
+        LineDetailResponse res = lineViewService.getLineDetailByName(name, status);
         return CustomResponse.ok(res);
     }
 }

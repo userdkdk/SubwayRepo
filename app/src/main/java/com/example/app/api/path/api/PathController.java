@@ -15,7 +15,7 @@ public class PathController {
 
     private final PathService pathService;
 
-    @GetMapping("/{lineId}/{startId}/{endId}")
+    @GetMapping("/{startId}/{endId}")
     public ResponseEntity<CustomResponse<PathResponse>> getPath(
             @PathVariable Integer startId,
             @PathVariable Integer endId,

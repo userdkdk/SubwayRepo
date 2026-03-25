@@ -1,6 +1,7 @@
 package com.example.db.business.segment;
 
 import com.example.app.api.line.port.row.LineSegmentRow;
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.domain.path.port.data.PathSegmentData;
 import com.example.app.api.segment.port.SegmentQueryPort;
 import com.example.app.api.station.port.row.StationSegmentRow;
@@ -44,7 +45,17 @@ public class SegmentQueryRepository implements SegmentQueryPort {
 
     @Override
     public List<PathSegmentData> findAllActive() {
-        return null;
+        QSegmentJpaEntity s = QSegmentJpaEntity.segmentJpaEntity;
+
+        return queryFactory
+                .select(Projections.constructor(
+                        PathSegmentData.class,
+                        s.beforeStationJpaEntity.id, s.afterStationJpaEntity.id,
+                        s.distance, s.spendTime
+                ))
+                .from(s)
+                .where(s.activeType.eq(ActiveType.ACTIVE))
+                .fetch();
     }
 
     @Override

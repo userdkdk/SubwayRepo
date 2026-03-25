@@ -47,9 +47,9 @@ public class LineService {
         Integer endId = request.endId();
         Double distance = request.attribute().distance();
         Integer spendTime = request.attribute().spendTime();
-        // station lock and check is active
-        checkStationActive(startId);
-        checkStationActive(endId);
+        // station lock to active station
+        stationRepository.findByIdAndActiveTypeForUpdate(startId, ActiveType.ACTIVE);
+        stationRepository.findByIdAndActiveTypeForUpdate(endId, ActiveType.ACTIVE);
         // create line
         LineName name = new LineName(request.name());
         Line savedLine = lineRepository.save(Line.create(name));
@@ -79,7 +79,7 @@ public class LineService {
             // find segment ids and lock stations
             List<Integer> segmentIds = lineSnapshotRepository.findSegsIdByLine(id);
             List<Integer> stationIds = segmentRepository.findStationIdsBySegments(segmentIds);
-            stationRepository.findAllByIdsForUpdate(stationIds);
+            stationRepository.findAllByIdsAndActiveTypeForUpdate(stationIds, ActiveType.ACTIVE);
 
             // snapshot에 있는 segment 전부 활성화
             int segUpdated = segmentRepository.activateAllByIds(segmentIds);
@@ -97,7 +97,7 @@ public class LineService {
         // find segment ids and lock stations
         List<Integer> segmentIds = segmentRepository.findActiveSegmentIdsByLine(id);
         List<Integer> stationIds = segmentRepository.findStationIdsBySegments(segmentIds);
-        stationRepository.findAllByIdsForUpdate(stationIds);
+        stationRepository.findAllByIdsAndActiveTypeForUpdate(stationIds, ActiveType.ACTIVE);
 
         Integer snapshotId = lineSnapshotRepository.save(LineSnapshot.create(id));
         int snapshotInserts = lineSnapshotSegmentRepository.insertAll(snapshotId, segmentIds);
@@ -118,13 +118,5 @@ public class LineService {
         segmentRepository.upsert(segment);
         Integer segmentId = segmentRepository.findIdByUniqueKey(segment);
         segmentHistoryRepository.save(SegmentHistory.create(segmentId));
-    }
-
-    private void checkStationActive(Integer id) {
-        Station station = stationRepository.findByIdForUpdate(id);
-        if (!station.isActive()) {
-            throw CustomException.domain(DomainErrorCode.STATION_NOT_ACTIVE)
-                    .addParam("id", id);
-        }
     }
 }

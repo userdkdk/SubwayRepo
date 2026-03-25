@@ -3,6 +3,7 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.app.common.redis.event.LineSegmentChangedEvent;
+import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.core.domain.line.Line;
 import com.example.core.domain.station.StationConnectionInfo;
@@ -51,7 +52,7 @@ public class LineSegmentService {
         line.isActive();
 
         // station lock
-        lockStations(stationId, beforeId, afterId);
+        lockStationsForAddStation(stationId, beforeId, afterId);
 
         // check station does not exist in line
         if (segmentRepository.existsActiveSegmentByStationAndLine(lineId, stationId)) {
@@ -102,7 +103,7 @@ public class LineSegmentService {
         line.isActive();
 
         // station lock
-        stationRepository.findByIdForUpdate(stationId);
+        stationRepository.findByIdAndActiveTypeForUpdate(stationId, ActiveType.ACTIVE);
 
         int activeSegmentCount = segmentRepository.countActiveByLine(lineId);
         if (activeSegmentCount<=1) {
@@ -182,13 +183,13 @@ public class LineSegmentService {
         segmentHistoryRepository.save(SegmentHistory.create(segmentId));
     }
 
-    private void lockStations(Integer... ids) {
+    private void lockStationsForAddStation(Integer... ids) {
         List<Integer> stationIds = Stream.of(ids)
                 .filter(Objects::nonNull)
                 .distinct()
                 .sorted()
                 .toList();
-        stationRepository.findAllByIdsForUpdate(stationIds);
+        stationRepository.findAllByIdsAndActiveTypeForUpdate(stationIds, ActiveType.ACTIVE);
     }
 
 }

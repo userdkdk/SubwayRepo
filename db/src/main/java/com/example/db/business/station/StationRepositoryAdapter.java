@@ -1,5 +1,6 @@
 package com.example.db.business.station;
 
+import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.core.common.exception.ErrorCode;
 import com.example.core.domain.station.Station;
@@ -31,16 +32,19 @@ public class StationRepositoryAdapter implements StationRepository {
     }
 
     @Override
-    public Station findByIdForUpdate(Integer id) {
-        StationJpaEntity entity = stationJpaRepository.findByIdForUpdate(id)
+    public Station findByIdAndActiveTypeForUpdate(Integer id, ActiveType activeType) {
+        StationJpaEntity entity = stationJpaRepository.findByIdAndActivateForUpdate(id, activeType)
                 .orElseThrow(()->CustomException.app(DomainErrorCode.STATION_NOT_FOUND)
                         .addParam("id", id));
         return stationMapper.toDomain(entity);
     }
 
     @Override
-    public void findAllByIdsForUpdate(List<Integer> ids) {
-        List<StationJpaEntity> entities = stationJpaRepository.findAllByIdsForUpdate(ids);
+    public void findAllByIdsAndActiveTypeForUpdate(List<Integer> ids, ActiveType activeType) {
+        List<StationJpaEntity> entities = stationJpaRepository.findAllByIdsAndActiveTypeForUpdate(ids, activeType);
+        if (entities.size() != ids.size()) {
+            throw CustomException.app(AppErrorCode.STATION_COUNTS_CONFLICT);
+        }
     }
 
     @Override
