@@ -32,6 +32,14 @@ public class StationRepositoryAdapter implements StationRepository {
     }
 
     @Override
+    public Station findByIdForUpdate(Integer id) {
+        StationJpaEntity entity = stationJpaRepository.findByIdForUpdate(id)
+                .orElseThrow(()->CustomException.app(DomainErrorCode.STATION_NOT_FOUND)
+                        .addParam("id", id));
+        return stationMapper.toDomain(entity);
+    }
+
+    @Override
     public Station findByIdAndActiveTypeForUpdate(Integer id, ActiveType activeType) {
         StationJpaEntity entity = stationJpaRepository.findByIdAndActivateForUpdate(id, activeType)
                 .orElseThrow(()->CustomException.app(DomainErrorCode.STATION_NOT_FOUND)

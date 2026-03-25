@@ -41,7 +41,7 @@ public class StationService {
     public void updateStationStatus(Integer id, UpdateStationStatusRequest request) {
         ActiveType target = request.actionType().toActiveType();
         // station lock for update
-        Station station = stationRepository.findByIdAndActiveTypeForUpdate(id, ActiveType.ACTIVE);
+        Station station = stationRepository.findByIdForUpdate(id);
         // return if status not change;
         if (station.getActiveType() == target) {
             return;

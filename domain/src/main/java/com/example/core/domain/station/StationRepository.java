@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface StationRepository {
     void save(Station station);
+    Station findByIdForUpdate(Integer id);
     Station findByIdAndActiveTypeForUpdate(Integer id, ActiveType activeType);
     void findAllByIdsAndActiveTypeForUpdate(List<Integer> ids, ActiveType activeType);
     void updateName(Integer id, StationName name);

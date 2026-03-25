@@ -16,6 +16,11 @@ public interface SpringDataStationJpaRepository extends JpaRepository<StationJpa
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from StationJpaEntity s " +
+            "where s.id = :id")
+    Optional<StationJpaEntity> findByIdForUpdate(@Param("id") Integer id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select s from StationJpaEntity s " +
             "where s.id = :id and s.activeType = :activeType")
     Optional<StationJpaEntity> findByIdAndActivateForUpdate(
             @Param("id") Integer id,
