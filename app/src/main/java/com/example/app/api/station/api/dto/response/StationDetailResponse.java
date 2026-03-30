@@ -1,6 +1,5 @@
 package com.example.app.api.station.api.dto.response;
 
-import com.example.app.api.station.port.row.StationSegmentRow;
 import com.example.core.common.domain.enums.ActiveType;
 
 import java.util.List;

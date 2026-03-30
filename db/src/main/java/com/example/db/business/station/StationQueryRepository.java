@@ -1,11 +1,11 @@
 package com.example.db.business.station;
 
-import com.example.app.api.station.port.StationQueryPort;
+import com.example.app.api.station.port.query.StationQueryPort;
 import com.example.core.domain.station.StationName;
 import com.example.core.query.CoreSortType;
 import com.example.app.common.dto.page.PageResult;
 import com.example.app.common.dto.request.enums.StatusFilter;
-import com.example.app.api.station.port.row.StationRow;
+import com.example.app.api.station.port.query.row.StationRow;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;

@@ -1,8 +1,8 @@
 package com.example.app.api.line.application;
 
 import com.example.app.api.line.api.dto.request.segment.CreateSegmentRequest;
+import com.example.app.api.segment.event.SegmentStatusChangedEvent;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.app.common.redis.event.LineSegmentChangedEvent;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.DomainErrorCode;
 import com.example.core.domain.line.Line;
@@ -93,7 +93,7 @@ public class LineSegmentService {
             }
         }
         // delete cache
-        eventPublisher.publishEvent(new LineSegmentChangedEvent(lineId));
+        eventPublisher.publishEvent(new SegmentStatusChangedEvent(lineId));
     }
 
     @Transactional
@@ -142,7 +142,7 @@ public class LineSegmentService {
             }
         }
         // delete cache
-        eventPublisher.publishEvent(new LineSegmentChangedEvent(lineId));
+        eventPublisher.publishEvent(new SegmentStatusChangedEvent(lineId));
     }
 
     private void ensureInactivateSegment(Integer lineId, Integer beforeId, Integer afterId) {

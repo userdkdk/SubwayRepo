@@ -1,6 +1,6 @@
 package com.example.app.api.line.application;
 
-import com.example.app.api.line.port.row.LineSegmentRow;
+import com.example.app.api.line.port.query.row.LineSegmentRow;
 import com.example.app.common.exception.AppErrorCode;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;

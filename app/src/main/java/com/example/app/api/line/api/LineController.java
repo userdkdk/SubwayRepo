@@ -4,9 +4,11 @@ import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
 import com.example.app.api.line.application.LineService;
+import com.example.app.api.line.event.LineStatusChangedEvent;
 import com.example.app.common.dto.response.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class LineController {
 
     private final LineService lineService;
+    private final ApplicationEventPublisher eventPublisher;
 
     // create line
     @PostMapping("")
@@ -43,6 +46,7 @@ public class LineController {
             @Valid @RequestBody UpdateLineStatusRequest request
     ) {
         lineService.updateLineStatus(lineId, request);
+        eventPublisher.publishEvent(new LineStatusChangedEvent(lineId));
         return CustomResponse.ok();
     }
 }

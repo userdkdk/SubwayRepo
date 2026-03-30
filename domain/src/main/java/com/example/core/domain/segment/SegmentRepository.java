@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SegmentRepository{
     int upsert(Segment segment);
-    void updateAttribute(Integer id, SegmentAttribute attribute);
+    Segment updateAttribute(Integer id, SegmentAttribute attribute);
     Integer findIdByUniqueKey(Segment segment);
     boolean existsActiveSegmentByStationAndLine(Integer lineId, Integer stationId);
     boolean existsActiveSegmentByStation(Integer stationId);

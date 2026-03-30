@@ -3,8 +3,9 @@ package com.example.app.api.line.application;
 import com.example.app.api.line.api.dto.request.line.CreateLineRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineAttributeRequest;
 import com.example.app.api.line.api.dto.request.line.UpdateLineStatusRequest;
+import com.example.app.api.line.event.LineAttributeChangedEvent;
+import com.example.app.api.line.event.LineStatusChangedEvent;
 import com.example.app.common.exception.AppErrorCode;
-import com.example.core.common.exception.DomainErrorCode;
 import com.example.core.domain.line.Line;
 import com.example.core.domain.line.LineName;
 import com.example.core.domain.line.LineRepository;
@@ -16,12 +17,12 @@ import com.example.core.domain.segment.SegmentAttribute;
 import com.example.core.domain.segment.SegmentRepository;
 import com.example.core.domain.segmentHistory.SegmentHistory;
 import com.example.core.domain.segmentHistory.SegmentHistoryRepository;
-import com.example.core.domain.station.Station;
 import com.example.core.domain.station.StationRepository;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ public class LineService {
     private final SegmentHistoryRepository segmentHistoryRepository;
     private final LineSnapshotRepository lineSnapshotRepository;
     private final LineSnapshotSegmentRepository lineSnapshotSegmentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void createLine(CreateLineRequest request) {
@@ -63,6 +65,7 @@ public class LineService {
     public void updateLineName(Integer id, UpdateLineAttributeRequest request) {
         LineName name = new LineName(request.name());
         lineRepository.updateName(id, name);
+        eventPublisher.publishEvent(new LineAttributeChangedEvent(id));
     }
 
     @Transactional
@@ -91,6 +94,7 @@ public class LineService {
             }
             // 라인 업데이트
             lineRepository.updateStatus(id, target);
+            eventPublisher.publishEvent(new LineStatusChangedEvent(id));
             return;
         }
         // deactivate
@@ -110,6 +114,7 @@ public class LineService {
         }
         // 라인 업데이트
         lineRepository.updateStatus(id, target);
+        eventPublisher.publishEvent(new LineStatusChangedEvent(id));
     }
 
     private void upsertSegment(Integer lineId, Integer startId, Integer endId, Double distance, Integer spendTime) {

@@ -15,6 +15,7 @@ public class LogEventLogger {
     private static final Logger ERROR =
             LoggerFactory.getLogger("ERROR_LOG");
 
+
     public static void log(AppLogEvent event) {
         switch (event.category()) {
             case ACCESS -> ACCESS.info(
@@ -27,6 +28,6 @@ public class LogEventLogger {
                     kv("category", event.category().name()),
                     kv("fields", event.fields())
             );
-        };
+        }
     }
 }

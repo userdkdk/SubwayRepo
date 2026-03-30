@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
     }
 
     private void logWarn(HttpServletRequest req, ErrorCode code, Map<String, Object> params, Exception e) {
-        AppLogEvent log = new ErrorLogEvent(
+        AppLogEvent log = ErrorLogEvent.from(
                 "ERROR LOG",
                 req.getMethod(),
                 req.getRequestURI(),
@@ -88,12 +88,10 @@ public class GlobalExceptionHandler {
     }
 
     private void logError(HttpServletRequest req, Exception e) {
-        AppLogEvent log = new ErrorLogEvent(
+        AppLogEvent log = ErrorLogEvent.fromWithoutCode(
                 "ERROR LOG",
                 req.getMethod(),
                 req.getRequestURI(),
-                null,
-                null,
                 e.getMessage()
         );
         LogEventLogger.log(log);

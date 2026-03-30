@@ -1,10 +1,10 @@
 package com.example.db.business.segment;
 
-import com.example.app.api.line.port.row.LineSegmentRow;
+import com.example.app.api.line.port.query.row.LineSegmentRow;
 import com.example.core.common.domain.enums.ActiveType;
 import com.example.core.domain.path.port.data.PathSegmentData;
-import com.example.app.api.segment.port.SegmentQueryPort;
-import com.example.app.api.station.port.row.StationSegmentRow;
+import com.example.app.api.segment.port.query.SegmentQueryPort;
+import com.example.app.api.station.port.query.row.StationSegmentRow;
 import com.example.db.business.station.QStationJpaEntity;
 import com.example.app.common.dto.request.enums.StatusFilter;
 import com.querydsl.core.types.Projections;
@@ -33,7 +33,7 @@ public class SegmentQueryRepository implements SegmentQueryPort {
                         s.id,
                         beforeStation.id, beforeStation.name,
                         afterStation.id, afterStation.name,
-                        s.distance, s.spendTime
+                        s.activeType, s.distance, s.spendTime
                 ))
                 .from(s)
                 .join(s.beforeStationJpaEntity, beforeStation)

@@ -31,4 +31,19 @@ public record ErrorLogEvent(
                 "logMessage",logMessage
         );
     }
+    public static ErrorLogEvent from(String message, String method, String uri,
+                                ErrorCode code, Map<String, Object> params, String logMessage) {
+        return new ErrorLogEvent(message, method, uri,
+                code, params, logMessage);
+    }
+    public static ErrorLogEvent fromWithoutCode(String message, String method, String uri,
+                                     String logMessage) {
+        return new ErrorLogEvent(message, method, uri,
+                null, null, logMessage);
+    }
+    public static ErrorLogEvent fromParams(String message, Map<String, Object> params,
+                                                String logMessage) {
+        return new ErrorLogEvent(message, null,null,
+                null, params, logMessage);
+    }
 }

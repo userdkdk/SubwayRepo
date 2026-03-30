@@ -1,6 +1,6 @@
 package com.example.app.api.line.api.dto.response;
 
-import com.example.app.api.line.port.row.LineProjection;
+import com.example.app.api.line.port.query.row.LineProjection;
 import com.example.core.common.domain.enums.ActiveType;
 
 public record LineResponse (

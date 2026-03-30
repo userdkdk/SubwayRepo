@@ -36,11 +36,12 @@ public class SegmentRepositoryAdapter implements SegmentRepository {
     }
 
     @Override
-    public void updateAttribute(Integer id, SegmentAttribute attribute) {
+    public Segment updateAttribute(Integer id, SegmentAttribute attribute) {
         SegmentJpaEntity entity = segmentJpaRepository.findById(id)
                 .orElseThrow(()->CustomException.app(DomainErrorCode.SEGMENT_NOT_FOUND)
                         .addParam("id", id));
         entity.changeAttribute(attribute.distance(), attribute.spendTimeSeconds());
+        return segmentMapper.toDomain(entity);
     }
 
     @Override

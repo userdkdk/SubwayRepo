@@ -1,8 +1,8 @@
 package com.example.db.business.line;
 
-import com.example.app.api.line.port.LineQueryPort;
+import com.example.app.api.line.port.query.LineQueryPort;
 import com.example.core.query.CoreSortType;
-import com.example.app.api.line.port.row.LineProjection;
+import com.example.app.api.line.port.query.row.LineProjection;
 import com.example.app.common.dto.page.PageResult;
 import com.example.app.common.dto.request.enums.StatusFilter;
 import com.querydsl.core.types.Order;

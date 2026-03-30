@@ -1,6 +1,7 @@
 package com.example.app.api.station.api.dto.response;
 
-import com.example.app.api.line.port.row.LineSegmentRow;
+import com.example.app.api.line.port.cache.LineDetailSegmentCacheItem;
+import com.example.core.common.domain.enums.ActiveType;
 
 public record StationSegmentResponse(
         Integer segmentId,
@@ -8,18 +9,20 @@ public record StationSegmentResponse(
         String beforeName,
         Integer afterId,
         String afterName,
+        ActiveType status,
         Double distance,
         Integer spendTime
 ) {
-    public static StationSegmentResponse from(LineSegmentRow row) {
+    public static StationSegmentResponse from(LineDetailSegmentCacheItem cache) {
         return new StationSegmentResponse(
-                row.segmentId(),
-                row.beforeStationId(),
-                row.beforeStationName(),
-                row.afterStationId(),
-                row.afterStationName(),
-                row.distance(),
-                row.spendTime()
+                cache.segmentId(),
+                cache.beforeId(),
+                cache.beforeName(),
+                cache.afterId(),
+                cache.afterName(),
+                cache.activeType(),
+                cache.distance(),
+                cache.spendTime()
         );
     }
 }

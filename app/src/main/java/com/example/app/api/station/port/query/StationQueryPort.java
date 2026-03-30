@@ -1,6 +1,6 @@
-package com.example.app.api.station.port;
+package com.example.app.api.station.port.query;
 
-import com.example.app.api.station.port.row.StationRow;
+import com.example.app.api.station.port.query.row.StationRow;
 import com.example.app.common.dto.page.PageResult;
 import com.example.app.common.dto.request.enums.StatusFilter;
 import com.example.core.domain.station.StationName;

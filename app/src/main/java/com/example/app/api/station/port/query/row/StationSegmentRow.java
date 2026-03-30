@@ -1,4 +1,4 @@
-package com.example.app.api.station.port.row;
+package com.example.app.api.station.port.query.row;
 
 import com.example.core.common.domain.enums.ActiveType;
 

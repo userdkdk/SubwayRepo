@@ -1,11 +1,11 @@
 package com.example.app.api.station.application;
 
-import com.example.app.api.segment.port.SegmentQueryPort;
+import com.example.app.api.segment.port.query.SegmentQueryPort;
 import com.example.app.api.station.api.dto.response.StationDetailResponse;
 import com.example.app.api.station.api.dto.response.StationResponse;
-import com.example.app.api.station.port.StationQueryPort;
-import com.example.app.api.station.port.row.StationRow;
-import com.example.app.api.station.port.row.StationSegmentRow;
+import com.example.app.api.station.port.query.StationQueryPort;
+import com.example.app.api.station.port.query.row.StationRow;
+import com.example.app.api.station.port.query.row.StationSegmentRow;
 import com.example.app.common.dto.page.PageResult;
 import com.example.app.common.dto.request.ViewRequestFilter;
 import com.example.app.common.exception.AppErrorCode;

@@ -1,6 +1,6 @@
-package com.example.app.api.line.port;
+package com.example.app.api.line.port.query;
 
-import com.example.app.api.line.port.row.LineProjection;
+import com.example.app.api.line.port.query.row.LineProjection;
 import com.example.app.common.dto.page.PageResult;
 import com.example.app.common.dto.request.enums.StatusFilter;
 import com.example.core.query.CoreSortType;
